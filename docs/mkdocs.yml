@@ -8,8 +8,8 @@ site_description: >-
   and get engaged with community.
 
 # Repository
-# repo_name: entropy-lab/documentation-unified
-# repo_url: https://github.com/entropy-lab/documentation-unified
+# repo_name: qua-platform/qua-platform.github.io
+# repo_url: https://github.com/qua-platform/qua-platform.github.io
 # edit_uri: edit/main/docs/docs
 
 copyright: Copyright &copy; 2023 Q.M Technologies Ltd.
@@ -85,7 +85,7 @@ extra:
 
 
             Thanks for your feedback! Help us improve this page by
-            using our <a href="https://github.com/entropy-lab/documentation-unified/issues/new?title=[Feedback]+{title}+-+{url}" target="_blank" rel="noopener">feedback form</a>.
+            using our <a href="https://github.com/qua-platform/qua-platform.github.io/issues/new?title=[Feedback]+{title}+-+{url}" target="_blank" rel="noopener">feedback form</a>.
 
 
   consent:
