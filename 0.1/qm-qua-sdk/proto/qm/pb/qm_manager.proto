@@ -1,0 +1,96 @@
+syntax = "proto3";
+import "qm/pb/inc_qua_config.proto";
+import "qm/pb/general_messages.proto";
+
+option java_multiple_files = true;
+option java_package = "qm.grpc.qmManager";
+option java_outer_classname = "QmManagerProto";
+option objc_class_prefix = "HLW";
+
+
+package qm.grpc.qm_manager;
+
+message OpenQuantumMachineRequest {
+    qm.grpc.qua_config.QuaConfig config = 1;
+    oneof oneOfCloseOtherMachines {
+        bool never = 2;
+        bool always = 3;
+        bool ifNeeded = 4;
+    }
+}
+
+message OpenQuantumMachineResponse {
+    string machineID = 1;
+    bool success = 2;
+    repeated ConfigValidationMessage configValidationErrors = 3;
+    repeated PhysicalValidationMessage physicalValidationErrors = 4;
+    repeated OpenQmWarning openQmWarnings = 5;
+}
+
+message CloseQuantumMachineRequest {
+    string machineID = 1;
+}
+
+message CloseQuantumMachineResponse {
+    bool success = 1;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 2;
+}
+
+message GetQuantumMachineRequest {
+    string machineID = 1;
+}
+
+message GetQuantumMachineResponse {
+    string machineID = 1;
+    qm.grpc.qua_config.QuaConfig config = 2;
+    bool success = 3;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 4;
+
+}
+
+message GetRunningJobRequest{
+    string machineID = 1;
+}
+
+message GetRunningJobResponse{
+    string machineID = 1;
+    string jobId = 2;
+}
+
+message ListOpenQuantumMachinesResponse {
+    repeated string machineIDs = 1;
+}
+
+message CloseAllQuantumMachinesResponse {
+    bool success = 1;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 2;
+}
+
+message GetControllersResponse {
+    repeated Controller controllers = 1;
+}
+
+message Controller {
+    string name = 1;
+}
+
+// Config
+
+message ConfigValidationMessage {
+    string message = 1;
+    string group = 2;
+    string path = 3;
+    qm.grpc.general_messages.MessageLevel level = 4;
+}
+
+message PhysicalValidationMessage {
+    string message = 1;
+    string group = 2;
+    string path = 3;
+    qm.grpc.general_messages.MessageLevel level = 4;
+}
+
+message OpenQmWarning {
+    int32 code = 1;
+    string message = 2;
+}

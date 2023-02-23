@@ -1,0 +1,266 @@
+syntax = "proto3";
+
+package qm.grpc.quantum_simulator.v1;
+option py_generic_services = true;
+
+// Input port of the quantum system (output port of OPX)
+message InputPort{
+  // name of the controller
+  string controller = 1;
+  // id
+  uint32 id = 2;
+}
+
+// Output port of the quantum system (input port of OPX)
+message OutputPort{
+  // name of the controller
+  string controller = 1;
+  // id
+  uint32 id = 2;
+}
+
+/*
+A class that holds the physical properties of a transmon.
+*/
+message TransmonProperties{
+  // frequency of the qubit in Hz
+  double frequency = 1;
+  // anharmonicity of the qubit in Hz
+  double anharmonicity = 2;
+  // T1 time in ns
+  double T1 = 3;
+  // T2 time in ns
+  double T2 = 4;
+  uint32 n_levels = 5;
+  uint32 n_order = 6;
+}
+
+// IQMixer for up conversion
+message IQMixerIn{
+  // output port of the OPX
+  InputPort I = 1;
+  // output port of the OPX
+  InputPort Q = 2;
+  // frequency of the local oscillator in Hz
+  double loFrequency = 3;
+}
+
+// IQMixer for down conversion
+message IQMixerOut{
+  // input port of the OPX
+  OutputPort I = 1;
+  // input port of the OPX
+  OutputPort Q = 2;
+  // frequency of the local oscillator in Hz
+  double loFrequency = 3;
+}
+
+//A class to describe analog frontend (currently just a constant multiplicative factor)
+message AnalogFrontend{
+  // a constant factor to account for losses or amplification of the signal
+  double ampFactor = 1;
+}
+
+/*
+A class to describe flux line and how it is connected to the OPX. The frequency of the qubit follows is tuned as: amp*(flux voltage - offset)^2
+*/
+message FluxLine {
+  // output port of the OPX driving the flux line
+  InputPort port = 1;
+  // amplitude in units of GHz/V^2
+  double ampFactor = 2;
+  // offset voltage at which the bias is zero
+  double offset = 3;
+}
+
+message FixedFrequencyTransmon{}
+
+// A class to describe tunable frequency transmon
+message TunableFrequencyTransmon{
+  // flux line controlling the transmon frequency
+  FluxLine fluxLine = 1;
+}
+
+/*
+Transmon contains the physical properties of the transmon
+and the information about how it is connected to the IQ Mixer and OPX
+*/
+message Transmon{
+  // physical properties of the transmon
+  TransmonProperties properties = 1;
+  // IQ mixer used to drive the qubit
+  IQMixerIn iQMixer = 2;
+  // analog frontend
+  AnalogFrontend analogFrontend = 3;
+  oneof type{
+    // fixed frequency qubit
+    FixedFrequencyTransmon fixedFrequencyTransmon = 4;
+    // tunable frequency qubit
+    TunableFrequencyTransmon tunableFrequencyTransmon = 5;
+  }
+}
+
+message DriveResonator{
+}
+
+//A class with the information about how the back reflected from the resonator is fed to the OPX.
+message ReadoutResonator{
+  IQMixerOut iQMixer = 1;
+}
+
+message ResonatorProperties{
+  // resonator frequency in Hz
+  double frequency = 1;
+  // resonator loss rate in Hz
+  double lossrate = 2;
+  // number of n_levels
+  uint32 n_levels = 3;
+}
+
+//A class to describe the physical properties of readout resonator and how it is connected to the OPX
+message Resonator{
+  ResonatorProperties properties = 1;
+  // IQMixer to upconvert the drive
+  IQMixerIn iQMixer = 2;
+  // analog frontend
+  AnalogFrontend analogFrontend = 3;
+  oneof type {
+    // drive resonator
+    DriveResonator driveResonator = 4;
+    // readout resonator
+    ReadoutResonator readoutResonator = 5;
+  }
+}
+
+// A class for describing capacitive coupling between two qubits
+message CapacitiveCoupler{
+  // output port of the OPX driving the coupler
+  InputPort g = 1;
+  // amplitude factor in units of GHz/V
+  double ampFactor = 2;
+}
+
+//Transmon-transmon coupling
+message TransmonTransmonCoupling{
+  // name of the capacitive coupler
+  string capacitiveCoupler = 1;
+  // name of the qubit 1
+  string qb1 = 2;
+  // name of the qubit 2
+  string qb2 = 3;
+}
+
+// Transmon-resonator coupling describes the connectivity between a qubit and a resonator
+message TransmonResonatorCoupling{
+  //name of the qubit
+  string transmon = 1;
+  //name of the resonator
+  string resonator = 2;
+  //strength of the coupling in GHz
+  double g = 3;
+  //coupling type
+  bool isDispersive = 4;
+}
+
+/*
+A class to describe a superconducting chip layout consisting of fixed/flux tunable transmons, capacitive couplers and readout resonators.
+*/
+message SCChip{
+  // a dictionary of Transmons
+  map<string, Transmon> transmons = 1;
+  // a dictionary of resonators
+  map<string, Resonator> resonators = 2;
+  // a dictionary of capacitive couplers
+  map<string, CapacitiveCoupler> capacitiveCouplers = 3;
+  // a list containing all the qubit-qubit couplings in the chip
+  repeated TransmonTransmonCoupling transmonTransmonCoupling = 4;
+  // a list containing the qubit-resonator couplings and their respective strengths
+  repeated TransmonResonatorCoupling transmonResonatorCoupling = 5;
+}
+
+message Offset{
+  InputPort port = 1;
+  double value = 2;
+}
+
+message Waveform{
+  oneof type {
+    ConstantWaveform constantWaveform = 1;
+    ArbitraryWaveform arbitraryWaveform = 2;
+  }
+}
+
+message ConstantWaveform{
+  double sample = 1;
+}
+
+message ArbitraryWaveform{
+  repeated double samples = 1;
+}
+
+message Error{
+  string type = 1;
+  string stack = 2;
+}
+
+message ColdAtomDevice{
+  double v = 1; // MHz*µm^6
+  string qubit = 2; // gg or rg
+  double frequency_01 = 3; // Raman resonant frequency in MHz
+  double frequency_1r = 4; // Rydberg resonant frequency in MHz
+  repeated Coordinate positions = 5; // µm
+  double T1 = 6; // µs
+  double T2 = 7; // µs
+}
+
+message Coordinate{
+  double x = 1; // µm
+  double y = 2; // µm
+  //double z = 3; // µm
+}
+
+message ColdAtomSetup{
+  ColdAtomDevice device = 1;
+  GlobalRamanBeam global_raman_beam = 2;
+  GlobalRydbergBeam global_rydberg_beam = 3;
+  ACStarkShifter local_raman_detuning = 4;
+  ACStarkShifter local_rydberg_detuning = 5;
+}
+
+message BeamSteerer{
+  string AOD_x = 1;
+  string AOD_y = 2;
+  Coordinate reference_position = 3; //# µm
+  double eta_x = 4; //# µm/MHz
+  double eta_y = 5; //# µm/MHz
+}
+
+message ACStarkShifter{
+  string AOM = 1; //# quantum element
+  double delta = 2; //# reference shift
+  repeated double eta_x = 3; //# MHz/V
+  BeamSteerer beam_steerer = 4;
+}
+
+message GlobalRamanBeam{
+  string intensity_modulator = 1; //# quantum element
+  double frequency = 2; //# MHz
+  double scale_factor = 3; //# MHz/V
+  double lo_frequency = 4; //# MHz
+}
+
+message GlobalRydbergBeam{
+  string AOM1 = 1; //# quantum element
+  string AOM2 = 2; //# quantum element
+  double frequency1 = 3; //# MHz
+  double frequency2 = 4; //# MHz
+  double scale_factor1 = 5; //# MHz/V
+  double scale_factor2 = 6; //# MHz/V
+}
+
+message PhysicalConfig{
+  oneof type {
+    SCChip chip = 1;
+    ColdAtomSetup cold_atom_setup = 2;
+  }
+}

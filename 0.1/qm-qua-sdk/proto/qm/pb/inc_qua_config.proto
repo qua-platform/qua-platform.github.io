@@ -1,0 +1,294 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package qm.grpc.qua_config;
+
+message QuaConfig {
+    oneof config_version {
+        // beta suffix means the version is not fixed yet and can changed
+        QuaConfigV1 v1beta = 1;
+    }
+    reserved 2 to 10;
+    int32 revision = 11;
+
+    message QuaConfigV1 {
+        map<string, ControllerDec> controllers = 2 [deprecated = true];
+        map<string, ControllerTypeDec> controllerTypes = 10;
+        map<string, Oscillator> oscillators = 9;
+        map<string, ElementDec> elements = 3;
+        map<string, PulseDec> pulses = 4;
+        map<string, MixerDec> mixers = 5;
+        map<string, WaveformDec> waveforms = 6;
+        map<string, DigitalWaveformDec> digitalWaveforms = 7;
+        map<string, IntegrationWeightDec> integrationWeights = 8;
+    }
+
+    message ControllerDec {
+        string type = 1;
+        map<uint32, AnalogOutputPortDec> analogOutputs = 2;
+        map<uint32, AnalogInputPortDec> analogInputs = 3;
+        map<uint32, DigitalOutputPortDec> digitalOutputs = 4;
+        map<uint32, DigitalInputPortDec> digitalInputs = 5;
+    }
+
+    
+    message ControllerTypeDec {
+        oneof controller_type_one_of {
+            OpxControllerDec opx = 1;
+            OpxPlusControllerDec opxPlus = 2;
+        }
+    }
+
+    message OpxControllerDec {
+        ControllerDec controller = 1;
+        string controllerName = 2;
+    }
+
+    message OpxPlusControllerDec {
+        ControllerDec controller = 1;
+        string controllerName = 2;
+    }
+
+    message AnalogOutputPortDec {
+        double offset = 1;
+        AnalogOutputPortFilter filter = 2;
+        uint32 delay = 3;
+        map<uint32, double> channelWeights = 4 [deprecated = true];
+        bool shareable = 5;
+        map<uint32, double> crosstalk = 6;
+     }
+
+     message AnalogOutputPortFilter {
+         repeated double feedforward = 1;
+         repeated double feedback = 2;
+    }
+
+    message AnalogInputPortDec {
+        double offset = 1;
+        google.protobuf.Int32Value gainDb = 2;
+        bool shareable = 3;
+    }
+
+    message DigitalOutputPortDec {
+        bool shareable = 1;
+    }
+
+    message DigitalInputPortDec {
+        uint32 deadtime = 1;
+        Polarity polarity = 2;
+        double threshold = 3;
+        bool shareable = 4;
+        enum Polarity {
+            RISING = 0;
+            FALLING = 1;
+        }
+    }
+
+    message MixerRef {
+        string mixer = 1;
+        uint64 loFrequency = 2 [deprecated = true];
+        double loFrequencyDouble = 3;
+    }
+
+    message Oscillator {
+        google.protobuf.Int64Value intermediateFrequency = 1 [deprecated = true];
+        MixerRef mixer = 2;
+        double intermediateFrequencyDouble = 3;
+    }
+
+    message SingleInput {
+        DacPortReference port = 1;
+    }
+
+    message MixInputs {
+        DacPortReference I = 1;
+        DacPortReference Q = 2;
+        string mixer = 3;
+        uint64 loFrequency = 4 [deprecated = true];
+        double loFrequencyDouble = 5;
+    }
+
+    message SingleInputCollection {
+        map<string, DacPortReference> inputs = 1;
+    }
+
+    message MultipleInputs {
+        map<string, DacPortReference> inputs = 1;
+    }
+
+    message ElementDec {
+        map<string, AdcPortReference> outputs = 3;
+        map<string, DigitalInputPortReference> digitalInputs = 4;
+        map<string, DigitalOutputPortReference> digitalOutputs = 9;
+
+        oneof element_inputs_one_of {
+            SingleInput singleInput = 5;
+            MixInputs mixInputs = 6;
+            SingleInputCollection singleInputCollection = 50;
+            MultipleInputs multipleInputs = 51;
+        }
+
+        google.protobuf.UInt32Value timeOfFlight = 7;
+        google.protobuf.UInt32Value smearing = 8;
+
+        google.protobuf.UInt64Value intermediateFrequency = 20 [deprecated = true];
+        double intermediateFrequencyDouble = 24;
+        bool intermediateFrequencyNegative = 23;
+        map<string, string> operations = 21;
+        google.protobuf.StringValue measurementQe = 22;
+
+        OutputPulseParameters outputPulseParameters = 30;
+
+        HoldOffset holdOffset = 31 [deprecated = true];
+
+        Sticky sticky = 32;
+
+        ElementThread thread = 40;
+
+        oneof oscillator_one_of {
+            google.protobuf.Int64Value intermediateFrequencyOscillator = 61 [deprecated = true];
+            double intermediateFrequencyOscillatorDouble = 64;
+            google.protobuf.StringValue namedOscillator = 62;
+            google.protobuf.Empty noOscillator = 63;
+        }
+    }
+
+    message ElementThread {
+        string threadName = 1;
+    }
+
+    message OutputPulseParameters {
+        uint32 threshold = 1 [deprecated = true];
+        repeated uint32 table = 2 [deprecated = true];
+
+        enum Polarity {
+            ASCENDING = 0;
+            DESCENDING = 1;
+        }
+
+        int32 signalThreshold = 3;
+        Polarity signalPolarity = 4;
+        int32 derivativeThreshold = 5;
+        Polarity derivativePolarity = 6;
+
+    }
+
+    message HoldOffset{
+        int32 duration = 1;
+    }
+
+    message Sticky {
+        bool analog = 1;
+        bool digital = 2;
+        int32 duration = 3;
+    }
+
+    message DacPortReference {
+        string controller = 1;
+        uint32 number = 2;
+    }
+
+    message AdcPortReference {
+        string controller = 1;
+        uint32 number = 2;
+    }
+
+    message DigitalInputPortReference {
+        PortReference port = 1;
+        uint32 delay = 2;
+        uint32 buffer = 3;
+    }
+
+    message DigitalOutputPortReference {
+        PortReference port = 1;
+    }
+
+    message PortReference {
+        string controller = 1;
+        uint32 number = 2;
+    }
+
+    message PulseDec {
+        uint32 length = 2;
+        uint32 operation = 3;
+        map<string, string> waveforms = 4;
+        google.protobuf.StringValue digitalMarker = 5;
+        map<string, string> integrationWeights = 8;
+
+        enum Operation {
+            MEASUREMENT = 0;
+            CONTROL = 1;
+        }
+    }
+
+    message WaveformDec {
+        oneof waveform_oneof {
+            ArbitraryWaveformDec arbitrary = 1;
+            ConstantWaveformDec constant = 2;
+            CompressedWaveformDec compressed = 3 [deprecated = true];
+        }
+    }
+
+    message ArbitraryWaveformDec {
+        repeated double samples = 1;
+        double multiplier = 2;
+        double deprecatedMaxAllowedError = 3 [deprecated = true];
+        google.protobuf.DoubleValue maxAllowedError = 4;
+        google.protobuf.DoubleValue samplingRate = 5;
+        bool isOverridable = 6;
+    }
+
+    message CompressedWaveformDec {
+        repeated double samples = 1;
+        double sampleRate = 2;
+    }
+
+    message ConstantWaveformDec {
+        double sample = 1;
+        double multiplier = 2;
+    }
+
+    message DigitalWaveformDec {
+        repeated DigitalWaveformSample samples = 1;
+    }
+
+    message DigitalWaveformSample {
+        bool value = 1;
+        uint32 length = 2;
+    }
+
+    message MixerDec {
+        repeated CorrectionEntry correction = 1;
+    }
+
+    message IntegrationWeightDec {
+        repeated IntegrationWeightSample cosine = 1;
+        repeated IntegrationWeightSample sine = 2;
+    }
+
+    message IntegrationWeightSample {
+        double value = 1;
+        uint32 length = 2;
+    }
+
+    message CorrectionEntry {
+        uint64 frequency = 1 [deprecated = true];
+        uint64 loFrequency = 2 [deprecated = true];
+        Matrix correction = 3;
+        bool frequencyNegative = 4;
+        double frequencyDouble = 5;
+        double loFrequencyDouble = 6;
+    }
+
+    message Matrix {
+        double v00 = 1;
+        double v01 = 2;
+        double v10 = 3;
+        double v11 = 4;
+    }
+
+}

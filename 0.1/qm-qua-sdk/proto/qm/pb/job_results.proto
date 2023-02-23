@@ -1,0 +1,302 @@
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+import "qm/pb/general_messages.proto";
+import "google/protobuf/struct.proto";
+
+option java_multiple_files = true;
+option java_package = "qm.grpc.results";
+option java_outer_classname = "JobResultsProto";
+option objc_class_prefix = "HLW";
+
+package qm.grpc.results_analyser;
+
+service JobResultsService {
+    rpc GetJobResultSchema (GetJobResultSchemaRequest) returns (GetJobResultSchemaResponse) {}
+    rpc GetJobState (GetJobStateRequest) returns (GetJobStateResponse) {}
+    rpc GetJobNamedResultHeader (GetJobNamedResultHeaderRequest) returns (GetJobNamedResultHeaderResponse) {}
+    rpc GetJobNamedResult (GetJobNamedResultRequest) returns (stream GetJobNamedResultResponse) {}
+    rpc GetJobDebugData (GetJobDebugDataRequest) returns (stream GetJobDebugDataResponse) {}
+    rpc GetJobErrors (GetJobErrorsRequest) returns (GetJobErrorsResponse) {}
+    rpc GetProgramMetadata(GetProgramMetadataRequest) returns (GetProgramMetadataResponse) {}
+}
+
+message GetProgramMetadataRequest {
+    string jobId = 1;
+}
+
+message GetProgramMetadataResponse {
+    bool success = 1;
+    string jobId = 2;
+    ProgramStreamMetadata programStreamMetadata = 3;
+}
+
+message ProgramStreamMetadata {
+    repeated StreamMetadata streamMetadata = 1;
+    repeated StreamMetadataExtractionError streamMetadataExtractionError = 2;
+}
+
+message StreamMetadata {
+    string streamName = 1;
+    repeated IterationData iterationData = 2;
+}
+
+message StreamMetadataExtractionError {
+    string location = 1;
+    string error = 2;
+}
+
+message IterationData {
+    string iterationVariableName = 1;
+    oneof iterationValues {
+        ForEachIntIterationValues forEachIntIterationValues = 2;
+        ForIntIterationValues forIntIterationValues = 3;
+        ForEachDoubleIterationValues forEachDoubleIterationValues = 4;
+        ForDoubleIterationValues forDoubleIterationValues = 5;
+    }
+
+    message ForEachIntIterationValues {
+        repeated int32 values = 1;
+    }
+
+    message ForIntIterationValues {
+        int32 startValue = 1;
+        int32 step = 2;
+        int32 numberOfIterations = 3;
+    }
+
+    message ForEachDoubleIterationValues {
+        repeated double values = 1;
+    }
+
+    message ForDoubleIterationValues {
+        double startValue = 1;
+        double step = 2;
+        int32 numberOfIterations = 3;
+    }
+}
+
+
+message GetJobResultSchemaRequest {
+    string jobId = 1;
+}
+
+message GetJobResultSchemaResponse {
+    repeated Item items = 1;
+    message Item {
+        string name = 1;
+        string simpleDType = 2;
+        bool isSingle = 3;
+        int32 expectedCount = 4;
+        repeated int32 shape = 5;
+    }
+}
+
+
+
+message GetJobStateRequest {
+    string jobId = 1;
+}
+
+message GetJobStateResponse {
+   bool done = 1;
+    bool closed = 2;
+    bool hasDataloss = 3;
+}
+
+
+
+message GetJobNamedResultHeaderRequest {
+    string jobId = 1;
+    string outputName = 2;
+    bool flatFormat = 3;
+}
+
+message GetJobNamedResultHeaderResponse {
+    bool isSingle = 1;
+    int32 countSoFar = 2;
+    string simpleDType = 3;
+    bool done = 4  [deprecated=true];
+    bool closed = 5  [deprecated=true];
+    bool hasDataloss = 6;
+    repeated int32 shape = 7;
+    google.protobuf.BoolValue hasExecutionErrors = 8;
+}
+
+
+message GetJobNamedResultRequest {
+    string jobId = 1;
+    string outputName = 2;
+    int32 offset = 3 [deprecated=true];
+    int32 limit = 4;
+    google.protobuf.Int64Value longOffset = 5;
+}
+
+message GetJobNamedResultResponse {
+    int32 countOfItems = 1;
+    bytes data = 2;
+}
+
+message GetJobErrorsRequest {
+    string jobId = 1;
+}
+
+message GetJobDebugDataRequest {
+    string jobId = 1;
+}
+
+message GetJobDebugDataResponse {
+    bytes data = 1;
+    string jobId = 2;
+}
+
+message GetJobErrorsResponse {
+    repeated Error errors = 1;
+    string jobId = 2;
+    message Error {
+        int32 errorCode = 1;
+        ExecutionErrorSeverity errorSeverity = 2;
+        string message = 3;
+    }
+
+    enum ExecutionErrorSeverity {
+        ERROR = 0;
+        WARNING = 1;
+    }
+}
+
+
+
+
+
+
+
+
+message PullAnalysedResultsRequest {
+    string jobFilePath = 1;
+    string metadata = 2;
+    bool containsVersion = 3;
+}
+
+
+message AnalysedResultsResponse {
+    string version = 1;
+    reserved 2 to 10;
+    repeated IcpResultData icpResults = 11;
+    repeated StreamResultData streamResults = 12;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 13;
+}
+
+message PullResultOutputRequest {
+    string jobId = 1;
+    string outputName = 2;
+}
+
+message PullResultOutputResponse {
+    oneof response {
+        Data data = 1;
+        Header header = 2;
+        Npz npz = 3;
+        Npy npy = 4;
+    }
+    message Header {
+        string version = 1;
+        string outputName = 2;
+        bool dataLoss = 3;
+        repeated qm.grpc.general_messages.ErrorMessage errors = 4;
+
+        bool single = 5; // if this is a "save" (single) or "save_all" (multi)
+    }
+    message Data {
+        google.protobuf.Value results = 1; //TODO maybe add repeated
+    }
+    message Npz {
+        bytes npz = 1;
+    }
+    message Npy {
+        string name = 1;
+        bytes npy = 2;
+        int64 count = 3;
+    }
+}
+
+message BinaryWrapper{
+    repeated bytes data = 1;
+}
+
+message PullFileResultRequest {
+    string jobId = 1;
+    string metadata = 2;
+
+    oneof fileType {
+        bool asNpz = 4;
+    }
+}
+
+message FileResultResponse {
+    string jobId = 1;
+    string controllerName = 2;
+    string group = 3;
+
+    oneof file {
+        bytes npz = 4;
+    }
+
+    string version = 10;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 11;
+}
+
+message PullSimulatorSamplesRequest {
+
+    string jobId = 1;
+    bool includeAnalog = 2;
+    bool includeDigital = 3;
+
+    oneof fileType {
+        bool asNpz = 4;
+    }
+
+    bool includeAllConnections = 5;
+}
+
+message SimulatorSamplesResponse {
+    string jobId = 1;
+    reserved 2 to 4;
+    bool ok = 5;
+
+    oneof body {
+        Header header = 6;
+        Data data = 7;
+    }
+    message Header {
+        string simpleDType = 1;
+        int32 countOfItems = 2;
+    }
+    message Data {
+        bytes data = 8;
+    }
+
+}
+
+message IcpResultData {
+    string name = 1;
+    uint64 timestamp = 2;
+    bool dataLoss = 3;
+    reserved 4 to 10;
+
+    oneof data {
+        int32 intValue = 11;
+        double doubleValue = 12;
+        bool booleanValue = 13;
+    }
+}
+
+message StreamResultData {
+    string name = 1;
+    uint64 timestamp = 2;
+    bool dataLoss = 3;
+    bool multipleSources = 4;
+    string dataSourceName = 5;
+    reserved 6 to 10;
+
+    int64 data = 11;
+}

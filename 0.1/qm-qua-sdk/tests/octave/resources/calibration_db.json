@@ -1,0 +1,429 @@
+{
+  "_default": {
+    "1": {
+      "correction": [
+        1.0360994215580928,
+        -0.09762228262668235,
+        -0.10175985132439765,
+        0.99397148525939
+      ],
+      "i_offset": -0.1919708251953125,
+      "q_offset": 0.069488525390625,
+      "lo_frequency": 2000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 46.125,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "2": {
+      "correction": [
+        0.9995433408881038,
+        0.07152250500800252,
+        0.070396439166772,
+        1.0155320986480956
+      ],
+      "i_offset": 0.02988433837890625,
+      "q_offset": -0.0185546875,
+      "lo_frequency": 3000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 47.3125,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "3": {
+      "correction": [
+        1.001864665662358,
+        0.038910529809793766,
+        0.03887966821999923,
+        1.002659917724859
+      ],
+      "i_offset": 0.001495361328125,
+      "q_offset": 0.012176513671875,
+      "lo_frequency": 4000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 48.125,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "4": {
+      "correction": [
+        1.0107367236950264,
+        0.018562357016780533,
+        0.018941192308117853,
+        0.9905213784856212
+      ],
+      "i_offset": 0.0127410888671875,
+      "q_offset": 0.042999267578125,
+      "lo_frequency": 5000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 48.75,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "5": {
+      "correction": [
+        1.0387699959384409,
+        -0.1255072974232825,
+        -0.1292389316380481,
+        1.0087766370566764
+      ],
+      "i_offset": 0.0142059326171875,
+      "q_offset": 0.0171966552734375,
+      "lo_frequency": 6000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 49.25,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "6": {
+      "correction": [
+        1.0134950819984836,
+        -0.06851463934766484,
+        -0.06939001066119765,
+        1.0007096030407152
+      ],
+      "i_offset": -0.009124755859375,
+      "q_offset": 0.0107421875,
+      "lo_frequency": 7000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 49.75,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "7": {
+      "correction": [
+        1.0175882702951786,
+        -0.1124395506390816,
+        -0.11224755726074923,
+        1.019328800018347
+      ],
+      "i_offset": -0.03369140625,
+      "q_offset": -0.000885009765625,
+      "lo_frequency": 8000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 50.0625,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "8": {
+      "correction": [
+        1.0170323989133279,
+        -0.08198750478260175,
+        -0.08311614299986471,
+        1.0032220656594124
+      ],
+      "i_offset": -0.2130889892578125,
+      "q_offset": 0.037841796875,
+      "lo_frequency": 9000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 50.4375,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "9": {
+      "correction": [
+        0.969180250393013,
+        0.017163061342150218,
+        0.0160913848534256,
+        1.0337270682799342
+      ],
+      "i_offset": -0.043212890625,
+      "q_offset": 0.039306640625,
+      "lo_frequency": 10000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 50.6875,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "10": {
+      "correction": [
+        1.014902499976447,
+        -0.004812529893084412,
+        -0.004955617996942225,
+        0.9855982891975315
+      ],
+      "i_offset": 0.043216705322265625,
+      "q_offset": 0.1109619140625,
+      "lo_frequency": 11000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 50.875,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "11": {
+      "correction": [
+        0.9852595271612191,
+        -0.0109095959990144,
+        -0.010584249701785496,
+        1.015545144753681
+      ],
+      "i_offset": 0.0712890625,
+      "q_offset": 0.0434417724609375,
+      "lo_frequency": 12000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.0625,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "12": {
+      "correction": [
+        0.9992302276838572,
+        0.011733159258266134,
+        0.011710265288981713,
+        1.0011837569657416
+      ],
+      "i_offset": -0.09326171875,
+      "q_offset": 0.11125946044921875,
+      "lo_frequency": 13000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.25,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "13": {
+      "correction": [
+        1.002324016649415,
+        0.015601524686589633,
+        0.015662587405519533,
+        0.9984163206780721
+      ],
+      "i_offset": -0.1558074951171875,
+      "q_offset": 0.04107666015625,
+      "lo_frequency": 14000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.375,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "14": {
+      "correction": [
+        1.0068887506493516,
+        -0.001939877776247199,
+        -0.001966582091751094,
+        0.9932161584969841
+      ],
+      "i_offset": -0.11328125,
+      "q_offset": -0.1328125,
+      "lo_frequency": 15000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.5,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "15": {
+      "correction": [
+        1.0171826919593014,
+        -0.02889160909399692,
+        -0.029808803033488884,
+        0.9858847629759384
+      ],
+      "i_offset": 0.0174713134765625,
+      "q_offset": -0.0726318359375,
+      "lo_frequency": 16000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.625,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "16": {
+      "correction": [
+        1.0103302186257064,
+        0.017417990191840288,
+        0.017761540294243452,
+        0.9907880480526754
+      ],
+      "i_offset": 0.09625244140625,
+      "q_offset": 0.032470703125,
+      "lo_frequency": 17000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.625,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    },
+    "17": {
+      "correction": [
+        1.0273026853610683,
+        0.07764322220263259,
+        0.08042170729139478,
+        0.9918104620664442
+      ],
+      "i_offset": 0.0782470703125,
+      "q_offset": 0.134521484375,
+      "lo_frequency": 18000000000.0,
+      "if_frequency": 60000000.0,
+      "temperature": 51.75,
+      "mixer_id": "octave_oct1_1",
+      "optimizer_parameters": {
+        "average_iterations": 100,
+        "iterations": 10000,
+        "calibration_offset_frequency": 7000000.0,
+        "keep_on": true,
+        "initial_setpoint": null,
+        "threshold": null,
+        "acquisition_BW": 1,
+        "if_power": null,
+        "initial_step_size": null
+      }
+    }
+  }
+}
