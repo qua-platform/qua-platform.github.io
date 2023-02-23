@@ -1,0 +1,606 @@
+<!-- Custom HTML site displayed as the Home chapter -->
+
+{% extends "main.html" %}
+{% block tabs %}
+{{ super() }}
+<style>
+    
+    [data-md-color-scheme="entropy-dark"] {
+        --feature-header-color: white;
+        --md-feature-bg-color: #E5E5E5;
+        --background-shape: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: %23212123' /></svg>") no-repeat bottom, linear-gradient(to bottom, #212123, hsl(188.8, 82.8%, 11.4%) 99%, #fff 99%);
+        --md-default-bg-color: #212123;
+    }
+    [data-md-color-scheme="entropy-bright"] {
+        --md-feature-bg-color: white;
+        --feature-header-color: #333;
+        --background-shape: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: %23E5E5E5' /></svg>") no-repeat bottom, linear-gradient(to bottom, #464647, hsl(188.8, 82.8%, 11.4%) 99%, #fff 99%);
+    }
+    .md-main {
+        flex-grow: 0
+    }
+
+    .md-main__inner {
+        display: flex;
+        height: 100%;
+    }
+
+    .tx-container {
+        padding-top: 2rem;
+        background: var(--background-shape);
+        padding-bottom: 7rem;
+        /**background: linear-gradient(to bottom, var(--md-primary-fg-color), hsla(160deg,47%,55%,1) 99%,#fff 99%)**/
+    }
+
+    .tx-hero {
+        margin: 16px 1.4rem;
+        color: var(--md-primary-bg-color);
+        justify-content: center;
+    }
+
+    .tx-hero h1 {
+        margin-bottom: 1rem;
+        color: currentColor;
+        font-weight: 700
+    }
+
+    .tx-hero__content {
+        padding-bottom: 1rem;
+        margin: 0 auto;
+        font-size:0.9rem;
+    }
+
+    .tx-hero__image{
+        width:21rem;
+        height:22rem;
+        order:1;
+        padding-right: 2.5rem;
+    }
+    .tx-hero__image img{
+        filter: drop-shadow(0rem 0rem 0.5rem black);
+        border-radius: 0.5rem;
+    }
+
+    .tx-hero .md-button {
+        margin-top: .5rem;
+        margin-right: .5rem;
+        color: var(--md-primary-bg-color);
+        border-width:0px;
+    }
+
+    .tx-hero .md-button--primary {
+        background-color: #645b5e;
+        color: white;
+        border-width:0px;
+        border-radius: 5px;
+    }
+
+    .tx-hero .md-button:focus,
+    .tx-hero .md-button:hover {
+        background-color: var(--md-accent-fg-color);
+        color: var(--md-default-bg-color);
+        border-radius:5px;
+    }
+
+    .feature-item h3 svg {
+        height: 30px;
+        float: left;
+        margin-right: 10px;
+        transform: translateY(10%);
+    }
+
+    .top-hr {
+        margin-top: 42px;
+    }
+
+    .feature-item {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 300;
+        box-sizing: border-box;
+        padding: 0 15px;
+        word-break: break-word
+    }
+
+    .feature-item h3 {
+        color: var(--feature-header-color);
+        font-weight: 300;
+        font-size: 25px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 34px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-family: inherit;
+    }
+
+    .feature-item p {
+        font-size: 16px;
+        line-height: 2em;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        color: var(--md-typeset-color);
+        margin: 0 0 10px;
+        display: block;
+    }
+
+    @media screen and (max-width:30em) {
+        .tx-hero h1 {
+            font-size: 1.4rem
+        }
+    }
+
+    @media screen and (min-width:60em) {
+        .md-sidebar--secondary {
+            display: none
+        }
+
+        .tx-hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tx-hero__content {
+            max-width: 24.8rem;
+            margin-top: 3.5rem;
+            margin-bottom: 3.5rem;
+            margin-left: 1.0rem;
+            margin-right: 4.0rem;
+            align-items: center;
+        }
+    }
+
+    @media screen and (min-width:76.25em) {
+        .md-sidebar--primary {
+            display: none
+        }
+
+        .top-hr {
+            width: 100%;
+            display: flex;
+            max-width: 61rem;
+            margin-right: auto;
+            margin-left: auto;
+            padding: 0 .2rem;
+        }
+
+        .bottom-hr {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            max-width: 61rem;
+            margin-right: auto;
+            margin-left: auto;
+            padding: 0 .2rem;
+        }
+
+        .feature-item {
+            flex: 1;
+            min-width: 0;
+        }
+
+//        .feature-item:hover {
+//           cursor: pointer;
+//            text-decoration: underline;
+//            text-decoration-color: currentcolor;
+//            text-decoration-thickness: auto;
+//            text-decoration-color: #6495ed;
+//            text-decoration-thickness: 2px;
+//            color: #464646;          
+//        }
+    }
+
+    .hr {
+        border-bottom: 1px solid #eee;
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    .text-center {
+        text-align: center;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        margin-top: 15px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 23px;
+        font-weight: 300;
+        padding-bottom: 10px;
+    }
+
+    .logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-flow: row wrap;
+        margin: 0 auto;
+    }
+
+    .logos img {
+        flex: 1 1 auto;
+        padding: 25px;
+        max-height: 130px;
+        vertical-align: middle;
+    }
+
+    .hr-logos {
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    .md-footer-meta__inner {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 1.0rem;
+    }
+
+    .md-footer-social {
+        padding-top: 20px;
+    }
+    #typewriter{
+        font-family: "Roboto Mono";
+        font-weight: normal;
+        font-size: 1.6rem;
+    }
+
+    .illustration{
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: livequbit 10s ease infinite;
+        height: 200px;
+        mask-position: center;
+        -webkit-mask-position: center;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        margin-left:auto;
+        -webkit-mask-left: auto;
+        margin-right:auto;
+        -webkit-mask-right: auto;
+    }
+    .story-step1{
+        mask-image: url("./assets/story_singleq.svg");
+        -webkit-mask-image: url("./assets/story_singleq.svg");
+        mask-size:50px;
+        -webkit-mask-size:50px;
+        width:50px;
+    }
+    .story-step2{
+        mask-image: url("./assets/story_5qbits.svg");
+        -webkit-mask-image: url("./assets/story_5qbits.svg");
+        mask-size:200px;
+        -webkit-mask-size:200px;
+        width:200px;
+    }
+    .story-step3{
+        mask-image: url("./assets/story_5_qubits_x.svg");
+        -webkit-mask-image: url("./assets/story_5_qubits_x.svg");
+        mask-size:150px;
+        -webkit-mask-size:150px;
+    }
+    .story-step4{
+        mask-image: url("./assets/story_5_qubits_x.svg");
+        -webkit-mask-image: url("./assets/story_5_qubits_x.svg");
+        mask-size:80px;
+        -webkit-mask-size:80px;
+        display:inline;
+        margin-left: 0px;
+        margin-right: 0px;
+        vertical-align: middle;
+        display: inline-block;
+        width:80px;
+    }
+    .story-step4-2{
+        mask-image: url("./assets/story_5_qubits_x.svg");
+        -webkit-mask-image: url("./assets/story_5_qubits_x.svg");
+        mask-size:60px;
+        -webkit-mask-size:60px;
+        display:inline;
+        margin-left: 0px;
+        -webkit-mask-left: 0px;
+        margin-right: 0px;
+        -webkit-mask-right:0px;
+        vertical-align: middle;
+        display: inline-block;
+        width:60px;
+    }
+    .img-story-step4{
+        height: 80px;
+        margin-top: 0px;
+        vertical-align: middle;
+        display: inline-block;
+        margin-bottom: 0px;
+        vertical-align: middle;
+    }
+    .img-story-step4-2{
+        height: 150px;
+        margin-top: 0px;
+        vertical-align: middle;
+        display: inline-block;
+        margin-bottom: 0px;
+        vertical-align: middle;
+        position:absolute;
+        left:40px;
+        top:30px;
+        z-index: 2;
+    }
+    .story-step5{
+        color:white;
+        font-weight: 700;
+        border-radius: 2px 20px 2px 20px;
+        width:80px;
+        height:50px;
+        margin-top:75px;
+        margin-bottom:75px;
+        padding:0px;
+        font-size:1.2rem;
+        display:inline;
+        margin-left: 0px;
+        margin-right: 0px;
+        vertical-align: middle;
+        display: inline-block;
+        padding:5px;
+    }
+    .story-step5 p{
+        margin: 0px;
+        padding-top: 6px;
+        display:inline;
+    }
+    .img-story-step5{
+        height: 80px;
+        margin-top: 0px;
+        vertical-align: middle;
+        display: inline-block;
+        margin-bottom: 0px;
+        vertical-align: middle;
+    }
+    @keyframes livequbit {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    em{
+        text-decoration: underline;
+        text-decoration-thickness: auto;
+        text-decoration-color: #6495ed;
+        text-decoration-thickness: 0.2rem;
+        color: inherit;
+    }
+    .relative-pos{
+        position:relative
+    }
+    .feature{
+        background-color: var(--md-feature-bg-color);
+        border-radius: 20px;
+        min-height: 300px;
+        width: 300px;
+        padding:20px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        font-weight: 500;
+        font-size: 1rem;
+        color:black;
+        font-weight: 700;
+    }
+    .feature p{
+        margin-bottom: 0px;
+    }
+    .feature2{
+        border-radius: 20px;
+        border: 3px solid var(--md-feature-bg-color);
+        padding:0px 20px 0px 20px;
+        width:600px;
+        max-width: 100%;
+        color:var(--md-typeset-color);
+        font-family: "Roboto", sans-serif;
+        font-size: 0.9rem;
+        text-align: left;
+        min-height: 100%;
+        line-height: 1.35;
+        font-weight: 500;
+        display:flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+    .feature2:hover{
+        display: block;
+        cursor: pointer;
+        background: var(--md-feature-bg-color);
+        color:black;
+        box-shadow: 0px 0px 8px rgb(80,80,80);
+    }
+    .feature2:hover p{
+        display: none;
+    }
+    .feature2 .onhover{
+        display:none;
+    }
+    .clickmore{
+        font-size: 0.7rem;
+        color:#3082cf;
+    }
+    .feature2:hover .onhover{
+        display:block;
+    }
+    .notalone{
+        border-radius: 20px;
+        min-height: 300px;
+        width: 300px;
+        padding:20px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        font-weight: 500;
+        font-size: 1rem;
+        color:var(--md-typeset-color);
+        border: 3px solid var(--md-feature-bg-color);
+        font-weight: 700;
+    }
+    .notalone:hover{
+        cursor: pointer;
+        background: var(--md-feature-bg-color);
+        box-shadow: 0px 0px 8px rgb(80,80,80);
+        color:black;
+    }
+    .support-btn{
+        height:150px;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        mask-position: center;
+        -webkit-mask-position: center;
+        mask-size: 80px;
+        -webkit-mask-size: 80px;
+        background-color: #3082cf;
+    }
+    .back-bootstrap{
+        -webkit-mask-image: url("./assets/rocket-launch.svg");
+        mask-image: url("./assets/rocket-launch.svg");
+    }
+    .back-stairs{
+        -webkit-mask-image: url("./assets/stairs-up.svg");
+        mask-image: url("./assets/stairs-up.svg");
+    }
+    .back-chat{
+        -webkit-mask-image: url("./assets/chat.svg");
+        mask-image: url("./assets/chat.svg");
+    }
+    div .row{
+        display: flex;
+    }
+    div .col{
+        flex:auto;
+        margin:30px;
+        max-width: 100%;
+    }
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    .example-sandbox{
+        border:3px solid white;
+        border-radius: 20px;
+        text-align: left;
+        width:1500px;
+        max-width: 100%;
+        padding:20px;
+        height:730px;
+    }
+    .example-sandbox h3{
+        margin-top:0px;
+        margin-left:0px;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+    .example-inline{
+        width:30px;
+        display:inline-block;
+        vertical-align: middle;
+      }
+    .example-sandbox iframe{
+        border:0px;
+        width:100%;
+        height:660px;
+    }
+</style> 
+
+
+
+<!-- Main site Entry button descriptions -->
+<section class="tx-container">
+    <div class="md-grid md-typeset">
+      <div class="tx-hero">
+        <div class="tx-hero__image">
+          <img src="assets/landing1.png" draggable="false">
+        </div>
+        <div class="tx-hero__content">
+          <h1 id="typewriter">Speak QUA to ...</h1>
+          <p>Pulse-to-gate level control and real-time feedback for all your undead needs, accelerating useful quantum computers.</p>
+          <a href="./qm-qua-sdk/docs/Introduction/qua_overview/" title="QUA overview" class="md-button md-button--primary">
+            Get started
+          </a>
+          <a href="./qm-qua-sdk/docs/Introduction/qop_overview/" title="QOP overview" class="md-button">
+            Learn more
+          </a>
+        </div>
+      </div>
+    </div>
+</section>
+
+<!-- Main site box descriptions -->
+
+<!-- 
+<div class="top-hr">
+    <div class="feature-item">
+        <h2>QUA & QOP</h2>         
+    </div>
+</div>
+
+
+<div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <div class="feature">
+            <div class="illustration story-step1"></div>
+            <p>Bring your qubit to life.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feature2" title="open QUA documentation" onclick="location.href='./qm-qua-sdk/docs/about_doc/';">
+            <p>Write quantum programs as naturally and seamlessly as writing pseudocode.</p>
+            <p>Describe pulse sequences, measurements, fast calculations and
+                real-time feedback all in one place.</p>
+            <p class="onhover clickmore">Click to see more...</p>
+            <p class="onhover"><em>QUA</em>
+                unifies universal quantum operations at the pulse-level
+                with universal classical operations used in classical processing (Turing-complete)
+                and comprehensive control flow.</p>
+            <p class="onhover">QUA
+                is very <em>expressive</em>, allowing implementing even complex protocols
+                as easily as writing pseudocode. It can <em>scale</em> to any
+                qubit number, and can be used with any qubit type.</p>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- <div class="top-hr"><div class="feature-item">
+    <h2>You are <em>not</em> alone...</h2>
+</div>
+</div>
+
+<div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <div class="notalone" title="open existing solutions" onclick="location.href='./py-qua-tools/';">
+            <div class="support-btn back-bootstrap"></div>
+            <p>Bootstrap your work using existing solutions.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="notalone" title="see learning resources" onclick="location.href='./qua-libs/Tutorials/intro-to-streams/readme/';">
+            <div class="support-btn back-stairs"></div>
+            <p>Find a slope for lean learning.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="notalone" title="open community discussion pages" onclick="location.href='https://discord.com/invite/7FfhhpswbP">
+            <div class="support-btn back-chat"></div>
+            <p>Discuss quantum issues with community</p>
+        </div>
+      </div>
+    </div>
+</div> -->
+
+{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}

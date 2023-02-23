@@ -1,0 +1,306 @@
+site_name: Documentation
+
+site_url: https://docs.quantum-machines.co
+site_author: Q.M Technologies Ltd.
+site_description: >-
+  Quantum machines documentation pages for OPX, OPX+, Octave,
+  and more. Bootstrap your work with Use cases and Solutions, 
+  and get engaged with community.
+
+# Repository
+# repo_name: entropy-lab/documentation-unified
+# repo_url: https://github.com/entropy-lab/documentation-unified
+# edit_uri: edit/main/docs/docs
+
+copyright: Copyright &copy; 2023 Q.M Technologies Ltd.
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/qm_logo_white.svg
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/qm_logo_white.svg
+  palette:
+    - scheme: entropy-bright
+      toggle:
+        icon: material/eye 
+        name: Switch to dark mode
+    - scheme: entropy-dark 
+      toggle:
+        icon: material/eye-outline
+        name: Switch to light mode
+  features:
+    - search
+    - search.suggest
+    - search.highlight
+    - search.share
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
+#    - navigation.tabs
+    - navigation.top
+    - content.code.annotate 
+    - content.code.copy
+    - content.code.select
+    - minify_html: true
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+
+extra_css:
+  - stylesheets/extra.css
+# - stylesheets/bootstrap.min.css
+extra:
+  generator: true
+  analytics:
+    provider: google
+    property: G-ZLWJVGXXPW
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+
+
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="https://github.com/entropy-lab/documentation-unified/issues/new?title=[Feedback]+{title}+-+{url}" target="_blank" rel="noopener">feedback form</a>.
+
+
+  consent:
+    title: Cookie consent
+    description:
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+  version:
+    provider: mike
+    default: latest
+
+nav:
+#  - Home: index.md
+#  - "QUA & QOP":
+  - "index.md"
+  - "Introduction":
+    - "Conceptual Overview": "qm-qua-sdk/docs/Introduction/qop_overview.md"
+    - "Configuration": "qm-qua-sdk/docs/Introduction/config.md"
+    - "QUA Overview": "qm-qua-sdk/docs/Introduction/qua_overview.md"
+    - "Example of use": "qm-qua-sdk/docs/Introduction/use_case.md"
+  - "Guides":
+    - qm-qua-sdk/docs/Guides/index.md
+    - "QUA Best practice Guide": "qm-qua-sdk/docs/Guides/best_practices.md"
+    - "QUA Language features": "qm-qua-sdk/docs/Guides/features.md"
+    - "Classical computations in QUA": "qm-qua-sdk/docs/Guides/qua_ref.md"
+    - "Variables in QUA": "qm-qua-sdk/docs/Guides/variables.md"
+    - "Timing in QUA": "qm-qua-sdk/docs/Guides/timing_in_qua.md"
+    - "Phase and Frame in QUA": "qm-qua-sdk/docs/Guides/phase_and_frame.md"
+    - "OPX Simulator": "qm-qua-sdk/docs/Guides/simulator.md"
+    - "Stream Processing": "qm-qua-sdk/docs/Guides/stream_proc.md"
+    - "Demodulation and measurement": "qm-qua-sdk/docs/Guides/demod.md"
+    - "Output filter": "qm-qua-sdk/docs/Guides/output_filter.md"
+    - "Job queue and Multiple users": "qm-qua-sdk/docs/Guides/multi-users.md"
+    - "Analog input stage": "qm-qua-sdk/docs/Guides/analog_input_stage.md"
+    - "Messages and Errors": "qm-qua-sdk/docs/Guides/error.md"
+    - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
+    - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
+  - "Hardware":
+    - qm-qua-sdk/docs/Hardware/index.md
+    - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md" 
+    - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
+    - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
+    - "OPD - Operator Digital": "qm-qua-sdk/docs/Hardware/dib.md"
+  - "API References":
+    - "QUA Language API":
+      - qm-qua-sdk/docs/API_references/qua/index.md
+      - "QUA Statements Reference": "qm-qua-sdk/docs/API_references/qua/dsl_main.md"
+      - "Result stream": "qm-qua-sdk/docs/API_references/qua/result_stream.md"
+      - "Math functions": "qm-qua-sdk/docs/API_references/qua/math.md"
+      - "Casting": "qm-qua-sdk/docs/API_references/qua/cast.md"
+      - "Utility": "qm-qua-sdk/docs/API_references/qua/util.md"
+      - "Random numbers": "qm-qua-sdk/docs/API_references/qua/random.md"
+    - "Configuration specification": "qm-qua-sdk/docs/API_references/config_spec.md"
+    - "Quantum Machine API": "qm-qua-sdk/docs/API_references/qm_api.md"
+    - "Quantum Machine Manager API": "qm-qua-sdk/docs/API_references/qm_manager_api.md"
+    - "QM Job API": "qm-qua-sdk/docs/API_references/qm_job_api.md"
+    - "QM Job Queue API": "qm-qua-sdk/docs/API_references/queue.md"
+    - "Results API": "qm-qua-sdk/docs/API_references/results_api.md"
+    - "Simulator API": "qm-qua-sdk/docs/API_references/simulator_api.md"
+    - "QM Octave API": "qm-qua-sdk/docs/API_references/qm_octave.md"
+    - "QM Octave Configuration API": "qm-qua-sdk/docs/API_references/octave_config.md"
+  - "Releases":
+    - "OPX (QOP 1) Releases": "qm-qua-sdk/docs/Releases/qop1_releases.md"
+    - "OPX+ (QOP 2) Releases": "qm-qua-sdk/docs/Releases/qop2_releases.md"
+    - "Python Package (qm-qua) Releases": "qm-qua-sdk/docs/Releases/qm_qua_releases.md"
+  - "Feedback and support": "qm-qua-sdk/docs/support.md"
+  - "Solutions repositories":
+    - "QUA Libraries": "qm-qua-sdk/docs/Libraries/libs_repository.md"
+    - "QUA tools" : "qm-qua-sdk/docs/Libraries/tools_repository.md"
+  # - "QuAM SDK":
+  #   - "Overview": "quam_sdk/index.md"
+  #   - "Getting started": "quam_sdk/getting_started.md"
+  #   - "API & Structure": "quam_sdk/api.md"
+  #   - "Examples": "usecase/quam_simple.md"   
+  # - "EntropyLab":
+  #   - "Overview": "entropylab/index.md"
+  #   - "Getting started": "entropylab/getting_started.md"
+  #   - NodeIO: 
+  #     - "Overview": "entropylab/nodeio/overview.md"
+  #     - "API reference": "entropylab/nodeio/api_reference.md"
+  #   - Workflow: 
+  #     - "Overview": "entropylab/workflow/overview.md"
+  #     - "API reference": "entropylab/workflow/api_reference.md"
+  #   - "Examples": "usecase/refactoring.md"
+  #   - Observability: "entropylab/observability/overview.md"
+  #   - Management of records: "entropylab/management_record/overview.md"
+  #   - Guide for contributors: "entropylab/contribute/overview.md"
+  # - "OQ3 Compiler":
+  #   - "OQC/docs/source/index.md"
+  #   - "Compilation flags": "OQC/docs/source/compilation_flags.md"
+  #   - "API": "OQC/docs/source/api_ref.md"
+  #   - Examples:
+  #     - "OQC/docs/source/examples/index.md"
+  #     - "Basic": "OQC/docs/source/examples/basic.md"
+  #     - "With include": "OQC/docs/source/examples/with_include.md"
+  # - "Solutions":
+  #   - "solutions/index.md"
+  #   - "QUA Tools":
+  #     - "Overview": "py-qua-tools/README.md"
+  #     - "Loops": "py-qua-tools/qualang_tools/loops/README.md"
+  #     - "Plot": "py-qua-tools/qualang_tools/plot/README.md"
+  #     - "Results": "py-qua-tools/qualang_tools/results/README.md"
+  #     - "Units": "py-qua-tools/qualang_tools/units/README.md"
+  #     - "Analysis": "py-qua-tools/qualang_tools/analysis/README.md"
+  #     - "Multi-user": "py-qua-tools/qualang_tools/multi_user/README.md" 
+  #     - "Bakery": "py-qua-tools/qualang_tools/bakery/README.md"
+  #     - "Addons": "py-qua-tools/qualang_tools/addons/README.md" 
+  #   - Use cases:
+  #     - "Atom sorting": "qua-libs/Quantum-Control-Applications/AMO/Use Case 1 - Saffman Lab - Atom Sorting/readme.md"
+  #     - "Two qubit gate optimization with cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md"
+  #     - "High resolution time tagging": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Cryogenic nanophotonic cavity/Use case 1 - Faraon Lab - sub-ns timetagging/README.md"
+  #     - "Carr-Purcell-Meiboom-Gill (CPMG) in an NV ensemble with ESR": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Electron Spin Resonance/Use case 1 - Sekhar Lab - CPMG/README.md"
+  #     - "Single NV center in a confocal setup": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/NV center in a confocal setup/README.md"
+  #     - "Fast Two Dimensional Scans Using a Spiral Pattern": "qua-libs/Quantum-Control-Applications/Quantum-Dots/Use Case 1 - Fast 2D Scans/README.md"
+  #     - " Two-qubit SWAP spectroscopy improved with pre-distortion digital filters": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md" 
+  #     - "Qubit Frequency Tracking": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 1 - Schuster Lab - Qubit Frequency Tracking/README.md"
+  #     - "Optimized readout with optimal weights": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 2 - Optimized readout with optimal weights/README.md"
+  #     - "Cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 1 - Paraoanu Lab - Cryoscope/readme.md"
+  #     - "DRAG and AC Stark-shift calibraiton": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 2 - DRAG coefficient calibration/README.md"
+  # - Learn:
+  #   - "learn/index.md"
+  #   - "QUA tutorials": 
+  #     - "Intro to digital output": "qua-libs/Tutorials/basic-digital-output/readme.md"
+  #     - "Intro to frame & phase": "qua-libs/Tutorials/frame-and-phase-intro/readme.md"
+  #     - "Intro to demodulation": "qua-libs/Tutorials/intro-to-demod/readme.md"
+  #     - "Intro to macros": "qua-libs/Tutorials/intro-to-macros/readme.md"
+  #     - "Intro to saving": "qua-libs/Tutorials/intro-to-saving/readme.md"
+  #     - "Intro to simulation": "qua-libs/Tutorials/intro-to-simulation/readme.md"
+  #     - "Intro to streams": "qua-libs/Tutorials/intro-to-streams/readme.md"
+  #     - "Intro to chirped signals": "qua-libs/Tutorials/basic-chirp/readme.md"
+  #     - "Intro to timing": "qua-libs/Tutorials/intro-to-timing/readme.md"
+  # - Community: "https://uxdiscuss.entropy-lab.io"
+      
+plugins:
+  - meta
+  - search
+  - table-reader:
+      data_path: "docs"
+  - macros:
+      module_name: macros
+  - exclude:
+      glob:
+        - qua-libs/examples-old/*
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      skip_classes:
+        - custom-skip-class-name
+      auto_caption: false
+      caption_position: bottom
+  - social:
+      cards_color:
+        fill: "#42424C"
+        text: "#FFFFFF"
+      cards_font: Roboto
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            filters: ["!^_"]
+            merge_init_into_class: true
+            docstring_section_style: "spacy"
+            show_bases: false
+            show_signature: false
+            show_signature_annotations: false
+            show_root_heading: true
+            show_root_toc_entry: true
+  - git-revision-date-localized:
+      type: timeago
+      enable_creation_date: true
+
+
+markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - overrides/.icons
+  - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.keys
+  - pymdownx.snippets:
+      check_paths: true
+      auto_append: []
+      base_path: ["docs"]
+  - attr_list
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - md_in_html
+  - abbr
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/redoc.standalone.js
+  # - javascripts/typewriterjs.js
+  # - javascripts/front_page.js
