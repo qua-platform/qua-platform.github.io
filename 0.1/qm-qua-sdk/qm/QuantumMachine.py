@@ -176,6 +176,13 @@ class QuantumMachine:
             raise UnsupportedCapabilityError(
                 "timestamping commands is supported from QOP 2.2 or above"
             )
+        if (
+            program.metadata.uses_fast_frame_rotation
+            and not self._capabilities.supports_fast_frame_rotation
+        ):
+            raise UnsupportedCapabilityError(
+                "fast frame rotation is supported from QOP 2.2 or above"
+            )
 
         if compiler_options is None:
             compiler_options = CompilerOptionArguments()
@@ -230,6 +237,14 @@ class QuantumMachine:
         ):
             raise UnsupportedCapabilityError(
                 "timestamping commands is supported from QOP 2.2 or above"
+            )
+
+        if (
+            program.metadata.uses_fast_frame_rotation
+            and not self._capabilities.supports_fast_frame_rotation
+        ):
+            raise UnsupportedCapabilityError(
+                "fast frame rotation is supported from QOP 2.2 or above"
             )
 
         logger.info("Compiling program")

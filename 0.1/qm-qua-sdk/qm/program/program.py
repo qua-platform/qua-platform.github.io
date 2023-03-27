@@ -18,6 +18,7 @@ from qm.program._ResultAnalysis import _ResultAnalysis
 @dataclasses.dataclass
 class ProgramMetadata:
     uses_command_timestamps: bool
+    uses_fast_frame_rotation: bool
 
 
 class Program:
@@ -38,7 +39,9 @@ class Program:
         self._qua_config = config
         self._result_analysis = _ResultAnalysis(self._program.result_analysis)
         self._is_in_scope = False
-        self._metadata = ProgramMetadata(uses_command_timestamps=False)
+        self._metadata = ProgramMetadata(
+            uses_command_timestamps=False, uses_fast_frame_rotation=False
+        )
 
     def _declare_var(
         self,
@@ -122,6 +125,12 @@ class Program:
     def metadata(self) -> ProgramMetadata:
         return self._metadata
 
-    def set_metadata(self, uses_command_timestamps: bool = None):
+    def set_metadata(
+        self,
+        uses_command_timestamps: bool = None,
+        uses_fast_frame_rotation: bool = None,
+    ):
         if uses_command_timestamps is not None:
             self._metadata.uses_command_timestamps = uses_command_timestamps
+        if uses_fast_frame_rotation is not None:
+            self.metadata.uses_fast_frame_rotation = uses_fast_frame_rotation

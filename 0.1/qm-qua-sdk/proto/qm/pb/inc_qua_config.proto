@@ -75,6 +75,7 @@ message QuaConfig {
 
     message DigitalOutputPortDec {
         bool shareable = 1;
+        bool inverted = 2;
     }
 
     message DigitalInputPortDec {

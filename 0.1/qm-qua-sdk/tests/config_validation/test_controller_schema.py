@@ -8,6 +8,103 @@ from qm.program._qua_config_schema import (
 )
 
 
+class TestControllerWithInvertedDigitalOutputs:
+    config_with_inverted = {
+        "version": 1,
+        "controllers": {
+            "con1": {
+                "type": "opx1",
+                "digital_outputs": {
+                    1: {"inverted": True},
+                },
+            }
+        },
+    }
+    config_without_inverted = {
+        "version": 1,
+        "controllers": {
+            "con1": {
+                "type": "opx1",
+                "digital_outputs": {
+                    1: {},
+                },
+            }
+        },
+    }
+
+    def test_qua_config_fail_if_no_capability(self):
+        schema = QuaConfigSchema()
+        conf = schema.load(self.config_with_inverted)
+        with pytest.raises(
+            ConfigValidationException, match="Server does not support inverted digital output"
+        ):
+            validate_config_capabilities(
+                conf,
+                ServerCapabilities(
+                    has_job_streaming_state=True,
+                    supports_multiple_inputs_for_element=False,
+                    supports_analog_delay=False,
+                    supports_shared_oscillators=False,
+                    supports_crosstalk=False,
+                    supports_shared_ports=False,
+                    supports_input_stream=False,
+                    supports_double_frequency=False,
+                    supports_command_timestamps=False,
+                    supports_new_grpc_structure=False,
+                    supports_inverted_digital_output=False,
+                    supports_octave_reset=False,
+                    supports_sticky_elements=False,
+                    supports_fast_frame_rotation=False
+                ),
+            )
+
+    def test_qua_config_pass_if_capability(self):
+        schema = QuaConfigSchema()
+        conf = schema.load(self.config_with_inverted)
+        validate_config_capabilities(
+            conf,
+            ServerCapabilities(
+                has_job_streaming_state=True,
+                supports_multiple_inputs_for_element=False,
+                supports_analog_delay=False,
+                supports_shared_oscillators=False,
+                supports_crosstalk=False,
+                supports_shared_ports=False,
+                supports_input_stream=False,
+                supports_double_frequency=False,
+                supports_command_timestamps=False,
+                supports_new_grpc_structure=False,
+                supports_inverted_digital_output=True,
+                supports_octave_reset=False,
+                supports_sticky_elements=False,
+                supports_fast_frame_rotation=False
+            ),
+        )
+
+    def test_qua_config_pass_if_no_inverted(self):
+        schema = QuaConfigSchema()
+        conf = schema.load(self.config_without_inverted)
+        validate_config_capabilities(
+            conf,
+            ServerCapabilities(
+                has_job_streaming_state=True,
+                supports_multiple_inputs_for_element=False,
+                supports_analog_delay=False,
+                supports_shared_oscillators=False,
+                supports_crosstalk=False,
+                supports_shared_ports=False,
+                supports_input_stream=False,
+                supports_double_frequency=False,
+                supports_command_timestamps=False,
+                supports_new_grpc_structure=False,
+                supports_inverted_digital_output=False,
+                supports_sticky_elements=False,
+                supports_octave_reset=False,
+                supports_fast_frame_rotation=False
+            ),
+        )
+
+
 class TestControllerWithSharedPorts:
     config_with_shareable = {
         "version": 1,
@@ -53,8 +150,10 @@ class TestControllerWithSharedPorts:
                     supports_double_frequency=False,
                     supports_command_timestamps=False,
                     supports_new_grpc_structure=False,
+                    supports_inverted_digital_output=False,
                     supports_sticky_elements=False,
                     supports_octave_reset=False,
+                    supports_fast_frame_rotation=False,
                 ),
             )
 
@@ -74,8 +173,10 @@ class TestControllerWithSharedPorts:
                 supports_double_frequency=False,
                 supports_command_timestamps=False,
                 supports_new_grpc_structure=False,
+                supports_inverted_digital_output=False,
                 supports_sticky_elements=False,
                 supports_octave_reset=False,
+                supports_fast_frame_rotation=False,
             ),
         )
 
@@ -95,8 +196,10 @@ class TestControllerWithSharedPorts:
                 supports_new_grpc_structure=False,
                 supports_double_frequency=False,
                 supports_command_timestamps=False,
+                supports_inverted_digital_output=False,
                 supports_sticky_elements=False,
                 supports_octave_reset=False,
+                supports_fast_frame_rotation=False,
             ),
         )
 

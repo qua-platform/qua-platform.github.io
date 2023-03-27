@@ -46,8 +46,10 @@ def _create_server_capabilities(
     supports_new_grpc_structure=False,
     supports_double_frequency=False,
     supports_command_timestamps=False,
+    supports_inverted_digital_output=False,
     supports_sticky_elements=False,
     supports_octave_reset=False,
+    supports_fast_frame_rotation=False
 ) -> ServerCapabilities:
     return ServerCapabilities(
         has_job_streaming_state=has_job_streaming_state,
@@ -60,8 +62,10 @@ def _create_server_capabilities(
         supports_new_grpc_structure=supports_new_grpc_structure,
         supports_double_frequency=supports_double_frequency,
         supports_command_timestamps=supports_command_timestamps,
+        supports_inverted_digital_output=supports_inverted_digital_output,
         supports_sticky_elements=supports_sticky_elements,
         supports_octave_reset=supports_octave_reset,
+        supports_fast_frame_rotation=supports_fast_frame_rotation
     )
 
 
@@ -652,7 +656,8 @@ class TestElementWithDoubleIntermediateFreq:
     @pytest.mark.parametrize("element", argvalues=list(_elements.values()), ids=list(_elements.keys()))
     def test_many_elements_schema_with_float_freq(self, element: dict, capability_container):
         with ignore_deprecation_warnings():
-            capability_container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True, True, False, True, True, True))
+            capability_container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True,
+                                                                          True, False, True, True, True, True, True))
             schema = ElementSchema()
             conf = schema.load(element)
             intermediate_frequency_int = conf.intermediate_frequency
@@ -663,7 +668,7 @@ class TestElementWithDoubleIntermediateFreq:
             assert isinstance(intermediate_frequency_int, int)
 
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True))
+                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True))
             schema = ElementSchema()
             conf = schema.load(element)
             intermediate_frequency = conf.intermediate_frequency_double
@@ -686,7 +691,7 @@ class TestElementWithSticky:
     def test_element_scheme_with_sticky(self, capability_container):
         with ignore_deprecation_warnings():
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True)
+                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
             )
             schema = ElementSchema()
             conf = schema.load(self._single_element)
@@ -700,7 +705,7 @@ class TestElementWithSticky:
     def test_element_scheme_sticky_without_capabilities(self, capability_container):
         with ignore_deprecation_warnings():
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, False)
+                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, False, True)
             )
             self._single_element["sticky"] = {"analog": True, "duration": 10}
             schema = ElementSchema()

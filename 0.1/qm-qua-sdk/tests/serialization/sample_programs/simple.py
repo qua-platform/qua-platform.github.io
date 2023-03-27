@@ -9,6 +9,9 @@ with program() as just_play:
 with program() as play_with_timestamp:
     play("pulse", "element", timestamp_stream="ts")
 
+with program() as program_with_fast_frame_rotation:
+    fast_frame_rotation(0.5, 0.5, "element")
+
 with program() as play_amp:
     x = declare(int)
     play(

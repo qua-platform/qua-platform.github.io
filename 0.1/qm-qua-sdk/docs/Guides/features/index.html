@@ -12,7 +12,7 @@
 <link href="../qua_ref/" rel="next"/>
 <link href="../../../../assets/qm_logo_white.svg" rel="icon"/>
 <meta content="mkdocs-1.4.2, mkdocs-material-9.0.13+insiders-4.32.0" name="generator"/>
-<title>QUA Language features - Documentation</title>
+<title>QUA Language Features - Documentation</title>
 <link href="../../../../assets/stylesheets/main.e95b5de1.min.css" rel="stylesheet"/>
 <link href="../../../../assets/stylesheets/palette.6932e648.min.css" rel="stylesheet"/>
 <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg>');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 1.75v11.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 0 1.5H2.75A1.75 1.75 0 0 1 1 13.25V1.75C1 .784 1.784 0 2.75 0h8.5C12.216 0 13 .784 13 1.75v7.736a.75.75 0 0 1-1.5 0V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25Zm13.274 9.537v-.001l-4.557 4.45a.75.75 0 0 1-1.055-.008l-1.943-1.95a.75.75 0 0 1 1.062-1.058l1.419 1.425 4.026-3.932a.75.75 0 1 1 1.048 1.074ZM4.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM4 7.75A.75.75 0 0 1 4.75 7h2a.75.75 0 0 1 0 1.5h-2A.75.75 0 0 1 4 7.75Z"/></svg>');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.499.75a.75.75 0 0 1 1.5 0v.996C5.9 2.903 6.793 3.65 7.662 4.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873 10.794-.045 12.622.26 14.408.558 16 1.94 16 4.25c0 1.278-.954 2.575-2.44 2.734l.146.508.065.22c.203.701.412 1.455.476 2.226.142 1.707-.4 3.03-1.487 3.898C11.714 14.671 10.27 15 8.75 15h-6a.75.75 0 0 1 0-1.5h1.376a4.484 4.484 0 0 1-.563-1.191 3.835 3.835 0 0 1-.05-2.063 4.647 4.647 0 0 1-2.025-.293.75.75 0 0 1 .525-1.406c1.357.507 2.376-.006 2.698-.318l.009-.01a.747.747 0 0 1 1.06 0 .748.748 0 0 1-.012 1.074c-.912.92-.992 1.835-.768 2.586.221.74.745 1.337 1.196 1.621H8.75c1.343 0 2.398-.296 3.074-.836.635-.507 1.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.425 2.425 0 0 1-.507-.441 3.075 3.075 0 0 1-.633-1.248.75.75 0 0 1 1.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738 0 1.25-.615 1.25-1.25 0-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706 1.345-.46.92-.27 1.774.019 3.062l.042.19a.884.884 0 0 1 .01.05c.348.443.666.949.94 1.553a.75.75 0 1 1-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7 5.527c-.814-.68-1.75-1.462-2.692-2.619a3.737 3.737 0 0 0-1.023.88c-.406.495-.663 1.036-.722 1.508.116.122.306.21.591.239.388.038.797-.06 1.032-.19a.75.75 0 0 1 .728 1.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75 5.677V5.5c0-.984.48-1.94 1.077-2.664.46-.559 1.05-1.055 1.673-1.353V.75Z"/></svg>');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.756 2.756 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6.24 6.24 0 0 0-.26.16.952.952 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661.103-.067.207-.132.313-.195l.007-.004c.1-.061.182-.11.258-.161a.969.969 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.612.612 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1.01 1.01 0 0 0-.34.398ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.344 2.343h-.001a8 8 0 0 1 11.314 11.314A8.002 8.002 0 0 1 .234 10.089a8 8 0 0 1 2.11-7.746Zm1.06 10.253a6.5 6.5 0 1 0 9.108-9.275 6.5 6.5 0 0 0-9.108 9.275ZM6.03 4.97 8 6.94l1.97-1.97a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l1.97 1.97a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-1.97 1.97a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L6.94 8 4.97 6.03a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018Z"/></svg>');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.249 1.249 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429Zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006a.036.036 0 0 0-.004-.009l-.006-.006-.008-.001c-.003 0-.006.002-.009.004Z"/></svg>');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.72.22a.75.75 0 0 1 1.06 0l1 .999a3.488 3.488 0 0 1 2.441 0l.999-1a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.775.776c.616.63.995 1.493.995 2.444v.327c0 .1-.009.197-.025.292.408.14.764.392 1.029.722l1.968-.787a.75.75 0 0 1 .556 1.392L13 7.258V9h2.25a.75.75 0 0 1 0 1.5H13v.5c0 .409-.049.806-.141 1.186l2.17.868a.75.75 0 0 1-.557 1.392l-2.184-.873A4.997 4.997 0 0 1 8 16a4.997 4.997 0 0 1-4.288-2.427l-2.183.873a.75.75 0 0 1-.558-1.392l2.17-.868A5.036 5.036 0 0 1 3 11v-.5H.75a.75.75 0 0 1 0-1.5H3V7.258L.971 6.446a.75.75 0 0 1 .558-1.392l1.967.787c.265-.33.62-.583 1.03-.722a1.677 1.677 0 0 1-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72 1.28a.75.75 0 0 1 0-1.06Zm.53 6.28a.75.75 0 0 0-.75.75V11a3.5 3.5 0 1 0 7 0V7.25a.75.75 0 0 0-.75-.75ZM6.173 5h3.654A.172.172 0 0 0 10 4.827V4.5a2 2 0 1 0-4 0v.327c0 .096.077.173.173.173Z"/></svg>');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.746.746 0 0 1 9.5 6Z"/></svg>');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Zm4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0Z"/></svg>');}</style>
@@ -26,7 +26,7 @@
 <script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-ZLWJVGXXPW"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-ZLWJVGXXPW",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-ZLWJVGXXPW",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
 <script>var consent;"undefined"==typeof __md_analytics||(consent=__md_get("__consent"))&&consent.analytics&&__md_analytics()</script>
 <meta content="website" property="og:type"/>
-<meta content="QUA Language features - Documentation" property="og:title"/>
+<meta content="QUA Language Features - Documentation" property="og:title"/>
 <meta content="Quantum machines documentation pages for OPX, OPX+, Octave, and more. Bootstrap your work with Use cases and Solutions,  and get engaged with community." property="og:description"/>
 <meta content="https://docs.quantum-machines.co/0.1/assets/images/social/qm-qua-sdk/docs/Guides/features.png" property="og:image"/>
 <meta content="image/png" property="og:image:type"/>
@@ -34,7 +34,7 @@
 <meta content="630" property="og:image:height"/>
 <meta content="https://docs.quantum-machines.co/0.1/qm-qua-sdk/docs/Guides/features/" property="og:url"/>
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="QUA Language features - Documentation" name="twitter:title"/>
+<meta content="QUA Language Features - Documentation" name="twitter:title"/>
 <meta content="Quantum machines documentation pages for OPX, OPX+, Octave, and more. Bootstrap your work with Use cases and Solutions,  and get engaged with community." name="twitter:description"/>
 <meta content="https://docs.quantum-machines.co/0.1/assets/images/social/qm-qua-sdk/docs/Guides/features.png" name="twitter:image"/>
 <link href="../../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
@@ -90,7 +90,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              QUA Language features
+              QUA Language Features
             
           </span>
 </div>
@@ -233,7 +233,7 @@
 <span class="md-ellipsis">
     
   
-    Example of use
+    Example Use Case
   
 
     
@@ -275,7 +275,7 @@
 <span class="md-ellipsis">
     
   
-    QUA Best practice Guide
+    QUA Best Practice Guide
   
 
     
@@ -288,7 +288,7 @@
 <span class="md-ellipsis">
     
   
-    QUA Language features
+    QUA Language Features
   
 
     
@@ -299,7 +299,7 @@
 <span class="md-ellipsis">
     
   
-    QUA Language features
+    QUA Language Features
   
 
     
@@ -423,11 +423,11 @@
 <a class="md-nav__link" href="#time-tagging">
 <span class="md-ellipsis">
       
-        Time tagging
+        Time Tagging
       
     </span>
 </a>
-<nav aria-label="Time tagging" class="md-nav">
+<nav aria-label="Time Tagging" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
 <a class="md-nav__link" href="#time-tagging-parameters">
@@ -499,7 +499,7 @@
 <a class="md-nav__link" href="#if-elif-else">
 <span class="md-ellipsis">
       
-        If-Elif-Else
+        If, Elif &amp; Else
       
     </span>
 </a>
@@ -508,7 +508,7 @@
 <a class="md-nav__link" href="#switch-case">
 <span class="md-ellipsis">
       
-        Switch-Case
+        Switch Case
       
     </span>
 </a>
@@ -640,7 +640,7 @@
 <a class="md-nav__link" href="#voltage-easing">
 <span class="md-ellipsis">
       
-        Voltage easing
+        Voltage Easing
       
     </span>
 </a>
@@ -652,7 +652,7 @@
 <a class="md-nav__link" href="#ramp-pulse">
 <span class="md-ellipsis">
       
-        Ramp pulse
+        Ramp Pulse
       
     </span>
 </a>
@@ -661,17 +661,17 @@
 <a class="md-nav__link" href="#frequency-chirp">
 <span class="md-ellipsis">
       
-        Frequency chirp
+        Frequency Chirp
       
     </span>
 </a>
-<nav aria-label="Frequency chirp" class="md-nav">
+<nav aria-label="Frequency Chirp" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
 <a class="md-nav__link" href="#non-uniform-chirp-sections">
 <span class="md-ellipsis">
       
-        Non-uniform chirp sections
+        Non-uniform Chirp Sections
       
     </span>
 </a>
@@ -680,7 +680,7 @@
 <a class="md-nav__link" href="#mathematical-formulation-of-the-chirp">
 <span class="md-ellipsis">
       
-        Mathematical formulation of the chirp
+        Mathematical Formulation of the Chirp
       
     </span>
 </a>
@@ -689,7 +689,7 @@
 <a class="md-nav__link" href="#continuous-chirp">
 <span class="md-ellipsis">
       
-        Continuous chirp
+        Continuous Chirp
       
     </span>
 </a>
@@ -732,7 +732,7 @@
 <a class="md-nav__link" href="#dynamic-pulse-duration">
 <span class="md-ellipsis">
       
-        Dynamic pulse duration
+        Dynamic Pulse Duration
       
     </span>
 </a>
@@ -741,7 +741,7 @@
 <a class="md-nav__link" href="#truncate-pulses">
 <span class="md-ellipsis">
       
-        Truncate pulses
+        Truncate Pulses
       
     </span>
 </a>
@@ -750,7 +750,7 @@
 <a class="md-nav__link" href="#dynamic-port-allocation">
 <span class="md-ellipsis">
       
-        Dynamic port allocation
+        Dynamic Port Allocation
       
     </span>
 </a>
@@ -759,7 +759,7 @@
 <a class="md-nav__link" href="#multiple-inputs">
 <span class="md-ellipsis">
       
-        Multiple inputs
+        Multiple Inputs
       
     </span>
 </a>
@@ -826,7 +826,7 @@
 <a class="md-nav__link" href="#compilation-options">
 <span class="md-ellipsis">
       
-        Compilation options
+        Compilation Options
       
     </span>
 </a>
@@ -839,7 +839,7 @@
 <span class="md-ellipsis">
     
   
-    Classical computations in QUA
+    Classical Computations in QUA
   
 
     
@@ -911,7 +911,7 @@
 <span class="md-ellipsis">
     
   
-    Demodulation and measurement
+    Demodulation and Measurement
   
 
     
@@ -923,7 +923,7 @@
 <span class="md-ellipsis">
     
   
-    Output filter
+    Output Filters
   
 
     
@@ -935,7 +935,7 @@
 <span class="md-ellipsis">
     
   
-    Job queue and Multiple users
+    Job queue and Multiple Users
   
 
     
@@ -947,7 +947,7 @@
 <span class="md-ellipsis">
     
   
-    Analog input stage
+    Analog Input Stage
   
 
     
@@ -1126,7 +1126,7 @@
 <span class="md-ellipsis">
     
   
-    QUA Statements Reference
+    QUA API
   
 
     
@@ -1138,7 +1138,7 @@
 <span class="md-ellipsis">
     
   
-    Result stream
+    Result Stream API
   
 
     
@@ -1150,7 +1150,7 @@
 <span class="md-ellipsis">
     
   
-    Math functions
+    Math Functions API
   
 
     
@@ -1162,7 +1162,7 @@
 <span class="md-ellipsis">
     
   
-    Casting
+    Casting API
   
 
     
@@ -1174,7 +1174,7 @@
 <span class="md-ellipsis">
     
   
-    Utility
+    Utility API
   
 
     
@@ -1186,7 +1186,7 @@
 <span class="md-ellipsis">
     
   
-    Random numbers
+    Random Number Generator API
   
 
     
@@ -1201,7 +1201,7 @@
 <span class="md-ellipsis">
     
   
-    Configuration specification
+    Configuration API
   
 
     
@@ -1313,7 +1313,7 @@
 <span class="md-ellipsis">
     
   
-    Releases
+    Solutions Repositories
   
 
     
@@ -1322,6 +1322,56 @@
 </label>
 <nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
 <label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Solutions Repositories
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Libraries/libs_repository/">
+<span class="md-ellipsis">
+    
+  
+    QUA Libraries
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Libraries/tools_repository/">
+<span class="md-ellipsis">
+    
+  
+    QUA Tools
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_7" type="checkbox"/>
+<label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_7_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_7">
 <span class="md-nav__icon md-icon"></span>
             
   
@@ -1374,7 +1424,7 @@
 <span class="md-ellipsis">
     
   
-    Feedback and support
+    Feedback and Support
   
 
     
@@ -1382,34 +1432,34 @@
 </a>
 </li>
 <li class="md-nav__item md-nav__item--nested">
-<input class="md-nav__toggle md-toggle" id="__nav_8" type="checkbox"/>
-<label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+<input class="md-nav__toggle md-toggle" id="__nav_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
 <span class="md-ellipsis">
     
   
-    Solutions repositories
+    Legal
   
 
     
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
-<nav aria-expanded="false" aria-labelledby="__nav_8_label" class="md-nav" data-md-level="1">
-<label class="md-nav__title" for="__nav_8">
+<nav aria-expanded="false" aria-labelledby="__nav_9_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_9">
 <span class="md-nav__icon md-icon"></span>
             
   
-    Solutions repositories
+    Legal
   
 
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../../Libraries/libs_repository/">
+<a class="md-nav__link" href="../../legal/terms_of_use/">
 <span class="md-ellipsis">
     
   
-    QUA Libraries
+    Terms of use
   
 
     
@@ -1417,11 +1467,23 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="../../Libraries/tools_repository/">
+<a class="md-nav__link" href="../../legal/privacy_policy/">
 <span class="md-ellipsis">
     
   
-    QUA tools
+    Website Privacy Policy
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../legal/cookie_policy/">
+<span class="md-ellipsis">
+    
+  
+    Cookie Policy
   
 
     
@@ -1557,11 +1619,11 @@
 <a class="md-nav__link" href="#time-tagging">
 <span class="md-ellipsis">
       
-        Time tagging
+        Time Tagging
       
     </span>
 </a>
-<nav aria-label="Time tagging" class="md-nav">
+<nav aria-label="Time Tagging" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
 <a class="md-nav__link" href="#time-tagging-parameters">
@@ -1633,7 +1695,7 @@
 <a class="md-nav__link" href="#if-elif-else">
 <span class="md-ellipsis">
       
-        If-Elif-Else
+        If, Elif &amp; Else
       
     </span>
 </a>
@@ -1642,7 +1704,7 @@
 <a class="md-nav__link" href="#switch-case">
 <span class="md-ellipsis">
       
-        Switch-Case
+        Switch Case
       
     </span>
 </a>
@@ -1774,7 +1836,7 @@
 <a class="md-nav__link" href="#voltage-easing">
 <span class="md-ellipsis">
       
-        Voltage easing
+        Voltage Easing
       
     </span>
 </a>
@@ -1786,7 +1848,7 @@
 <a class="md-nav__link" href="#ramp-pulse">
 <span class="md-ellipsis">
       
-        Ramp pulse
+        Ramp Pulse
       
     </span>
 </a>
@@ -1795,17 +1857,17 @@
 <a class="md-nav__link" href="#frequency-chirp">
 <span class="md-ellipsis">
       
-        Frequency chirp
+        Frequency Chirp
       
     </span>
 </a>
-<nav aria-label="Frequency chirp" class="md-nav">
+<nav aria-label="Frequency Chirp" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
 <a class="md-nav__link" href="#non-uniform-chirp-sections">
 <span class="md-ellipsis">
       
-        Non-uniform chirp sections
+        Non-uniform Chirp Sections
       
     </span>
 </a>
@@ -1814,7 +1876,7 @@
 <a class="md-nav__link" href="#mathematical-formulation-of-the-chirp">
 <span class="md-ellipsis">
       
-        Mathematical formulation of the chirp
+        Mathematical Formulation of the Chirp
       
     </span>
 </a>
@@ -1823,7 +1885,7 @@
 <a class="md-nav__link" href="#continuous-chirp">
 <span class="md-ellipsis">
       
-        Continuous chirp
+        Continuous Chirp
       
     </span>
 </a>
@@ -1866,7 +1928,7 @@
 <a class="md-nav__link" href="#dynamic-pulse-duration">
 <span class="md-ellipsis">
       
-        Dynamic pulse duration
+        Dynamic Pulse Duration
       
     </span>
 </a>
@@ -1875,7 +1937,7 @@
 <a class="md-nav__link" href="#truncate-pulses">
 <span class="md-ellipsis">
       
-        Truncate pulses
+        Truncate Pulses
       
     </span>
 </a>
@@ -1884,7 +1946,7 @@
 <a class="md-nav__link" href="#dynamic-port-allocation">
 <span class="md-ellipsis">
       
-        Dynamic port allocation
+        Dynamic Port Allocation
       
     </span>
 </a>
@@ -1893,7 +1955,7 @@
 <a class="md-nav__link" href="#multiple-inputs">
 <span class="md-ellipsis">
       
-        Multiple inputs
+        Multiple Inputs
       
     </span>
 </a>
@@ -1960,7 +2022,7 @@
 <a class="md-nav__link" href="#compilation-options">
 <span class="md-ellipsis">
       
-        Compilation options
+        Compilation Options
       
     </span>
 </a>
@@ -2019,17 +2081,18 @@ d_{sliced}\left[i\right]=\text{demod}(i\cdot 4\cdot C,(i+1)\cdot 4\cdot C)
 <a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="n">B</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="n">C</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
-<a href="#__codelineno-3-5" id="__codelineno-3-5" name="__codelineno-3-5"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"cos"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">)</span>
-<a href="#__codelineno-3-6" id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="p">)</span>  <span class="c1"># The integration weights are, constant, of length 10*4*6 = 240</span>
-<a href="#__codelineno-3-7" id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
-<a href="#__codelineno-3-8" id="__codelineno-3-8" name="__codelineno-3-8"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"arb_integW"</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">),</span>
-<a href="#__codelineno-3-9" id="__codelineno-3-9" name="__codelineno-3-9"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">)</span>
-<a href="#__codelineno-3-10" id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="p">)</span>  <span class="c1"># Integration weights are length 4*4*11 = 176</span>
+<a href="#__codelineno-3-5" id="__codelineno-3-5" name="__codelineno-3-5"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"cos"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
+<a href="#__codelineno-3-6" id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="c1"># The integration weights are, constant, of length 10*4*6 = 240</span>
+<a href="#__codelineno-3-7" id="__codelineno-3-7" name="__codelineno-3-7"></a>
+<a href="#__codelineno-3-8" id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+<a href="#__codelineno-3-9" id="__codelineno-3-9" name="__codelineno-3-9"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"arb_integW"</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">),</span>
+<a href="#__codelineno-3-10" id="__codelineno-3-10" name="__codelineno-3-10"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">sliced</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
+<a href="#__codelineno-3-11" id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="c1"># Integration weights are length 4*4*11 = 176</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ol>
-<li>chunk size is in units of 4ns.</li>
+<li>The chunk size is in units of 4ns.</li>
 <li>For arbitrary integration weights, chunk size must be bigger than or equal to 7</li>
 <li>Duration of integration weights must be 4 * <code>chunk_size</code> * <code>array_size</code></li>
 </ol>
@@ -2052,13 +2115,12 @@ d_{accumulated}\left[i\right]=\sum_{j=0}^{i}\text{demod}(j\cdot 4\cdot C,(j+1)\c
 <a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">demod</span><span class="o">.</span><span class="n">accumulated</span><span class="p">(</span><span class="s2">"integW1"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
 <a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
 <a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">accumulated</span><span class="p">(</span><span class="s2">"arb_integW"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">),</span>
-<a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">accumulated</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">)</span>
-<a href="#__codelineno-5-8" id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="p">)</span>
+<a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a>    <span class="n">demod</span><span class="o">.</span><span class="n">accumulated</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ol>
-<li>chunk size is in units of 4ns.</li>
+<li>The chunk size is in units of 4ns.</li>
 <li>For arbitrary integration weights, chunk size must be bigger than or equal to 7</li>
 <li>Duration of integration weights must be 4 * chunk_size * array_size</li>
 </ol>
@@ -2071,11 +2133,12 @@ d_{movingWindow}\left[i\right]=\sum_{j=max(i-W+1,0)}^{i}\text{demod}(j\cdot 4\cd
 <p>Illustration:</p>
 <p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../moving_window.png"><img alt="moving_window" src="../moving_window.png"/></a></p>
 <p>Syntax:</p>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="n">measure</span><span class="p">([</span><span class="n">pulse</span><span class="p">],</span> <span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="p">[</span><span class="n">stream</span><span class="p">],</span> <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">([</span><span class="n">integration_weights</span><span class="p">],</span>
-<a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>                                                          <span class="p">[</span><span class="n">output_array</span><span class="p">],</span>
-<a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a>                                                          <span class="p">[</span><span class="n">chunk_size</span><span class="p">],</span>
-<a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a>                                                          <span class="p">[</span><span class="n">chunks_per_window</span><span class="p">],</span>
-<a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>                                                          <span class="p">[</span><span class="n">analog_output</span><span class="p">]),</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="n">measure</span><span class="p">([</span><span class="n">pulse</span><span class="p">],</span> <span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="p">[</span><span class="n">stream</span><span class="p">],</span> 
+<a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>        <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">([</span><span class="n">integration_weights</span><span class="p">],</span>
+<a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a>                            <span class="p">[</span><span class="n">output_array</span><span class="p">],</span>
+<a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a>                            <span class="p">[</span><span class="n">chunk_size</span><span class="p">],</span>
+<a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>                            <span class="p">[</span><span class="n">chunks_per_window</span><span class="p">],</span>
+<a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a>                            <span class="p">[</span><span class="n">analog_output</span><span class="p">]),</span><span class="o">...</span><span class="p">)</span>
 </code></pre></div>
 <p>Examples:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="n">A</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -2083,10 +2146,11 @@ d_{movingWindow}\left[i\right]=\sum_{j=max(i-W+1,0)}^{i}\text{demod}(j\cdot 4\cd
 <a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="n">C</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">(</span><span class="s2">"cos"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
 <a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="n">measure</span><span class="p">(</span><span class="s2">"readout"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
-<a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>                <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">(</span><span class="s2">"arb_integW"</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">),</span> <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
+<a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>        <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">(</span><span class="s2">"arb_integW"</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">),</span>
+<a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a>        <span class="n">demod</span><span class="o">.</span><span class="n">moving_window</span><span class="p">(</span><span class="s2">"sin"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"out1"</span><span class="p">))</span>
 </code></pre></div>
 <p>!!! Note:</p>
-<div class="highlight"><pre><span></span><code>1. chunk size is in units of 4ns.
+<div class="highlight"><pre><span></span><code>1. The chunk size is in units of 4ns.
 2. For arbitrary integration weights, chunk size must be bigger than or equal to 7
 3. Duration of integration weights must be 4 * chunk_size * array_size
 4. Chunk size must be less or equal to array_size
@@ -2122,10 +2186,10 @@ d_{movingWindow}\left[i\right]=\sum_{j=max(i-W+1,0)}^{i}\text{demod}(j\cdot 4\cd
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="n">measure</span><span class="p">([</span><span class="n">pulse</span><span class="p">],</span> <span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="p">[</span><span class="n">stream</span><span class="p">],</span>
 <a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>                <span class="n">integration</span><span class="o">.</span><span class="n">moving_window</span><span class="p">([</span><span class="n">integration_weights</span><span class="p">],[</span><span class="n">output_array</span><span class="p">],[</span><span class="n">chunk_size</span><span class="p">],[</span><span class="n">chunks_per_window</span><span class="p">],[</span><span class="n">analog_output</span><span class="p">]),</span><span class="o">...</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="time-tagging">Time tagging<a class="headerlink" href="#time-tagging" title="Permanent link">¶</a></h3>
+<h3 id="time-tagging">Time Tagging<a class="headerlink" href="#time-tagging" title="Permanent link">¶</a></h3>
 <p>The time-tagging feature populates a vector of time stamps that are associated with voltage edges typically generated by a single photon counting module (SPCM).</p>
 <h4 id="time-tagging-parameters">Time-tagging parameters<a class="headerlink" href="#time-tagging-parameters" title="Permanent link">¶</a></h4>
-<p>A time-tag is generated when the voltage in the OPX analog input meets two conditions, one for the signal and one for the signal's derivative.
+<p>A time-tag is generated when the voltage in the OPX analog input meets two <strong>independent</strong> conditions, one for the signal and one for the signal's derivative.
 The time tagger logic is as follows:</p>
 <ul>
 <li>A tag will be registered in the ADC sample where both conditions are met simultaneously.</li>
@@ -2153,7 +2217,7 @@ V(t) &lt; signalThreshold
 <div class="arithmatex">\[
 \dot{V(t)} &lt; derivativeThreshold
 \]</div>
-<p>For example, in the configuration block below, the element <code>spcm</code> has the time tagging parameters defined in the <code>outputPulseParameters</code> block.</p>
+<p>For example, in the configuration block below, the time tagging is set to detect a voltage edge. The element <code>spcm</code> has the time tagging parameters defined in the <code>outputPulseParameters</code> block.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="s1">'spcm'</span><span class="p">:</span> <span class="p">{</span>
 <a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>    <span class="s2">"singleInput"</span><span class="p">:</span> <span class="p">{</span>
 <a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>        <span class="s2">"port"</span><span class="p">:</span> <span class="p">(</span><span class="s1">'con1'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -2169,28 +2233,32 @@ V(t) &lt; signalThreshold
 <a href="#__codelineno-12-13" id="__codelineno-12-13" name="__codelineno-12-13"></a>    <span class="s1">'outputPulseParameters'</span><span class="p">:</span> <span class="p">{</span>   <span class="c1"># Time tagging parameters</span>
 <a href="#__codelineno-12-14" id="__codelineno-12-14" name="__codelineno-12-14"></a>        <span class="s1">'signalThreshold'</span><span class="p">:</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span>
 <a href="#__codelineno-12-15" id="__codelineno-12-15" name="__codelineno-12-15"></a>        <span class="s1">'signalPolarity'</span><span class="p">:</span> <span class="s1">'Below'</span><span class="p">,</span>
-<a href="#__codelineno-12-16" id="__codelineno-12-16" name="__codelineno-12-16"></a>        <span class="s1">'derivativeThreshold'</span><span class="p">:</span> <span class="o">-</span><span class="mi">2048</span><span class="p">,</span>
+<a href="#__codelineno-12-16" id="__codelineno-12-16" name="__codelineno-12-16"></a>        <span class="s1">'derivativeThreshold'</span><span class="p">:</span> <span class="o">-</span><span class="mi">10000</span><span class="p">,</span>
 <a href="#__codelineno-12-17" id="__codelineno-12-17" name="__codelineno-12-17"></a>        <span class="s1">'derivativePolarity'</span><span class="p">:</span> <span class="s1">'Above'</span>
 <a href="#__codelineno-12-18" id="__codelineno-12-18" name="__codelineno-12-18"></a>    <span class="p">}</span>
 <a href="#__codelineno-12-19" id="__codelineno-12-19" name="__codelineno-12-19"></a><span class="p">},</span>
 </code></pre></div>
-<p>Note that the condition on the derivative is chosen such that it will always be <strong>true</strong>. In that way,
+<p>Note that the condition on the derivative is chosen such that it will always be <strong>True</strong>. In that way,
 a time tag will be registered upon crossing the signal's threshold.</p>
 <p>The example above showcases a common usage of the time tagger as a voltage edge detector which would detect a falling
-edge through <span class="arithmatex">\(~244 mV\)</span> (<span class="arithmatex">\(-500/2048=-0.244\)</span>).</p>
+edge through <span class="arithmatex">\(~122 mV\)</span>, since the units are in ADC samples (12 bits) and <span class="arithmatex">\(-500/-4096=-0.122\)</span>. The minus sine is added to account for the internal inversion of the OPX's ADC.</p>
 <p>For a gaussian input as shown below, the parameters above would detect the falling edge at <span class="arithmatex">\(t=210 ns\)</span>.
 If the <code>signalPolarity</code> would be changed to <code>Above</code>, the rising edge would be detected at <span class="arithmatex">\(t=270 ns\)</span>.</p>
-<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../timetagging_example.png"><img alt="timetagging edge detector example" src="../timetagging_example.png"/></a></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<figure>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../timetagging_example.png"><img alt="timetagging edge detector example" src="../timetagging_example.png"/></a>
+</p>
+<figcaption>timetagging edge detector example</figcaption>
+</figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>For most use-cases, we recommend setting the the <code>derivativeThreshold</code> and <code>derivativePolarity</code> as in the example above.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<details class="info">
+<summary>Info</summary>
 <p>Due to backwards compatibility, the parameter's values can also be <code>Ascending</code> for <code>Above</code> and  <code>Descending</code> for <code>Below</code></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+</details>
+<details class="info">
+<summary>Info</summary>
 <p>If the <code>'outputPulseParameters'</code> dictionary is left empty, the default values are used.
 The user must supply <strong>all</strong> values, or none. The default values are as follows:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="s1">'outputPulseParameters'</span><span class="p">:</span> <span class="p">{</span>
@@ -2200,7 +2268,7 @@ The user must supply <strong>all</strong> values, or none. The default values ar
 <a href="#__codelineno-13-5" id="__codelineno-13-5" name="__codelineno-13-5"></a>    <span class="s1">'derivativePolarity'</span><span class="p">:</span> <span class="s1">'Below'</span>
 <a href="#__codelineno-13-6" id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="p">}</span>
 </code></pre></div>
-</div>
+</details>
 <h4 id="time-tagging-modes-usage">Time-tagging modes &amp; usage<a class="headerlink" href="#time-tagging-modes-usage" title="Permanent link">¶</a></h4>
 <h5 id="basic-time-tagging">Basic time-tagging<a class="headerlink" href="#basic-time-tagging" title="Permanent link">¶</a></h5>
 <p>Basic time tagging has a resolution of 1ns with a dead time of 2ns.
@@ -2216,11 +2284,12 @@ Time-tagging is done in a measure statement, with the following syntax:</p>
 </ul>
 <h5 id="high-resolution-time-tagging">High resolution time-tagging<a class="headerlink" href="#high-resolution-time-tagging" title="Permanent link">¶</a></h5>
 <p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.0-blue"/></a> <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-0.3.7-green"/></a>
-High resolution time tagging has a resolution \&lt;50ps with a dead time of 84ns.
-Time-tagging is done in a measure statement, with the following syntax:</p>
+High resolution time tagging has a resolution &lt;50ps with a dead time of 84ns.
+The high resolution time-tagging is done in a measure statement, with the following syntax:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="n">counts</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="n">times</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<a href="#__codelineno-15-3" id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="n">measure</span><span class="p">([</span><span class="n">pulse</span><span class="p">],</span> <span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="p">[</span><span class="n">stream</span><span class="p">],</span> <span class="n">time_tagging</span><span class="o">.</span><span class="n">high_res</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="p">[</span><span class="n">duration</span><span class="p">],</span> <span class="n">counts</span><span class="p">)</span>
+<a href="#__codelineno-15-3" id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="n">measure</span><span class="p">([</span><span class="n">pulse</span><span class="p">],</span> <span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="p">[</span><span class="n">stream</span><span class="p">],</span>
+<a href="#__codelineno-15-4" id="__codelineno-15-4" name="__codelineno-15-4"></a>        <span class="n">time_tagging</span><span class="o">.</span><span class="n">high_res</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="p">[</span><span class="n">duration</span><span class="p">],</span> <span class="n">counts</span><span class="p">))</span>
 </code></pre></div>
 <ul>
 <li><code>times</code> is a vector of integers into which the times of the detected pulses are saved (in ps).</li>
@@ -2229,21 +2298,21 @@ Time-tagging is done in a measure statement, with the following syntax:</p>
 </ul>
 <h2 id="flow-control">Flow control<a class="headerlink" href="#flow-control" title="Permanent link">¶</a></h2>
 <h3 id="branching">Branching<a class="headerlink" href="#branching" title="Permanent link">¶</a></h3>
-<h4 id="if-elif-else">If-Elif-Else<a class="headerlink" href="#if-elif-else" title="Permanent link">¶</a></h4>
-<p>The simplest way to use branching is using the <code>if_</code> statement. Usage of the <code>if_</code> conditional is demonstrated in the
-code block below. Here, <code>op1</code> is played if <code>a</code> is larger than 1, <code>op2</code> is played if it's between -1 and 1, and
-<code>op3</code> is played if it is below -1.
+<h4 id="if-elif-else">If, Elif &amp; Else<a class="headerlink" href="#if-elif-else" title="Permanent link">¶</a></h4>
+<p>The simplest way to use branching is using the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.if_"><code>if_()</code></a> statement. Usage of the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.if_"><code>if_()</code></a>,
+<a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.elif_"><code>elif_()</code></a> &amp; <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.else_"><code>else_()</code></a> conditional is demonstrated in thecode block below. 
+Here, <code>op1</code> is played if <code>a</code> is larger than 1, <code>op2</code> is played if it's between -1 and 1, and <code>op3</code> is played if it is below -1.
 <code>a</code> is a <code>fixed</code> QUA variable in this case, which can be the result of a measurement or a classical computation.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="k">with</span> <span class="n">if_</span><span class="p">(</span><span class="n">a</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">):</span>
 <a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'op1'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">)</span>
-<a href="#__codelineno-16-3" id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="k">with</span> <span class="n">if_</span><span class="p">(</span><span class="n">a</span><span class="o">&gt;=-</span><span class="mi">1</span><span class="p">):</span>
+<a href="#__codelineno-16-3" id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="k">with</span> <span class="n">elif_</span><span class="p">(</span><span class="n">a</span><span class="o">&gt;=-</span><span class="mi">1</span><span class="p">):</span>
 <a href="#__codelineno-16-4" id="__codelineno-16-4" name="__codelineno-16-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'op2'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">)</span>
 <a href="#__codelineno-16-5" id="__codelineno-16-5" name="__codelineno-16-5"></a><span class="k">with</span> <span class="n">else_</span><span class="p">():</span>
 <a href="#__codelineno-16-6" id="__codelineno-16-6" name="__codelineno-16-6"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'op3'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">)</span>
 </code></pre></div>
-<h4 id="switch-case">Switch-Case<a class="headerlink" href="#switch-case" title="Permanent link">¶</a></h4>
-<p>It is also possible to use a switch-case, as shown in the example below. Here, <code>op1</code> will be played if <code>a=1</code>,
-<code>op2</code> will be played if <code>a=2</code>, and <code>default_op</code> will be played otherwise.
+<h4 id="switch-case">Switch Case<a class="headerlink" href="#switch-case" title="Permanent link">¶</a></h4>
+<p>It is also possible to use a <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.switch_"><code>switch_()</code></a>-<a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.case_"><code>case_()</code></a>, as shown in the example below. 
+Here, <code>op1</code> will be played if <code>a=1</code>, <code>op2</code> will be played if <code>a=2</code>, and <code>default_op</code> will be played otherwise.
 <code>a</code> is an <code>int</code> QUA variable in this case, which can be the result of a measurement or a classical computation.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="k">with</span> <span class="n">switch_</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a>    <span class="k">with</span> <span class="n">case_</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
@@ -2267,7 +2336,7 @@ different operation will be played.</p>
 <a href="#__codelineno-18-10" id="__codelineno-18-10" name="__codelineno-18-10"></a>        <span class="o">...</span>
 <a href="#__codelineno-18-11" id="__codelineno-18-11" name="__codelineno-18-11"></a>    <span class="o">...</span>
 </code></pre></div>
-<p>This can be further simplified by wrapping the code with a Python <code>for</code> loop:</p>
+<p>Writing this structure can be further simplified by wrapping the code with a Python <code>for</code> loop:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a><span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
 <a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>    <span class="o">...</span>
 <a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a>    <span class="k">with</span> <span class="n">switch_</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
@@ -2276,7 +2345,7 @@ different operation will be played.</p>
 <a href="#__codelineno-19-6" id="__codelineno-19-6" name="__codelineno-19-6"></a>                <span class="n">play</span><span class="p">(</span><span class="sa">f</span><span class="s1">'op</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">)</span>
 <a href="#__codelineno-19-7" id="__codelineno-19-7" name="__codelineno-19-7"></a>    <span class="o">...</span>
 </code></pre></div>
-<p>There is an optional flag, <code>unsafe</code> that can be used to decrease the gaps that might be created when using switch-case
+<p>The switch case operation has an optional flag, <code>unsafe</code> that can be used to decrease the gaps that might be created when using switch-case
 inside a loop, such as in the example above. However, this flag cannot be used with <code>with default_():</code>, and in
 addition, if a value in the <code>switch</code> does not match any of the values in the <code>case</code>, unexpected behavior can occur.</p>
 <p>The usage can be seen in the following example:</p>
@@ -2289,25 +2358,26 @@ addition, if a value in the <code>switch</code> does not match any of the values
 <a href="#__codelineno-20-7" id="__codelineno-20-7" name="__codelineno-20-7"></a>    <span class="o">...</span>
 </code></pre></div>
 <h4 id="conditional-play">Conditional Play<a class="headerlink" href="#conditional-play" title="Permanent link">¶</a></h4>
-<p>It is also possible to add a condition directly in the <code>play</code> command. The pulse would only be played if the condition
+<p>It is also possible to add a condition directly in the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.play"><code>play()</code></a> command. The pulse would only be played if the condition
 is evaluated to <code>True</code>. This would result in a quicker evaluation of the condition, compared to using an <code>if_</code>, and
-should be used when feedback latency is critical.</p>
+can be used when feedback latency is critical.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="n">play</span><span class="p">(</span><span class="s1">'op'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
 <p>If there is a digital pulse associated with the operation, it will always be played, regardless of the condition.</p>
 </div>
 <h4 id="ternary-operator">Ternary Operator<a class="headerlink" href="#ternary-operator" title="Permanent link">¶</a></h4>
-<p>The ternary operation can be used to quickly evaluate a condition to decide between two parameters, this would result in
-a quicker evaluation of the condition, compared to using an <code>if_</code>. In the example below, the duration of the pulse will
-be <code>c</code> if <code>a &gt; 0</code> otherwise it would be <code>d</code>. <code>c</code> and <code>d</code> can be either QUA variables, or constants.</p>
+<p>The ternary operation is available via the <a href="../../API_references/qua/util/">Util API</a>, and can be used to quickly evaluate 
+a condition to decide between two parameters, this would result in a quicker evaluation of the condition, compared to using an <code>if_</code>.
+In the example below, the duration of the pulse will be <code>c</code> if <code>a &gt; 0</code> otherwise it would be <code>d</code>. <code>c</code> and <code>d</code> can be either QUA variables,
+or constants.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="n">assign</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Util</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 <a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a><span class="n">play</span><span class="p">(</span><span class="s1">'op'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">Util</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 </code></pre></div>
 <h3 id="loops">Loops<a class="headerlink" href="#loops" title="Permanent link">¶</a></h3>
 <h4 id="for">For<a class="headerlink" href="#for" title="Permanent link">¶</a></h4>
-<p>The QUA <code>for_</code> loop is similar to a python loop, having a <code>(var, start, end_cond, step)</code> structure.
+<p>The QUA <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.for_"><code>for_()</code></a> loop is similar to a python loop, having a <code>(var, start, end_cond, step)</code> structure.
 The following block of code plays a pulse five times, running over a QUA variable <code>t</code>, and uses it for the pulse
 duration.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a><span class="n">t</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -2315,7 +2385,7 @@ duration.</p>
 <a href="#__codelineno-23-3" id="__codelineno-23-3" name="__codelineno-23-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 </code></pre></div>
 <h4 id="for_each">For_Each<a class="headerlink" href="#for_each" title="Permanent link">¶</a></h4>
-<p>The QUA <code>for_each_</code> loop scans the variable through a predefined vector. This is a bit less efficient compared to the
+<p>The QUA <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.for_each_"><code>for_each_()</code></a> loop scans the variable through a predefined vector. This is a bit less efficient compared to the
 <code>for_</code> loop above, but can scan arbitrary points.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-24-1" id="__codelineno-24-1" name="__codelineno-24-1"></a><span class="n">t_vec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">]</span>
 <a href="#__codelineno-24-2" id="__codelineno-24-2" name="__codelineno-24-2"></a><span class="n">t</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -2330,27 +2400,27 @@ duration.</p>
 <a href="#__codelineno-25-5" id="__codelineno-25-5" name="__codelineno-25-5"></a><span class="k">with</span> <span class="n">for_each_</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="p">(</span><span class="n">t_vec</span><span class="p">,</span> <span class="n">a_vec</span><span class="p">)):</span>
 <a href="#__codelineno-25-6" id="__codelineno-25-6" name="__codelineno-25-6"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span> <span class="o">*</span> <span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s1">'qe'</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 </code></pre></div>
-<p>In both cases, 't_vec' and 'a_vec' can also be QUA arrays</p>
+<p>In both cases, <code>t_vec</code> and <code>a_vec</code> can also be QUA arrays</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code>for_each_</code> loops are more resource intensive and unlike <code>for_</code> loops, have a maximum size.</p>
 </div>
 <h4 id="while">While<a class="headerlink" href="#while" title="Permanent link">¶</a></h4>
-<p>The <code>while</code> loop is executed for as long as the condition is <code>True</code>. The following block of code plays a pulse 5 times.</p>
+<p>The <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.while_"><code>while_()</code></a> loop is executed for as long as the condition is <code>True</code>. The following block of code plays a pulse 5 times.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-26-1" id="__codelineno-26-1" name="__codelineno-26-1"></a><span class="n">N</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <a href="#__codelineno-26-2" id="__codelineno-26-2" name="__codelineno-26-2"></a><span class="k">with</span> <span class="n">while_</span><span class="p">(</span><span class="n">N</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
 <a href="#__codelineno-26-3" id="__codelineno-26-3" name="__codelineno-26-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span><span class="p">,</span><span class="s1">'qe'</span><span class="p">)</span>
 <a href="#__codelineno-26-4" id="__codelineno-26-4" name="__codelineno-26-4"></a>    <span class="n">assign</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="pause-resume-and-io-variables">Pause, Resume and IO variables<a class="headerlink" href="#pause-resume-and-io-variables" title="Permanent link">¶</a></h2>
-<p>QUA programs can be paused by using the <code>pause</code> QUA command. When a <code>pause</code> command is reached, the OPX completely halts
-the execution of the program until a <code>resume</code> command is sent using the QM <code>Job</code> API.
+<p>QUA programs can be paused by using the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.pause"><code>pause()</code></a> QUA command. When a <code>pause</code> command is reached, the OPX completely halts
+the execution of the program until a <a class="autorefs autorefs-internal" href="../../API_references/qm_job_api/#qm.jobs.running_qm_job.RunningQmJob.resume"><code>resume()</code></a> command is sent using the <code>Job</code> API.
 This could be used to control an external device, such as an LO source. When the program is paused, data
 can be sent between the client PC and the real-time program using 2 available IO variables (Input/Output variables).</p>
 <p>The following examples shows basic communications between the client and QUA program using this <code>pause</code> and <code>resume</code>
 technique.</p>
 <h3 id="setting-an-io-variable">Setting an IO variable<a class="headerlink" href="#setting-an-io-variable" title="Permanent link">¶</a></h3>
-<p>In this QUA program, a <code>pause</code> precedes the <code>play</code> command, which plays a pulse with an amplitude dynamically set by an IO variable.</p>
+<p>In this QUA program, a <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.pause"><code>pause()</code></a> precedes the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.play"><code>play()</code></a> command, which plays a pulse with an amplitude dynamically set by an IO variable.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-27-1" id="__codelineno-27-1" name="__codelineno-27-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
 <a href="#__codelineno-27-2" id="__codelineno-27-2" name="__codelineno-27-2"></a>    <span class="n">N</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <a href="#__codelineno-27-3" id="__codelineno-27-3" name="__codelineno-27-3"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
@@ -2359,7 +2429,7 @@ technique.</p>
 <a href="#__codelineno-27-6" id="__codelineno-27-6" name="__codelineno-27-6"></a>        <span class="n">assign</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">IO1</span><span class="p">)</span>
 <a href="#__codelineno-27-7" id="__codelineno-27-7" name="__codelineno-27-7"></a>        <span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span><span class="o">*</span><span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s1">'qe'</span><span class="p">)</span>
 </code></pre></div>
-<p>When the <code>pause</code> command is encountered, the execution waits for a <code>resume</code> command, with usage as shown below:</p>
+<p>When the <code>pause</code> command is encountered, the execution waits for a <a class="autorefs autorefs-internal" href="../../API_references/qm_job_api/#qm.jobs.running_qm_job.RunningQmJob.resume"><code>resume()</code></a> command, with usage as shown below:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-28-1" id="__codelineno-28-1" name="__codelineno-28-1"></a><span class="n">job</span> <span class="o">=</span> <span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
 <a href="#__codelineno-28-2" id="__codelineno-28-2" name="__codelineno-28-2"></a><span class="n">current_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <a href="#__codelineno-28-3" id="__codelineno-28-3" name="__codelineno-28-3"></a><span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">current_vals</span><span class="p">:</span>
@@ -2369,7 +2439,7 @@ technique.</p>
 <a href="#__codelineno-28-7" id="__codelineno-28-7" name="__codelineno-28-7"></a>    <span class="n">job</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="reading-an-io-variable">Reading an IO variable<a class="headerlink" href="#reading-an-io-variable" title="Permanent link">¶</a></h3>
-<p>IO values can also be used to extract information of a running program. For example, update to the LO frequency to some value calculated in real-time, in the OPX.
+<p>IO values can also be used to extract information of a running program. For example, update the LO frequency to some value calculated in real-time, in the OPX.
 The following example demonstrate such use case with an IO variable:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-29-1" id="__codelineno-29-1" name="__codelineno-29-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
 <a href="#__codelineno-29-2" id="__codelineno-29-2" name="__codelineno-29-2"></a>    <span class="n">rt_lo</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
@@ -2399,8 +2469,8 @@ The following example demonstrate such use case with an IO variable:</p>
 <h2 id="input-streams">Input streams<a class="headerlink" href="#input-streams" title="Permanent link">¶</a></h2>
 <p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-0.3.7-green"/></a> Input streams allows passing data from the client computer to a running job in the OPX+ with
 minimal latency. To use one, you must first declare it in the QUA program using the
-[qm.qua._dsl.declare_input_stream[] command. The declaration is similar to the declaration of a normal QUA
-variable. You need to define its type (int, fixed, bool) it's name, and optionality, its size or values.
+<a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.declare_input_stream"><code>declare_input_stream()</code></a> command. The declaration is similar to the declaration of a normal QUA
+variable. You need to define its type (int, fixed, bool), it's name, and optionality, its size or values.
 Once declared, you can use it as you would use any other QUA variable, with the exception that you have two new
 available commands:</p>
 <ol>
@@ -2441,9 +2511,9 @@ available commands:</p>
 Once defined in this way, the last value played at the end of a pulse will be held until the next pulse begins.
 Then the values of the currently playing pulse will be <strong>added</strong> to the previously held value.
 A sticky element always ramps back to its DC offset value when the element has reached its final instruction of the program.
-This ramp can also be explicitly initiated by the <code>ramp_to_zero</code> function.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+This ramp can also be explicitly initiated by the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.ramp_to_zero"><code>ramp_to_zero()</code></a> function.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>The amplitude of sticky pulses is accumulated with a resolution of 16 bit.
 Therefore, <em>N</em> changes to the sticky pulse amplitude can result in an amplitude inaccuracy of about <span class="arithmatex">\(N \cdot 2^{-16}\)</span>.
 To null out this accumulated error, it is recommended to use <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.ramp_to_zero"><code>ramp_to_zero()</code></a> from time to time.</p>
@@ -2498,7 +2568,7 @@ At the end of the program, the blue trace is ramped to zero within 200 clock cyc
 <p>The example above is for an element without an intermediate frequency. In case of an element with an intermediate
 frequency, the output will be a sine wave with the last amplitude.</p>
 </div>
-<h3 id="voltage-easing">Voltage easing<a class="headerlink" href="#voltage-easing" title="Permanent link">¶</a></h3>
+<h3 id="voltage-easing">Voltage Easing<a class="headerlink" href="#voltage-easing" title="Permanent link">¶</a></h3>
 <p>A ramp to zero can be initiated on a sticky pulse at any point by calling the <code>ramp_to_zero(qe,duration)</code> function.
 The duration parameter is optional and can be used to override the configuration value.
 The waveform below was generated by running this program:</p>
@@ -2509,8 +2579,8 @@ The waveform below was generated by running this program:</p>
 </code></pre></div>
 <p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../ramp_to_zero_2.png"><img alt="ramp to zero 2 example" src="../ramp_to_zero_2.png"/></a></p>
 <p>Note the first pulse eases to zero at a double rate compared to the second one.</p>
-<h2 id="ramp-pulse">Ramp pulse<a class="headerlink" href="#ramp-pulse" title="Permanent link">¶</a></h2>
-<p>It's possible to generate a voltage ramp by using the <code>ramp(slope)</code> command.
+<h2 id="ramp-pulse">Ramp Pulse<a class="headerlink" href="#ramp-pulse" title="Permanent link">¶</a></h2>
+<p>It's possible to generate a voltage ramp by using the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.ramp"><code>ramp()</code></a> command.
 The <code>slope</code> argument is specified in units of <code>V/ns</code>. Usage of this feature is as follows:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-36-1" id="__codelineno-36-1" name="__codelineno-36-1"></a><span class="n">play</span><span class="p">(</span><span class="n">ramp</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">),</span><span class="s1">'qe1'</span><span class="p">,</span><span class="n">duration</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </code></pre></div>
@@ -2530,14 +2600,14 @@ The <code>slope</code> argument is specified in units of <code>V/ns</code>. Usag
 </code></pre></div>
 <p>The quantum element <code>qe1</code> is defined as a sticky pulse and the resulting waveform is therefore triangular in each loop step as is shown in the image below.</p>
 <p>!!<a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../ramp_pulse.png"><img alt="ramp_pulse" src="../ramp_pulse.png"/></a></p>
-<h2 id="frequency-chirp">Frequency chirp<a class="headerlink" href="#frequency-chirp" title="Permanent link">¶</a></h2>
+<h2 id="frequency-chirp">Frequency Chirp<a class="headerlink" href="#frequency-chirp" title="Permanent link">¶</a></h2>
 <p>This feature allows to perform a linear sweep of the element's intermediate frequency in time. Chirp parameters can be updated in run-time, inside a QUA program.</p>
 <p>Basic usage of this feature is performed as follows:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-38-1" id="__codelineno-38-1" name="__codelineno-38-1"></a>play('pulse', 'qe', chirp=(rate, units))
 </code></pre></div>
 <p>Because the supported chirp rate spans many orders of magnitude, from mHz/sec to GHz/sec, it is defined by both a <code>rate</code>
-numeric variable and a <code>units</code> string. Supported units are (exactly) one of the following: 'Hz/nsec', 'mHz/nsec', 'uHz/nsec',
-'pHz/nsec' or their equivalent rates per-second: 'GHz/sec', 'MHz/sec', 'KHz/sec', 'Hz/sec', 'mHz/sec'. The rate itself is an integer,
+numeric variable and a <code>units</code> string. Supported units are (exactly) one of the following: <code>'Hz/nsec'</code>, <code>'mHz/nsec'</code>, <code>'uHz/nsec'</code>,
+<code>'pHz/nsec'</code> or their equivalent rates per-second: <code>'GHz/sec'</code>, <code>'MHz/sec'</code>, <code>'KHz/sec'</code>, <code>'Hz/sec'</code>, <code>'mHz/sec'</code>. The rate itself is an integer,
 which can either be a QUA variable or a python literal.</p>
 <p>A spectrogram of a positive chirp rate followed by a negative rate is shown below. The chirp duration is defined by the duration of the used pulse.</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-39-1" id="__codelineno-39-1" name="__codelineno-39-1"></a>with program() as prog:
@@ -2556,7 +2626,7 @@ In this case each chirp section will have the same duration, equal to the total 
 <a href="#__codelineno-40-6" id="__codelineno-40-6" name="__codelineno-40-6"></a>    play("pulse", "qe", chirp=([25000, 0, 50000, -30000, 80000], 'Hz/nsec'))
 </code></pre></div>
 <p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../chirp_piecewise.png"><img alt="chirp_piecewise" src="../chirp_piecewise.png"/></a></p>
-<h3 id="non-uniform-chirp-sections">Non-uniform chirp sections<a class="headerlink" href="#non-uniform-chirp-sections" title="Permanent link">¶</a></h3>
+<h3 id="non-uniform-chirp-sections">Non-uniform Chirp Sections<a class="headerlink" href="#non-uniform-chirp-sections" title="Permanent link">¶</a></h3>
 <p>A list of linear chirp rates can be specified at uniform intervals in time as shown above. You can also have non-uniform sections by passing a second list, giving the clock cycle number
 where the next chirp rate is set to start. This is shown in the example below:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-41-1" id="__codelineno-41-1" name="__codelineno-41-1"></a><span class="n">rates</span> <span class="o">=</span> <span class="p">[</span><span class="mi">199</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="o">-</span><span class="mi">997</span><span class="p">,</span> <span class="mi">1396</span><span class="p">]</span>
@@ -2565,7 +2635,7 @@ where the next chirp rate is set to start. This is shown in the example below:</
 <a href="#__codelineno-41-4" id="__codelineno-41-4" name="__codelineno-41-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span><span class="p">,</span> <span class="s1">'qe'</span><span class="p">,</span> <span class="n">chirp</span><span class="o">=</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span><span class="n">times</span><span class="p">,</span> <span class="s1">'Hz/nsec'</span><span class="p">))</span>
 </code></pre></div>
 <p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../chirp_piecewise_nonuniform.png"><img alt="chirp_piecewise_nonuniform" src="../chirp_piecewise_nonuniform.png"/></a></p>
-<h3 id="mathematical-formulation-of-the-chirp">Mathematical formulation of the chirp<a class="headerlink" href="#mathematical-formulation-of-the-chirp" title="Permanent link">¶</a></h3>
+<h3 id="mathematical-formulation-of-the-chirp">Mathematical Formulation of the Chirp<a class="headerlink" href="#mathematical-formulation-of-the-chirp" title="Permanent link">¶</a></h3>
 <p>The frequency in every piecewise linear section is given by:</p>
 <div class="arithmatex">\[
 f(t) = f_0 + \alpha t
@@ -2579,7 +2649,7 @@ f(t) = f_0 + \alpha t
 <div class="arithmatex">\[
 f(t) = 2\pi (f_0t + \frac{t^2}{2}\alpha)
 \]</div>
-<h3 id="continuous-chirp">Continuous chirp<a class="headerlink" href="#continuous-chirp" title="Permanent link">¶</a></h3>
+<h3 id="continuous-chirp">Continuous Chirp<a class="headerlink" href="#continuous-chirp" title="Permanent link">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a>  The continuous chirp feature only exists in the OPX+</p>
@@ -2604,12 +2674,12 @@ To use, add to the <code>play</code> command the kwargs <code>continue_chirp=Tru
 </div>
 <p>It is possible to add crosstalk terms between any ports in the same controller of the OPX.
 Adding a crosstalk term means that anything that comes out from a given port of the OPX will also come out of other ports of the OPX, with the given amplitude factor.
-The crosstalk is being applied <em>before</em> the <a href="../Guides/output_filter.md/#output-filter">Filters</a>, which means that any filters applied on a port will only affect that specific port.
+The crosstalk is being applied <strong>before</strong> the <a href="../output_filter/">Filters</a>, which means that any filters applied on a port will only affect that specific port.
 This could be useful to correct for electronic crosstalk that exists between different control lines.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> Adding a crosstalk term to any port will delay <strong>all</strong> analog pulses coming out from all ports. The delay will be 8 cycles (32 ns).
-Starting from <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.1-blue"/></a>, it is possible to add the <a href="../Guides/features.md/#compilation-options">compilation flag</a> <code>disable-crosstalk-matrix-ports-alignment</code> to only delay the ports which participate in the crosstalk matrix.</p>
+Starting from <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.1-blue"/></a>, it is possible to add the <a href="../features/#compilation-options">compilation flag</a> <code>disable-crosstalk-matrix-ports-alignment</code> to only delay the ports which participate in the crosstalk matrix.</p>
 </div>
 <h3 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">¶</a></h3>
 <p>The crosstalk terms can be configured at the OPX configuration file, with a different terms applied to each analog output in each controller.
@@ -2621,6 +2691,8 @@ To configure, add a <code>crosstalk</code> term in the <code>analog_outputs</cod
 <a href="#__codelineno-43-5" id="__codelineno-43-5" name="__codelineno-43-5"></a>                <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">'offset'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'crosstalk'</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}},</span>
 <a href="#__codelineno-43-6" id="__codelineno-43-6" name="__codelineno-43-6"></a>                <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">'offset'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'crosstalk'</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">}},</span>
 <a href="#__codelineno-43-7" id="__codelineno-43-7" name="__codelineno-43-7"></a>            <span class="p">},</span>
+<a href="#__codelineno-43-8" id="__codelineno-43-8" name="__codelineno-43-8"></a>        <span class="p">}</span>
+<a href="#__codelineno-43-9" id="__codelineno-43-9" name="__codelineno-43-9"></a><span class="p">}</span>
 </code></pre></div>
 <p>In the example above, any pulse played to output number 1 would also come out from ports 2 &amp; 3 with an amplitude factor of 0.2 and -0.1 respectively, as seen in the following example:</p>
 <p>!!<a class="glightbox" data-desc-position="bottom" data-height="auto" data-width="100%" href="../crosstalk_output.png"><img alt="crosstalk_output" src="../crosstalk_output.png"/></a></p>
@@ -2656,8 +2728,8 @@ Alternatively, the user can simply control the sampling ratio of the pulse:</p>
 <p>Any time a pulse is compressed, the compiler will output a warning and the compression factor:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-46-1" id="__codelineno-46-1" name="__codelineno-46-1"></a><span class="n">WARNING</span> <span class="o">-</span> <span class="n">Waveform</span> <span class="n">wf_long</span> <span class="n">was</span> <span class="n">compressed</span> <span class="k">with</span> <span class="n">rate</span> <span class="mf">0.6548853220189729</span> <span class="ow">and</span> <span class="n">error</span> <span class="n">of</span> <span class="mf">1.6128764990241962E-13</span>
 </code></pre></div>
-<h2 id="dynamic-pulse-duration">Dynamic pulse duration<a class="headerlink" href="#dynamic-pulse-duration" title="Permanent link">¶</a></h2>
-<p>The duration of the pulse can stretched (but, in the case of an arbitrary waveform, not compressed)
+<h2 id="dynamic-pulse-duration">Dynamic Pulse Duration<a class="headerlink" href="#dynamic-pulse-duration" title="Permanent link">¶</a></h2>
+<p>The duration of the pulse can be stretched (but, in the case of an arbitrary waveform, not compressed)
 using the 'duration' parameter:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-47-1" id="__codelineno-47-1" name="__codelineno-47-1"></a><span class="c1"># Stretching the pulse length</span>
 <a href="#__codelineno-47-2" id="__codelineno-47-2" name="__codelineno-47-2"></a><span class="n">play</span><span class="p">(</span><span class="n">pulse</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
@@ -2665,7 +2737,7 @@ using the 'duration' parameter:</p>
 <a href="#__codelineno-47-4" id="__codelineno-47-4" name="__codelineno-47-4"></a><span class="n">play</span><span class="p">(</span><span class="n">pulse</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="o">+</span><span class="mi">100</span><span class="p">)</span>
 </code></pre></div>
 <ul>
-<li>'duration' is given in clock cycles units.</li>
+<li><code>duration</code> is given in clock cycles units.</li>
 <li>The stretched pulse is calculated from the original pulse using a 3rd order Lagrange interpolator on a 4 points running window.</li>
 </ul>
 <p>The 'duration' parameter can accept a general mathematical expression composed of operators (+, -, *, /),
@@ -2675,8 +2747,8 @@ numbers, QUA variables and QUA functions (such as cos and sin).</p>
 <p>When playing an arbitrary waveform, if the value of the duration parameter is set to below the original pulse
 length, corrupted output may occur.</p>
 </div>
-<h2 id="truncate-pulses">Truncate pulses<a class="headerlink" href="#truncate-pulses" title="Permanent link">¶</a></h2>
-<p>Part of a pulse can be played by using the 'truncate' parameter:</p>
+<h2 id="truncate-pulses">Truncate Pulses<a class="headerlink" href="#truncate-pulses" title="Permanent link">¶</a></h2>
+<p>Part of a pulse can be played by using the <code>truncate</code> parameter:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-48-1" id="__codelineno-48-1" name="__codelineno-48-1"></a><span class="c1"># Truncating the pulse length</span>
 <a href="#__codelineno-48-2" id="__codelineno-48-2" name="__codelineno-48-2"></a><span class="n">play</span><span class="p">(</span><span class="n">pulse</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">truncate</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <a href="#__codelineno-48-3" id="__codelineno-48-3" name="__codelineno-48-3"></a><span class="c1"># One can also use a variable or an expression</span>
@@ -2685,8 +2757,8 @@ length, corrupted output may occur.</p>
 <a href="#__codelineno-48-6" id="__codelineno-48-6" name="__codelineno-48-6"></a><span class="n">play</span><span class="p">(</span><span class="n">pulse</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span> <span class="n">truncate</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
 <ul>
-<li>'truncate' is given in clock cycles units, with the minimum being 4 cycles.</li>
-<li>'truncate=n' will cause the first n cycles of the pulse to be played, this could be useful, for example, for exploring the dynamics of a qubit while a pulse is being played.</li>
+<li><code>truncate</code> is given in clock cycles units, with the minimum being 4 cycles.</li>
+<li><code>truncate=n</code> will cause the first n cycles of the pulse to be played, this could be useful, for example, for exploring the dynamics of a qubit while a pulse is being played.</li>
 <li>If a pulse is given a dynamic duration, it will first be stretched to the given duration and then truncated.</li>
 </ul>
 <p>The 'truncate' parameter can accept a general mathematical expression composed of operators (+, -, *, /),
@@ -2695,7 +2767,7 @@ numbers, QUA variables and QUA functions (such as cos and sin).</p>
 <p class="admonition-title">Warning</p>
 <p>If the 'truncate' parameter is longer than the pulse duration, it'll cause unexpected results.</p>
 </div>
-<h2 id="dynamic-port-allocation">Dynamic port allocation<a class="headerlink" href="#dynamic-port-allocation" title="Permanent link">¶</a></h2>
+<h2 id="dynamic-port-allocation">Dynamic Port Allocation<a class="headerlink" href="#dynamic-port-allocation" title="Permanent link">¶</a></h2>
 <p>It is possible to define an element with multiple inputs. At runtime, you can select to which port you want to play.</p>
 <p>To define such an element in the config, use the <code>singleInputCollection</code> dictionary item:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-49-1" id="__codelineno-49-1" name="__codelineno-49-1"></a><span class="s1">'aom_selector'</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># An example element that can play to either port 1 or 2</span>
@@ -2715,7 +2787,7 @@ numbers, QUA variables and QUA functions (such as cos and sin).</p>
 <p>At run time, use the <code>target</code> parameter of the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.play"><code>play()</code></a> command:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-50-1" id="__codelineno-50-1" name="__codelineno-50-1"></a><span class="n">play</span><span class="p">(</span><span class="s1">'pulse'</span><span class="p">,</span> <span class="s1">'aom_selector'</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">'row'</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="multiple-inputs">Multiple inputs<a class="headerlink" href="#multiple-inputs" title="Permanent link">¶</a></h2>
+<h2 id="multiple-inputs">Multiple Inputs<a class="headerlink" href="#multiple-inputs" title="Permanent link">¶</a></h2>
 <p>When playing a pulse, it is possible to output it from multiple ports simultaneously.
 This is done using the <code>multipleInputs</code> dictionary item:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-51-1" id="__codelineno-51-1" name="__codelineno-51-1"></a><span class="s1">'qubit'</span><span class="p">:</span> <span class="p">{</span>
@@ -2739,7 +2811,7 @@ This is done using the <code>multipleInputs</code> dictionary item:</p>
 <h2 id="analog-delay">Analog Delay<a class="headerlink" href="#analog-delay" title="Permanent link">¶</a></h2>
 <p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a></p>
 <p>We can add a delay to the analog ports of up to 16 microseconds, in units of ns.</p>
-<p>To do so, simply specify the desired delay in the <a href="../Introduction/config.md/#controllers">port's configuration</a>. For example</p>
+<p>To do so, simply specify the desired delay in the <a href="../../Introduction/config/#controllers">port's configuration</a>. For example</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-53-1" id="__codelineno-53-1" name="__codelineno-53-1"></a><span class="s1">'analog_outputs'</span><span class="p">:</span> <span class="p">{</span>
 <a href="#__codelineno-53-2" id="__codelineno-53-2" name="__codelineno-53-2"></a>    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">'offset'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'delay'</span><span class="p">:</span> <span class="mi">110</span><span class="p">},</span>
 <a href="#__codelineno-53-3" id="__codelineno-53-3" name="__codelineno-53-3"></a>    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">'offset'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'delay'</span><span class="p">:</span> <span class="mi">21</span><span class="p">},</span>
@@ -2799,22 +2871,22 @@ This means that "qe2" and "qe1" can share the same <em>thread</em>.</p>
 Any quantum element which does not have a <em>thread</em> directly specified will have its own <em>thread</em>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If "qe1" has a two inputs (i.e. an IQ pair) it will actually be assigned two <em>threads</em>.
+<p>If "qe1" has two inputs (i.e. an IQ pair) it will actually be assigned two <em>threads</em>.
 If "qe2" has a single input, it will use one of the <em>threads</em> which is used by "qe1".</p>
 </div>
-<p>If "qe2" and "qe1" will given a play command, they will be played one after the other and not at the same time. For example:</p>
+<p>If "qe2" and "qe1" will be given a play command, they will be played one after the other and not at the same time. For example:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-57-1" id="__codelineno-57-1" name="__codelineno-57-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
 <a href="#__codelineno-57-2" id="__codelineno-57-2" name="__codelineno-57-2"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">"pulse1"</span><span class="p">,</span> <span class="s2">"qe1"</span><span class="p">)</span>
 <a href="#__codelineno-57-3" id="__codelineno-57-3" name="__codelineno-57-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">"pulse2"</span><span class="p">,</span> <span class="s2">"qe2"</span><span class="p">)</span>
 <a href="#__codelineno-57-4" id="__codelineno-57-4" name="__codelineno-57-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">"pulse3"</span><span class="p">,</span> <span class="s2">"qe3"</span><span class="p">)</span>
 </code></pre></div>
 <p>In the example above, "qe1" will be played first and only when it is done "qe2" will be played.
-Because "qe3" is on another <em>thread</em>, it will start immediately with "qe1".</p>
+Because "qe3" is on another <em>thread</em>, it will start immediately with "qe1". See examples <a href="../timing_in_qua/#examples-for-timing-scenarios-in-qua">here</a></p>
 <h2 id="oscillators">Oscillators<a class="headerlink" href="#oscillators" title="Permanent link">¶</a></h2>
 <p>In addition to limited threads, there is also a limited number of internal oscillators. The OPX has <span class="arithmatex">\(N_{osc}=10\)</span>
 and the OPX+ has <span class="arithmatex">\(N_{osc}=18\)</span>. This limits the number of quantum elements <strong>with an intermediate frequency</strong>.
 However, it is possible to share oscillators between different elements.
-For information on how to define shared oscillators, see the <a href="../Introduction/config.md/#oscillators">configuration</a> page.</p>
+For information on how to define shared oscillators, see the <a href="../../Introduction/config/#oscillators">configuration</a> page.</p>
 <p>Sharing oscillators between elements shares their frequency, their frame and their mixer correction matrix.
 This means that any operation that affects these on any of the elements, would affect them all.
 In the following example, <code>qe1</code>, <code>qe2</code> and <code>qe3</code> share an oscillator:</p>
@@ -2855,10 +2927,10 @@ To precompile a job, use the <code>compile</code> function:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The number of samples in the new waveform has to be the same as in the old waveform.
-It is currently not possible to change the bandwidth of an overridable arbitrary waveform. Therefore the
+It is currently not possible to change the bandwidth of an overridable arbitrary waveform. Therefore, the
 <code>samplingRate</code> and <code>maxAllowedError</code> properties are not supported when "<code>is_overridable</code>: True".</p>
 </div>
-<h2 id="compilation-options">Compilation options<a class="headerlink" href="#compilation-options" title="Permanent link">¶</a></h2>
+<h2 id="compilation-options">Compilation Options<a class="headerlink" href="#compilation-options" title="Permanent link">¶</a></h2>
 <p>There are a few optional features and modification in the compilation process from QUA to the OPX low-level code.
 These options can be activated by passing a list of flags to the execution, compile or simulation commands as shown below:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-63-1" id="__codelineno-63-1" name="__codelineno-63-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">'flag1'</span><span class="p">,</span> <span class="s1">'flag2'</span><span class="p">])</span>  <span class="c1"># execution</span>
@@ -2867,12 +2939,12 @@ These options can be activated by passing a list of flags to the execution, comp
 </code></pre></div>
 <p>The following is a short list of optional flags and their description:</p>
 <ul>
-<li>'auto-element-thread' - Used when thread sharing is required. The compiler will automatically determine which elements can share a thread and allocate the resources accordingly. See further information <a href="../Guides/features.md/#threads">here</a>.</li>
-<li>'disable-filtered-ports-alignment' - Starting from version <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> on OPX+, this flag will disable the temporal alignment between analog ports that are filtered with a digital output filter and those that are not. This will reduce latency for unfiltered ports when using the filters. In addition, this flag will disable the automatic adjustment of the time-of-flight and digital delays parameters in the configuration. Read more about the latency in the <a href="../Guides/output_filter.md/#output-filter">output filter guide</a>.</li>
-<li>'disable-crosstalk-matrix-ports-alignment' - Starting from version <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.1-blue"/></a> on OPX+, this flag will disable the temporal alignment between analog ports that participate in the crosstalk matrix and those that are not. This will reduce latency for these ports when using the crosstalk matrix. In addition, this flag will disable the automatic adjustment of the time-of-flight and digital delays parameters in the configuration. Read more about the latency in the <a href="../Guides/features.md/#crosstalk-matrix">output filter guide</a>.</li>
+<li>'auto-element-thread' - Used when thread sharing is required. The compiler will automatically determine which elements can share a thread and allocate the resources accordingly. See further information <a href="#threads">here</a>.</li>
+<li>'disable-filtered-ports-alignment' - Starting from version <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> on OPX+, this flag will disable the temporal alignment between analog ports that are filtered with a digital output filter and those that are not. This will reduce latency for unfiltered ports when using the filters. In addition, this flag will disable the automatic adjustment of the time-of-flight and digital delays parameters in the configuration. Read more about the latency in the <a href="../output_filter/">output filter guide</a>.</li>
+<li>'disable-crosstalk-matrix-ports-alignment' - Starting from version <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.1-blue"/></a> on OPX+, this flag will disable the temporal alignment between analog ports that participate in the crosstalk matrix and those that are not. This will reduce latency for these ports when using the crosstalk matrix. In addition, this flag will disable the automatic adjustment of the time-of-flight and digital delays parameters in the configuration. Read more about the latency in the <a href="#crosstalk-matrix">output filter guide</a>.</li>
 <li>'skip-loop-unrolling' -  Disables an optimization over loop iterations. This gives faster compilation time at the cost of more program memory use and possibly more gaps.</li>
 <li>'skip-loop-rolling' - Disables another optimization over loop iterations. This gives faster compilation time at the cost of more program memory use.</li>
-<li>'not-strict-timing' - <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> Gaps within a <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.strict_timing_"><code>strict_timing_()</code></a> block will not block execution by raising warnings instead of errors. Read more about the strict timing feature <a href="../Guides/timing_in_qua.md/#strict-timing">here</a>.</li>
+<li>'not-strict-timing' - <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue"/></a> Gaps within a <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.strict_timing_"><code>strict_timing_()</code></a> block will not block execution by raising warnings instead of errors. Read more about the strict timing feature <a href="../timing_in_qua/#strict-timing">here</a>.</li>
 </ul>
 <p>For example, in the following code, we use the automatic thread allocation:</p>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-64-1" id="__codelineno-64-1" name="__codelineno-64-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">'auto-element-thread'</span><span class="p">])</span>  <span class="c1"># execution</span>
@@ -2882,7 +2954,7 @@ These options can be activated by passing a list of flags to the execution, comp
 <span class="md-icon" title="Last update">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"></path></svg>
 </span>
-<span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-02-22T13:41:51+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-02-22</span>
+<span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-03-07T18:02:45+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-03-07</span>
 </span>
 <span class="md-source-file__fact">
 <span class="md-icon" title="Created">
@@ -2920,7 +2992,7 @@ These options can be activated by passing a list of flags to the execution, comp
               
               
 
-Thanks for your feedback! Help us improve this page by using our <a href="https://github.com/qua-platform/qua-platform.github.io/issues/new?title=[Feedback]+QUA%20Language%20features+-+/qm-qua-sdk/docs/Guides/features/" rel="noopener" target="_blank">feedback form</a>.
+Thanks for your feedback! Help us improve this page by using our <a href="https://github.com/qua-platform/qua-platform.github.io/issues/new?title=[Feedback]+QUA%20Language%20Features+-+/qm-qua-sdk/docs/Guides/features/" rel="noopener" target="_blank">feedback form</a>.
             </div>
 </div>
 </div>

@@ -34,6 +34,14 @@ logger = logging.getLogger(__name__)
 
 
 def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilities):
+    if not server_capabilities.supports_inverted_digital_output:
+        for con_name, con in pb_config.v1_beta.controllers.items():
+            for port_id, port in con.digital_outputs.items():
+                if port.inverted:
+                    raise ConfigValidationException(
+                        f"Server does not support inverted digital output used in controller "
+                        f"'{con_name}', port {port_id}"
+                    )
     if not server_capabilities.supports_multiple_inputs_for_element:
         for el_name, el in pb_config.v1_beta.elements.items():
             if el is not None and el.multiple_inputs:
@@ -308,6 +316,13 @@ class DigitalOutputPortDefSchema(Schema):
             "description": "Whether the port is shareable with other QM instances"
         },
     )
+    inverted = fields.Bool(
+        dump_default=False,
+        metadata={
+            "description": "Whether the port is inverted. "
+            "If True, the output will be inverted."
+        },
+    )
 
     class Meta:
         title = "Digital port"
@@ -319,7 +334,7 @@ class DigitalOutputPortDefSchema(Schema):
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigDigitalOutputPortDec(
-            shareable=data.get("shareable", False)
+            shareable=data.get("shareable", False), inverted=data.get("inverted", False)
         )
         return item
 

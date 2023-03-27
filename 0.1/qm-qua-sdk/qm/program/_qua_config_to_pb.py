@@ -56,7 +56,8 @@ def digital_output_port_to_pb(
     data: Dict[str, Any]
 ) -> qua_config.QuaConfigDigitalOutputPortDec:
     digital_output = qua_config.QuaConfigDigitalOutputPortDec(
-        shareable=bool(data.get("shareable"))
+        shareable=bool(data.get("shareable")),
+        inverted=bool(data.get("inverted", False)),
     )
     return digital_output
 

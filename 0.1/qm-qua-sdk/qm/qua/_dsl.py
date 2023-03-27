@@ -757,6 +757,7 @@ def fast_frame_rotation(cosine, sine, *elements: str):
             be shifted. multiple elements can be given, in which case
             all of their oscillators' phases will be shifted
     """
+    _get_root_program_scope().program.set_metadata(uses_fast_frame_rotation=True)
     body = _get_scope_as_blocks_body()
     body.fast_frame_rotation(
         _unwrap_exp(exp(cosine)), _unwrap_exp(exp(sine)), *elements

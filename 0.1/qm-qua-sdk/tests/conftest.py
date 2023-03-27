@@ -18,5 +18,6 @@ def ignore_deprecation_warnings():
 @pytest.fixture(autouse=True)
 def capability_container():
     container = create_capabilities_container(QuaMachineInfo([], ImplementationInfo("", "", "")))
-    container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True))
+    container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True,
+                                                       True, True, True))
     return container

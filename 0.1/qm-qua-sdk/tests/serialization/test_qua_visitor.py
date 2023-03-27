@@ -11,7 +11,7 @@ from qm.serialization.generate_qua_script import _StripLocationVisitor, generate
 from qm.qua import program, declare, play, switch_, case_, default_, if_, else_, elif_
 from qm.qua import program, declare, play
 from .sample_programs.control_structs import for_each_with_ts
-from .sample_programs.simple import play_with_timestamp, just_play
+from .sample_programs.simple import play_with_timestamp, just_play, program_with_fast_frame_rotation
 
 program_names = list(all_programs.keys())
 
@@ -46,8 +46,13 @@ def test_programs_with_timestamp():
     assert for_each_with_ts.metadata.uses_command_timestamps
 
 
+def test_program_with_fast_frame_rotation():
+    assert program_with_fast_frame_rotation.metadata.uses_fast_frame_rotation
+
+
 def test_program_without_timestamp():
     assert not just_play.metadata.uses_command_timestamps
+    assert not just_play.metadata.uses_fast_frame_rotation
 
 
 @pytest.mark.parametrize("name", program_names)
