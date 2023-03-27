@@ -149,14 +149,18 @@ nav:
     - "Simulator API": "qm-qua-sdk/docs/API_references/simulator_api.md"
     - "QM Octave API": "qm-qua-sdk/docs/API_references/qm_octave.md"
     - "QM Octave Configuration API": "qm-qua-sdk/docs/API_references/octave_config.md"
+  - "Solutions Repositories":
+    - "QUA Libraries": "qm-qua-sdk/docs/Libraries/libs_repository.md"
+    - "QUA Tools" : "qm-qua-sdk/docs/Libraries/tools_repository.md"
   - "Releases":
     - "OPX (QOP 1) Releases": "qm-qua-sdk/docs/Releases/qop1_releases.md"
     - "OPX+ (QOP 2) Releases": "qm-qua-sdk/docs/Releases/qop2_releases.md"
     - "Python Package (qm-qua) Releases": "qm-qua-sdk/docs/Releases/qm_qua_releases.md"
   - "Feedback and Support": "qm-qua-sdk/docs/support.md"
-  - "Solutions Repositories":
-    - "QUA Libraries": "qm-qua-sdk/docs/Libraries/libs_repository.md"
-    - "QUA Tools" : "qm-qua-sdk/docs/Libraries/tools_repository.md"
+  - "Legal":
+    - "Terms of use": "qm-qua-sdk/docs/legal/terms_of_use.md"
+    - "Website Privacy Policy": "qm-qua-sdk/docs/legal/privacy_policy.md"
+    - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
   #   - "Getting started": "quam_sdk/getting_started.md"
