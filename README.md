@@ -95,7 +95,7 @@ To build config documentation (do once before publishing new version)
 cd docs
 cd qm-qua-sdk
 poetry run poe generate-grpc
-poetry run poe ./docs/build_config_schema.py
+poetry run python ./docs/build_config_schema.py
 ```
 
 ## Historical notes
