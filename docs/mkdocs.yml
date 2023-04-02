@@ -109,7 +109,7 @@ nav:
     - "QUA Overview": "qm-qua-sdk/docs/Introduction/qua_overview.md"
     - "Example Use Case": "qm-qua-sdk/docs/Introduction/use_case.md"
   - "Guides":
-    - qm-qua-sdk/docs/Guides/index.md
+#    - qm-qua-sdk/docs/Guides/index.md
     - "QUA Best Practice Guide": "qm-qua-sdk/docs/Guides/best_practices.md"
     - "QUA Language Features": "qm-qua-sdk/docs/Guides/features.md"
     - "Classical Computations in QUA": "qm-qua-sdk/docs/Guides/qua_ref.md"
@@ -126,14 +126,14 @@ nav:
     - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
     - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
   - "Hardware":
-    - qm-qua-sdk/docs/Hardware/index.md
+#    - qm-qua-sdk/docs/Hardware/index.md
     - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md" 
     - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
     - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
     - "OPD - Operator Digital": "qm-qua-sdk/docs/Hardware/dib.md"
   - "API References":
     - "QUA Language API":
-      - qm-qua-sdk/docs/API_references/qua/index.md
+#      - qm-qua-sdk/docs/API_references/qua/index.md
       - "QUA API": "qm-qua-sdk/docs/API_references/qua/dsl_main.md"
       - "Result Stream API": "qm-qua-sdk/docs/API_references/qua/result_stream.md"
       - "Math Functions API": "qm-qua-sdk/docs/API_references/qua/math.md"
