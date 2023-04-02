@@ -1,8 +1,8 @@
 from typing import Union, Optional
 
-from qm.exceptions import QmQuaException
 import qm.grpc.qua as _qua
 from qm._loc import _get_loc
+from qm.exceptions import QmQuaException
 
 _ScalarExpressionType = _qua.QuaProgramAnyScalarExpression
 _VariableRefType = _qua.QuaProgramVarRefExpression
@@ -21,9 +21,7 @@ def var(name: str) -> _VariableRefType:
     return exp
 
 
-def binary(
-    left: _ScalarExpressionType, sop: str, right: _ScalarExpressionType
-) -> _ScalarExpressionType:
+def binary(left: _ScalarExpressionType, sop: str, right: _ScalarExpressionType) -> _ScalarExpressionType:
     """A binary operation
 
     Args:
@@ -66,51 +64,39 @@ def binary(
         raise QmQuaException("Unsupported operator " + sop)
 
     exp = _qua.QuaProgramAnyScalarExpression(
-        binary_operation=_qua.QuaProgramBinaryExpression(
-            loc=_get_loc(), left=left, right=right, op=op
-        )
+        binary_operation=_qua.QuaProgramBinaryExpression(loc=_get_loc(), left=left, right=right, op=op)
     )
     return exp
 
 
 def literal_int(value: int) -> _ScalarExpressionType:
     exp = _qua.QuaProgramAnyScalarExpression(
-        literal=_qua.QuaProgramLiteralExpression(
-            value=str(value), type=_qua.QuaProgramType.INT, loc=_get_loc()
-        )
+        literal=_qua.QuaProgramLiteralExpression(value=str(value), type=_qua.QuaProgramType.INT, loc=_get_loc())
     )
     return exp
 
 
 def literal_bool(value: bool) -> _ScalarExpressionType:
     exp = _qua.QuaProgramAnyScalarExpression(
-        literal=_qua.QuaProgramLiteralExpression(
-            value=str(value), type=_qua.QuaProgramType.BOOL, loc=_get_loc()
-        )
+        literal=_qua.QuaProgramLiteralExpression(value=str(value), type=_qua.QuaProgramType.BOOL, loc=_get_loc())
     )
     return exp
 
 
 def literal_real(value: float) -> _ScalarExpressionType:
     exp = _qua.QuaProgramAnyScalarExpression(
-        literal=_qua.QuaProgramLiteralExpression(
-            value=str(value), type=_qua.QuaProgramType.REAL, loc=_get_loc()
-        )
+        literal=_qua.QuaProgramLiteralExpression(value=str(value), type=_qua.QuaProgramType.REAL, loc=_get_loc())
     )
     return exp
 
 
 def io1() -> _ScalarExpressionType:
-    exp = _qua.QuaProgramAnyScalarExpression(
-        variable=_qua.QuaProgramVarRefExpression(io_number=1, loc=_get_loc())
-    )
+    exp = _qua.QuaProgramAnyScalarExpression(variable=_qua.QuaProgramVarRefExpression(io_number=1, loc=_get_loc()))
     return exp
 
 
 def io2() -> _ScalarExpressionType:
-    exp = _qua.QuaProgramAnyScalarExpression(
-        variable=_qua.QuaProgramVarRefExpression(io_number=2, loc=_get_loc())
-    )
+    exp = _qua.QuaProgramAnyScalarExpression(variable=_qua.QuaProgramVarRefExpression(io_number=2, loc=_get_loc()))
     return exp
 
 
@@ -124,16 +110,12 @@ def array(
         loc = _get_loc()
         value.loc = loc
         exp = _qua.QuaProgramAnyScalarExpression(
-            array_cell=_qua.QuaProgramArrayCellRefExpression(
-                array_var=value, index=index_exp, loc=loc
-            )
+            array_cell=_qua.QuaProgramArrayCellRefExpression(array_var=value, index=index_exp, loc=loc)
         )
         return exp
 
 
-def var_ref(
-    value: str, index_exp: Optional[_ScalarExpressionType]
-) -> _ScalarExpressionType:
+def var_ref(value: str, index_exp: Optional[_ScalarExpressionType]) -> _ScalarExpressionType:
     exp = _qua.QuaProgramAnyScalarExpression()
 
     loc = _get_loc()

@@ -1,52 +1,54 @@
 import json
 import logging
-from typing import Optional, Union, List, Tuple, Dict, TYPE_CHECKING
+import warnings
+from typing import Any, Dict, List, Tuple, Union, Optional, Sequence, cast
 
-import numpy
-from deprecation import deprecated
-
+from qm.program import Program
 from qm.jobs.qm_job import QmJob
+from qm.octave import QmOctaveConfig
+from qm.persistence import BaseStore
 from qm.jobs.job_queue import QmQueue
-from qm._QmJobErrors import (
-    InvalidDigitalInputPolarityError,
-)
+from qm.grpc.qua_config import QuaConfig
+from qm.octave.qm_octave import QmOctave
+from qm.utils import deprecation_message
+from qm.api.models.devices import Polarity
 from qm.api.frontend_api import FrontendApi
-from qm.api.job_manager_api import JobManagerApi
-from qm.api.models.capabilities import ServerCapabilities
-from qm.api.models.compiler import CompilerOptionArguments
-from qm.api.models.devices import MixerInfo, AnalogOutputPortFilter, Polarity
-from qm.api.simulation_api import SimulationApi
-from qm.exceptions import (
-    JobCancelledError,
-    InvalidConfigError,
-    UnsupportedCapabilityError,
-)
-from qm.grpc.general_messages import Matrix
 from qm.jobs.pending_job import QmPendingJob
 from qm.jobs.simulated_job import SimulatedJob
-from qm.octave import OctaveManager
-from qm.octave.qm_octave import QmOctave
-from qm.persistence import BaseStore
-from qm.program import Program
-from qm.program.ConfigBuilder import convert_msg_to_config
+from qm.api.simulation_api import SimulationApi
+from qm.jobs.running_qm_job import RunningQmJob
+from qm.api.job_manager_api import JobManagerApi
+from qm.octave.octave_manager import OctaveManager
 from qm.simulate.interface import SimulationConfig
-from qm.utils import fix_object_data_type as _fix_object_data_type
-
-if TYPE_CHECKING:
-    from qm.grpc.qua_config import QuaConfig
+from qm.elements_db import ElementsDB, init_elements
+from qm.utils.types_utils import convert_object_type
+from qm.api.models.capabilities import ServerCapabilities
+from qm.api.models.compiler import CompilerOptionArguments
+from qm.program.ConfigBuilder import convert_msg_to_config
+from qm._QmJobErrors import InvalidDigitalInputPolarityError
+from qm.elements.element_with_octave import ElementWithOctave
+from qm.type_hinting.config_types import DictQuaConfig, PortReferenceType, DigitalInputPortConfigType
+from qm.type_hinting.general import Value, Number, PathLike, NumpySupportedFloat, NumpySupportedValue
+from qm.elements.native_elements import MixInputsElement, SingleInputElement, static_set_mixer_correction
+from qm.exceptions import QmValueError, JobCancelledError, InvalidConfigError, UnsupportedCapabilityError
 
 logger = logging.getLogger(__name__)
+
+
+class FunctionInputError(Exception):
+    pass
 
 
 class QuantumMachine:
     def __init__(
         self,
         machine_id: str,
-        pb_config: "QuaConfig",
+        pb_config: QuaConfig,
         frontend_api: FrontendApi,
         capabilities: ServerCapabilities,
         store: BaseStore,
         octave_manager: OctaveManager,
+        octave_config: Optional[QmOctaveConfig] = None,
     ):
         self._id = machine_id
         self._config = pb_config
@@ -62,12 +64,31 @@ class QuantumMachine:
             capabilities=self._capabilities,
             store=self._store,
         )
-        self._octave = QmOctave(self, octave_manager)
+        self._elements: ElementsDB = init_elements(
+            pb_config, frontend_api, machine_id=machine_id, octave_config=octave_config
+        )
+        self._octave = QmOctave(self.elements, octave_manager)
+        with self._octave.batch_mode():
+            for element in self._elements.values():
+                if isinstance(element, ElementWithOctave):
+                    element.set_client()
 
-    @deprecated("1.1", "1.2", details="QuantumMachine no longer has 'manager' property")
     @property
-    def manager(self):
+    def elements(self) -> ElementsDB:
+        return self._elements
+
+    @property
+    def manager(self) -> None:
         """Returns the Quantum Machines Manager"""
+        warnings.warn(
+            deprecation_message(
+                method="QuantumMachine.manager",
+                deprecated_in="1.1.0",
+                removed_in="1.2.0",
+                details="QuantumMachine no longer has 'manager' property",
+            ),
+            DeprecationWarning,
+        )
         return None
 
     @property
@@ -81,6 +102,15 @@ class QuantumMachine:
 
     @property
     def octave(self) -> QmOctave:
+        warnings.warn(
+            deprecation_message(
+                method="QuantumMachine.octave",
+                deprecated_in="1.1.0",
+                removed_in="1.2.0",
+                details="Use ElementWithOctave instead. For further details, see elements API.",
+            ),
+            DeprecationWarning,
+        )
         return self._octave
 
     def close(self) -> bool:
@@ -94,10 +124,10 @@ class QuantumMachine:
 
     def simulate(
         self,
-        program,
+        program: Program,
         simulate: SimulationConfig,
         compiler_options: Optional[CompilerOptionArguments] = None,
-    ):
+    ) -> SimulatedJob:
         """Simulate the outputs of a deterministic QUA program.
 
         Equivalent to ``execute()`` with ``simulate=SimulationConfig`` (see example).
@@ -131,8 +161,8 @@ class QuantumMachine:
         Returns:
             a ``QmJob`` object (see QM Job API).
         """
-        job = self.execute(
-            program, simulate=simulate, compiler_options=compiler_options
+        job: SimulatedJob = cast(
+            SimulatedJob, self.execute(program, simulate=simulate, compiler_options=compiler_options)
         )
         return job
 
@@ -145,7 +175,7 @@ class QuantumMachine:
         dry_run: int = False,
         simulate: Optional[SimulationConfig] = None,
         compiler_options: Optional[CompilerOptionArguments] = None,
-    ) -> QmJob:
+    ) -> RunningQmJob:
         """Executes a program and returns an job object to keep track of execution and get
         results.
 
@@ -169,20 +199,10 @@ class QuantumMachine:
         """
         if type(program) is not Program:
             raise Exception("program argument must be of type qm.program.Program")
-        if (
-            program.metadata.uses_command_timestamps
-            and not self._capabilities.supports_command_timestamps
-        ):
-            raise UnsupportedCapabilityError(
-                "timestamping commands is supported from QOP 2.2 or above"
-            )
-        if (
-            program.metadata.uses_fast_frame_rotation
-            and not self._capabilities.supports_fast_frame_rotation
-        ):
-            raise UnsupportedCapabilityError(
-                "fast frame rotation is supported from QOP 2.2 or above"
-            )
+        if program.metadata.uses_command_timestamps and not self._capabilities.supports_command_timestamps:
+            raise UnsupportedCapabilityError("timestamping commands is supported from QOP 2.2 or above")
+        if program.metadata.uses_fast_frame_rotation and not self._capabilities.supports_fast_frame_rotation:
+            raise UnsupportedCapabilityError("fast frame rotation is supported from QOP 2.2 or above")
 
         if compiler_options is None:
             compiler_options = CompilerOptionArguments()
@@ -231,45 +251,34 @@ class QuantumMachine:
             job = pending_job.wait_for_execution()
             ```
         """
-        if (
-            program.metadata.uses_command_timestamps
-            and not self._capabilities.supports_command_timestamps
-        ):
-            raise UnsupportedCapabilityError(
-                "timestamping commands is supported from QOP 2.2 or above"
-            )
+        if program.metadata.uses_command_timestamps and not self._capabilities.supports_command_timestamps:
+            raise UnsupportedCapabilityError("timestamping commands is supported from QOP 2.2 or above")
 
-        if (
-            program.metadata.uses_fast_frame_rotation
-            and not self._capabilities.supports_fast_frame_rotation
-        ):
-            raise UnsupportedCapabilityError(
-                "fast frame rotation is supported from QOP 2.2 or above"
-            )
+        if program.metadata.uses_fast_frame_rotation and not self._capabilities.supports_fast_frame_rotation:
+            raise UnsupportedCapabilityError("fast frame rotation is supported from QOP 2.2 or above")
 
         logger.info("Compiling program")
         if compiler_options is None:
             compiler_options = CompilerOptionArguments()
 
-        return self._frontend.compile(
-            self._id, program.build(self._config), compiler_options
-        )
+        return self._frontend.compile(self._id, program.build(self._config), compiler_options)
 
-    def list_controllers(self):
+    def list_controllers(self) -> Tuple[str, ...]:
         """Gets a list with the defined controllers in this qm
 
         Returns:
             The names of the controllers configured in this qm
         """
+        # TODO (YR) - why is this function here, QM should not be aware of the controllers
         return tuple(self.get_config()["controllers"].keys())
 
     def set_mixer_correction(
         self,
         mixer: str,
-        intermediate_frequency: Union[int, float],
-        lo_frequency: Union[int, float],
+        intermediate_frequency: Number,
+        lo_frequency: Number,
         values: Tuple[float, float, float, float],
-    ):
+    ) -> None:
         """Sets the correction matrix for correcting gain and phase imbalances
         of an IQ mixer for the supplied intermediate frequency and LO frequency.
 
@@ -291,35 +300,23 @@ class QuantumMachine:
 
             Currently, the OPX does not support multiple mixer calibration entries.
             This function will accept IF & LO frequencies written in the config file,
-            and will update the correction matrix for all of the elements with the given
+            and will update the correction matrix for all the elements with the given
             mixer/frequencies combination when the program started.
 
             It’s not recommended to use this method while a job is running.
             To change the calibration values for a running job,
             use job.set_element_correction
         """
-        if (type(values) is not tuple and type(values) is not list) or len(values) != 4:
-            raise Exception("correction values must be a tuple of 4 items")
-
-        correction_matrix = Matrix(*[_fix_object_data_type(x) for x in values])
-
-        if self._capabilities.supports_double_frequency:
-            frequencies = {
-                "lo_frequency_double": float(lo_frequency),
-                "intermediate_frequency_double": abs(float(intermediate_frequency)),
-            }
-        else:
-            frequencies = {
-                "lo_frequency": int(lo_frequency),
-                "intermediate_frequency": abs(int(intermediate_frequency)),
-            }
-
-        mixer_info = MixerInfo(
-            mixer=mixer, frequency_negative=intermediate_frequency < 0, **frequencies
+        static_set_mixer_correction(
+            self._frontend,
+            self._id,
+            mixer,
+            intermediate_frequency=intermediate_frequency,
+            lo_frequency=lo_frequency,
+            values=values,
         )
-        self._frontend.set_correction(self._id, mixer_info, correction_matrix)
 
-    def set_intermediate_frequency(self, element: str, freq: float):
+    def set_intermediate_frequency(self, element: str, freq: float) -> None:
         """Sets the intermediate frequency of the element
 
         Args:
@@ -328,25 +325,15 @@ class QuantumMachine:
             freq (float): the intermediate frequency to set to the given
                 element
         """
+        element_inst = self.elements[element]
+        element_inst.set_intermediate_frequency(freq)
 
-        logger.debug(
-            "Setting element '%s' intermediate frequency to '%s'", element, freq
-        )
-        if type(element) is not str:
-            raise TypeError("element must be a string")
-        if not isinstance(freq, (numpy.floating, float)):
-            raise TypeError("freq must be a float")
-
-        freq = _fix_object_data_type(freq)
-
-        self._frontend.set_intermediate_frequency(self._id, element, freq)
-
-    def get_output_dc_offset_by_element(self, element: str, input):
+    def get_output_dc_offset_by_element(self, element: str, iq_input: str) -> float:
         """Get the current DC offset of the OPX analog output channel associated with a element.
 
         Args:
             element: the name of the element to get the correction for
-            input: the port name as appears in the element config.
+            iq_input: the port name as appears in the element config.
                 Options:
 
                 `'single'`
@@ -358,38 +345,42 @@ class QuantumMachine:
         Returns:
             the offset, in normalized output units
         """
-        config = self.get_config()
-
-        if element in config["elements"]:
-            element_obj = config["elements"][element]
+        config: DictQuaConfig = self.get_config()
+        element_instance = self.elements[element]
+        if isinstance(element_instance, SingleInputElement):
+            port = element_instance.port
+        elif isinstance(element_instance, MixInputsElement):
+            if iq_input == "I":
+                port = element_instance.i_port
+            elif iq_input == "Q":
+                port = element_instance.q_port
+            else:
+                raise ValueError(f"Port must be I or Q, got {iq_input}.")
         else:
-            raise InvalidConfigError(f"Element {element} not found")
+            raise ValueError(f"Element {element} of type {type(element_instance)} does not have a 'port' property.")
 
-        if "singleInput" in element_obj:
-            port = element_obj["singleInput"]["port"]
-        elif "mixInputs" in element_obj:
-            port = element_obj["mixInputs"][input]
-        else:
-            raise InvalidConfigError(f"Port {input}, not found")
+        # TODO (YR) - this part should be under the element, but for now I keep it here.
+        #  This is the next phase of the work
 
-        if len(port) == 2:
-            controller, analog_output = port
-        else:
-            raise InvalidConfigError(
-                "Port format does not recognized. (Use port[0] for the controller and port[1] for the analog output)"
-            )
+        controller: str = port.controller
+        port_number: int = port.number
 
         if controller in config["controllers"]:
-            controller = config["controllers"][port[0]]
+            config_controller = config["controllers"][controller]
         else:
             raise InvalidConfigError("Controller does not exist")
 
-        if analog_output in controller["analog_outputs"]:
-            return controller["analog_outputs"][port[1]]["offset"]
+        if port_number in config_controller["analog_outputs"]:
+            return config_controller["analog_outputs"][port_number]["offset"]
         else:
-            raise InvalidConfigError(f"Controller {controller} does not exist")
+            raise InvalidConfigError(f"Controller {config_controller} does not exist")
 
-    def set_output_dc_offset_by_element(self, element, input, offset):
+    def set_output_dc_offset_by_element(
+        self,
+        element: str,
+        input: Union[str, Tuple[str, str], List[str]],
+        offset: Union[float, Tuple[float, float], List[float]],
+    ) -> None:
         """Set the current DC offset of the OPX analog output channel associated with a element.
 
         Args:
@@ -419,40 +410,39 @@ class QuantumMachine:
             If the sum of the DC offset and the largest waveform data-point exceed the normalized unit range specified
             above, DAC output overflow will occur and the output will be corrupted.
         """
-        logger.debug(
-            "Setting DC offset of input '%s' on element '%s' to '%s'",
-            input,
-            element,
-            offset,
-        )
-        if type(element) is not str:
-            raise TypeError("element must be a string")
-
-        if isinstance(input, (tuple, list)):
-            if not isinstance(offset, (tuple, list)) or not len(input) == len(offset):
-                raise TypeError("input and offset are not of the same length")
-            for i, o in zip(input, offset):
-                self.set_output_dc_offset_by_element(element, i, o)
-            return
-
-        if type(input) is not str:
-            raise TypeError("input must be a string or a tuple of strings")
-        if offset == 0:
-            offset = float(offset)
-        if not isinstance(offset, (numpy.floating, float)):
-            raise TypeError("offset must be a float or a tuple of floats")
-
-        offset = _fix_object_data_type(offset)
-
-        self._frontend.set_output_dc_offset(self._id, element, input, offset)
+        element_inst = self.elements[element]
+        if isinstance(element_inst, MixInputsElement):
+            if isinstance(input, (list, tuple)):
+                if not set(input) <= {"I", "Q"}:
+                    raise FunctionInputError(f"Input names should be 'I' or 'Q', got {input}")
+                if not (isinstance(offset, (list, tuple)) and len(input) == len(offset)):
+                    raise FunctionInputError(
+                        f"input should be two iterables of the same size," f"got input = {input} and offset = {offset}"
+                    )
+                kwargs = {f"{k.lower()}_offset": v for k, v in zip(input, offset)}
+            elif isinstance(input, str):
+                if input not in {"I", "Q"}:
+                    raise FunctionInputError(f"Input names should be 'I' or 'Q', got {input}")
+                if not isinstance(offset, (int, float)):
+                    raise FunctionInputError(f"Input should be int or float, got {type(offset)}")
+                kwargs = {f"{input.lower()}_offset": offset}
+            else:
+                raise ValueError(f"Invalid input - {input}")
+            element_inst.set_output_dc_offset(**kwargs)
+        elif isinstance(element_inst, SingleInputElement):
+            element_inst.set_output_dc_offset(cast(float, offset))
+        else:
+            raise ValueError(
+                f"Element {element} of type {element_inst.__class__.__name__} " f"does not support dc offset setting."
+            )
 
     def set_output_filter_by_element(
         self,
         element: str,
         input: str,
-        feedforward: Union[List, numpy.ndarray, None],
-        feedback: Union[List, numpy.ndarray, None],
-    ):
+        feedforward: Sequence[NumpySupportedFloat],
+        feedback: Sequence[NumpySupportedFloat],
+    ) -> None:
         """Sets the intermediate frequency of the element
 
         Args:
@@ -474,26 +464,17 @@ class QuantumMachine:
             f"Setting output filter of port '{input}' on element '{element}' "
             + f"to (feedforward: {feedforward}, feedback: {feedback})"
         )
-        if type(element) is not str:
-            raise TypeError("element must be a string")
-        if type(input) is not str:
-            raise TypeError("port must be a string")
-        if feedforward is not None and not isinstance(
-            feedforward, (numpy.ndarray, List)
-        ):
-            raise TypeError("feedforward must be a list or None")
+        element_inst = self.elements[element]
+        if isinstance(element_inst, MixInputsElement):
+            element_inst.set_output_filter(input, feedforward, feedback)
+        elif isinstance(element_inst, SingleInputElement):
+            element_inst.set_output_filter(feedforward, feedback)
+        else:
+            raise AttributeError(
+                f"Element {element} of type {element_inst.__class__.__name__} " f"does not support filter setting."
+            )
 
-        if feedback is not None and not isinstance(feedback, (numpy.ndarray, List)):
-            raise TypeError("feedback must be a list or None")
-
-        self._frontend.set_output_filter_taps(
-            self._id,
-            element,
-            input,
-            AnalogOutputPortFilter(feedforward=feedforward, feedback=feedback),
-        )
-
-    def set_input_dc_offset_by_element(self, element, output, offset):
+    def set_input_dc_offset_by_element(self, element: str, output: str, offset: float) -> None:
         """set the current DC offset of the OPX analog input channel associated with a element.
 
         Args:
@@ -509,24 +490,10 @@ class QuantumMachine:
             If the sum of the DC offset and the largest waveform data-point exceed the normalized unit range specified
             above, DAC output overflow will occur and the output will be corrupted.
         """
-        logger.debug(
-            "Setting DC offset of output '%s' on element '%s' to '%s'",
-            output,
-            element,
-            offset,
-        )
-        if type(element) is not str:
-            raise TypeError("element must be a string")
-        if type(output) is not str:
-            raise TypeError("output must be a string")
-        if not isinstance(offset, (numpy.floating, float)):
-            raise TypeError("offset must be a float")
+        element_instance = self.elements[element]
+        element_instance.set_input_dc_offset(output, offset)
 
-        offset = _fix_object_data_type(offset)
-
-        self._frontend.set_input_dc_offset(self._id, element, output, offset)
-
-    def get_input_dc_offset_by_element(self, element, output):
+    def get_input_dc_offset_by_element(self, element: str, output: str) -> float:
         """Get the current DC offset of the OPX analog input channel associated with a element.
 
         Args:
@@ -539,35 +506,29 @@ class QuantumMachine:
         """
         config = self.get_config()
 
-        if element in config["elements"]:
-            element_obj = config["elements"][element]
-        else:
-            raise Exception("Element not found")
-
-        if "outputs" in element_obj:
-            outputs = element_obj["outputs"]
-        else:
-            raise Exception("Element has not outputs")
-
+        element_obj = self.elements[element]
+        outputs = element_obj._config.outputs
         if output in outputs:
             port = outputs[output]
         else:
             raise Exception("Output does not exist")
 
-        if port[0] in config["controllers"]:
-            controller = config["controllers"][port[0]]
+        port_controller, input_number = port.controller, port.number
+
+        if port_controller in config["controllers"]:
+            controller = config["controllers"][port_controller]
         else:
             raise Exception("Controller does not exist")
 
         if "analog_inputs" not in controller:
             raise Exception("Controller has not analog inputs defined")
 
-        if port[1] in controller["analog_inputs"]:
-            return controller["analog_inputs"][port[1]]["offset"]
+        if input_number in controller["analog_inputs"]:
+            return cast(float, controller["analog_inputs"][input_number]["offset"])
         else:
             raise Exception("Port not found")
 
-    def get_digital_delay(self, element, digital_input):
+    def get_digital_delay(self, element: str, digital_input: str) -> int:
         """Gets the delay of the digital input of the element
 
         Args:
@@ -578,23 +539,10 @@ class QuantumMachine:
         Returns:
             the delay
         """
-        element_object = None
-        config = self.get_config()
-        for (key, value) in config["elements"].items():
-            if key == element:
-                element_object = value
-                break
+        element_instance = self.elements[element]
+        return element_instance.get_digital_delay(digital_input)
 
-        if element_object is None:
-            raise Exception("element not found")
-
-        for (key, value) in element_object["digitalInputs"].items():
-            if key == digital_input:
-                return value["delay"]
-
-        raise Exception("digital input not found")
-
-    def set_digital_delay(self, element: str, digital_input: str, delay: int):
+    def set_digital_delay(self, element: str, digital_input: str, delay: int) -> None:
         """Sets the delay of the digital input of the element
 
         Args:
@@ -604,22 +552,10 @@ class QuantumMachine:
             delay (int): the delay value to set to, in nsec. Range: 0 to
                 255 - 2 * buffer, in steps of 1
         """
-        logger.debug(
-            "Setting delay of digital port '%s' on element '%s' to '%s'",
-            digital_input,
-            element,
-            delay,
-        )
-        if type(element) is not str:
-            raise Exception("element must be a string")
-        if type(digital_input) is not str:
-            raise Exception("port must be a string")
-        if type(delay) is not int:
-            raise Exception("delay must be an int")
+        element_instance = self.elements[element]
+        element_instance.set_digital_delay(digital_input, delay)
 
-        self._frontend.set_digital_delay(self._id, element, digital_input, delay)
-
-    def get_digital_buffer(self, element, digital_input):
+    def get_digital_buffer(self, element: str, digital_input: str) -> int:
         """Gets the buffer for digital input of the element
 
         Args:
@@ -630,23 +566,10 @@ class QuantumMachine:
         Returns:
             the buffer
         """
-        element_object = None
-        config = self.get_config()
-        for (key, value) in config["elements"].items():
-            if key == element:
-                element_object = value
-                break
+        element_instance = self.elements[element]
+        return element_instance.get_digital_buffer(digital_input_name=digital_input)
 
-        if element_object is None:
-            raise Exception("element not found")
-
-        for (key, value) in element_object["digitalInputs"].items():
-            if key == digital_input:
-                return value["buffer"]
-
-        raise Exception("digital input not found")
-
-    def set_digital_buffer(self, element, digital_input, buffer):
+    def set_digital_buffer(self, element: str, digital_input: str, buffer: int) -> None:
         """Sets the buffer for digital input of the element
 
         Args:
@@ -656,22 +579,10 @@ class QuantumMachine:
             buffer (int): the buffer value to set to, in nsec. Range: 0
                 to (255 - delay) / 2, in steps of 1
         """
-        logger.debug(
-            "Setting buffer of digital port '%s' on element '%s' to '%s'",
-            digital_input,
-            element,
-            buffer,
-        )
-        if type(element) is not str:
-            raise Exception("element must be a string")
-        if type(digital_input) is not str:
-            raise Exception("port must be a string")
-        if type(buffer) is not int:
-            raise Exception("buffer must be an int")
+        element_instance = self.elements[element]
+        element_instance.set_digital_buffer(digital_input, buffer)
 
-        self._frontend.set_digital_delay(self._id, element, digital_input, buffer)
-
-    def get_time_of_flight(self, element):
+    def get_time_of_flight(self, element: str) -> int:
         """Gets the *time of flight*, associated with a measurement element.
 
         This is the amount of time between the beginning of a measurement pulse applied to element
@@ -684,19 +595,10 @@ class QuantumMachine:
         Returns:
             the time of flight, in nsec
         """
-        element_object = None
-        config = self.get_config()
-        for (key, value) in config["elements"].items():
-            if key == element:
-                if "time_of_flight" in value:
-                    return value["time_of_flight"]
-                else:
-                    return 0
+        element_object = self.elements[element]
+        return element_object.time_of_flight
 
-        if element_object is None:
-            raise Exception("element not found")
-
-    def get_smearing(self, element):
+    def get_smearing(self, element: str) -> int:
         """Gets the *smearing* associated with a measurement element.
 
         This is a broadening of the raw results acquisition window, to account for dispersive broadening
@@ -709,19 +611,26 @@ class QuantumMachine:
         Returns:
             the smearing, in nesc.
         """
-        element_object = None
-        config = self.get_config()
-        for (key, value) in config["elements"].items():
-            if key == element:
-                if "smearing" in value:
-                    return value["smearing"]
-                else:
-                    return 0
+        element_object = self.elements[element]
+        return element_object.smearing
 
-        if element_object is None:
-            raise Exception("element not found")
+    @property
+    def io1(self) -> Dict[str, Value]:
+        return self.get_io1_value()
 
-    def set_io1_value(self, value_1: Union[float, bool, int]):
+    @io1.setter
+    def io1(self, value: Value) -> None:
+        self.set_io1_value(value)
+
+    @property
+    def io2(self) -> Dict[str, Value]:
+        return self.get_io1_value()
+
+    @io2.setter
+    def io2(self, value: Value) -> None:
+        self.set_io2_value(value)
+
+    def set_io1_value(self, value_1: Value) -> None:
         """Sets the value of ``IO1``.
 
         This can be used later inside a QUA program as a QUA variable ``IO1`` without declaration.
@@ -735,13 +644,14 @@ class QuantumMachine:
             value_1 (Union[float,bool,int]): the value to be placed in
                 ``IO1``
         """
-        self.set_io_values(value_1, None)
+        self.set_io_values(value_1=value_1)
 
-    def set_io2_value(self, value_2: Union[float, bool, int]):
+    def set_io2_value(self, value_2: Value) -> None:
         """Sets the value of ``IO1``.
 
         This can be used later inside a QUA program as a QUA variable ``IO2`` without declaration.
-        The type of QUA variable is inferred from the python type passed to ``value_2``, according to the following rule:
+        The type of QUA variable is inferred from the python type passed to ``value_2``,
+        according to the following rule:
 
         int -> int
         float -> fixed
@@ -751,13 +661,13 @@ class QuantumMachine:
             value_2 (Union[float, bool, int]): the value to be placed in
                 ``IO1``
         """
-        self.set_io_values(None, value_2)
+        self.set_io_values(value_2=value_2)
 
     def set_io_values(
         self,
-        value_1: Optional[Union[float, bool, int]],
-        value_2: Optional[Union[float, bool, int]],
-    ):
+        value_1: Optional[NumpySupportedValue] = None,
+        value_2: Optional[NumpySupportedValue] = None,
+    ) -> None:
         """Sets the values of ``IO1`` and ``IO2``
 
         This can be used later inside a QUA program as a QUA variable ``IO1``, ``IO2`` without declaration.
@@ -778,23 +688,20 @@ class QuantumMachine:
         if value_1 is None and value_2 is None:
             return
 
-        if value_1 is not None:
-            logger.debug("Setting value '%s' to IO1", value_1)
-        if value_2 is not None:
-            logger.debug("Setting value '%s' to IO2", value_2)
+        try:
+            if value_1 is not None:
+                logger.debug(f"Setting value '{value_1}' to IO1")
+                value_1 = convert_object_type(value_1)
 
-        value_1 = _fix_object_data_type(value_1)
-        value_2 = _fix_object_data_type(value_2)
-
-        for index, value in enumerate([value_1, value_2]):
-            if type(value) not in (int, float, bool) and value is not None:
-                raise Exception(
-                    f"Invalid value_{index + 1} type (The possible types are: int, bool or float)"
-                )
+            if value_2 is not None:
+                logger.debug(f"Setting value '{value_2}' to IO2")
+                value_2 = convert_object_type(value_2)
+        except QmValueError as e:
+            raise QmValueError(f"Failed to set_io_values: {e.message}") from e
 
         self._frontend.set_io_values(self._id, [value_1, value_2])
 
-    def get_io1_value(self):
+    def get_io1_value(self) -> Dict[str, Value]:
         """Gets the data stored in ``IO1``
 
         No inference is made on type.
@@ -805,7 +712,7 @@ class QuantumMachine:
         """
         return self.get_io_values()[0]
 
-    def get_io2_value(self):
+    def get_io2_value(self) -> Dict[str, Value]:
         """Gets the data stored in ``IO2``
 
         No inference is made on type.
@@ -816,7 +723,7 @@ class QuantumMachine:
         """
         return self.get_io_values()[1]
 
-    def get_io_values(self):
+    def get_io_values(self) -> List[Dict[str, Value]]:
         """Gets the data stored in both ``IO1`` and ``IO2``
 
         No inference is made on type.
@@ -843,8 +750,13 @@ class QuantumMachine:
             },
         ]
 
-    @deprecated("1.1", "1.2", details="Not implemented")
-    def peek(self, address):
+    def peek(self, address: Any) -> None:
+        warnings.warn(
+            deprecation_message(
+                method="QuantumMachine.peek", deprecated_in="1.1.0", removed_in="1.2.0", details="Not Implemented"
+            ),
+            DeprecationWarning,
+        )
         raise NotImplementedError()
         # if you must use this, code below will work for a specific controller
         # request = PeekRequest()
@@ -853,11 +765,16 @@ class QuantumMachine:
 
         # return self._frontend.Peek(request)
 
-    @deprecated("1.1", "1.2", details="Not implemented")
-    def poke(self, address, value):
+    def poke(self, address: Any, value: Any) -> None:
+        warnings.warn(
+            deprecation_message(
+                method="QuantumMachine.poke", deprecated_in="1.1.0", removed_in="1.2.0", details="Not Implemented"
+            ),
+            DeprecationWarning,
+        )
         pass
 
-    def get_config(self):
+    def get_config(self) -> DictQuaConfig:
         """Gets the current config of the qm
 
         Returns:
@@ -867,7 +784,7 @@ class QuantumMachine:
         self._config = config
         return convert_msg_to_config(config)
 
-    def save_config_to_file(self, filename):
+    def save_config_to_file(self, filename: PathLike) -> None:
         """Saves the qm current config to a file
 
         Args:
@@ -897,56 +814,49 @@ class QuantumMachine:
             # wait for execution
             return None
 
-    def set_digital_input_threshold(self, port: Tuple[str, int], threshold: float):
+    def set_digital_input_threshold(self, port: PortReferenceType, threshold: float) -> None:
         controller_name, port_number = port
-        self._frontend.set_digital_input_threshold(
-            self._id, controller_name, port_number, threshold
-        )
+        self._frontend.set_digital_input_threshold(self._id, controller_name, port_number, threshold)
 
-    def _get_digital_input_port(self, port: Tuple[str, int]):
-        config: Dict = self.get_config()
+    def _get_digital_input_port(self, port: PortReferenceType) -> DigitalInputPortConfigType:
+        config = self.get_config()
         component = "Controller"
         target_controller_name, target_port = port
         controller = config["controllers"].get(target_controller_name, None)
         if controller is not None:
-            controller_digital_inputs = controller.get("digital_inputs", None)
+            controller_digital_inputs: Optional[Dict[int, DigitalInputPortConfigType]] = controller.get(
+                "digital_inputs", None
+            )
             if controller_digital_inputs is not None:
                 if target_port in controller_digital_inputs:
                     return controller_digital_inputs[target_port]
                 else:
                     component = "Digital input port"
             else:
-                component = "Digital input for conroller"
+                component = "Digital input for controller"
 
         raise InvalidConfigError(f"{component} not found")
 
-    def get_digital_input_threshold(self, port: Tuple[str, int]) -> float:
-        return self._get_digital_input_port(port)["threshold"]
+    def get_digital_input_threshold(self, port: PortReferenceType) -> float:
+        return cast(float, self._get_digital_input_port(port)["threshold"])
 
-    def set_digital_input_deadtime(self, port: Tuple[str, int], deadtime: int):
+    def set_digital_input_deadtime(self, port: PortReferenceType, deadtime: int) -> None:
         controller_name, port_number = port
-        self._frontend.set_digital_input_dead_time(
-            self._id, controller_name, port_number, deadtime
-        )
+        self._frontend.set_digital_input_dead_time(self._id, controller_name, port_number, deadtime)
 
-    def get_digital_input_deadtime(self, port: Tuple[str, int]) -> int:
+    def get_digital_input_deadtime(self, port: PortReferenceType) -> int:
         return self._get_digital_input_port(port)["deadtime"]
 
-    def set_digital_input_polarity(self, port: Tuple[str, int], polarity: str) -> str:
-        if polarity == "RISING":
-            polarity = Polarity.RISING
-        elif polarity == "FALLING":
-            polarity = Polarity.FALLING
-        else:
+    def set_digital_input_polarity(self, port: PortReferenceType, polarity: str) -> None:
+        try:
+            polarity_enum = Polarity[polarity]
+        except KeyError:
             raise InvalidDigitalInputPolarityError(
-                f"Invalid value for polarity {polarity}. Valid values are: 'RISING' "
-                f"or 'FALLING'"
+                f"Invalid value for polarity {polarity}. Valid values are: 'RISING' or 'FALLING'."
             )
 
         controller_name, port_number = port
-        self._frontend.set_digital_input_polarity(
-            self._id, controller_name, port_number, polarity
-        )
+        self._frontend.set_digital_input_polarity(self._id, controller_name, port_number, polarity_enum)
 
-    def get_digital_input_polarity(self, port: Tuple[str, int]) -> str:
+    def get_digital_input_polarity(self, port: PortReferenceType) -> str:
         return self._get_digital_input_port(port)["polarity"]

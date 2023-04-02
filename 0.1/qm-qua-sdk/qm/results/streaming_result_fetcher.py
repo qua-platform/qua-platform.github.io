@@ -1,25 +1,21 @@
 import logging
 import zipfile
-from io import BufferedWriter, BytesIO
-from typing import Optional, Union, Dict, Tuple, Generator, List
+from typing import Dict, List, Tuple, Union, BinaryIO, Optional, Generator, cast
 
-from qm.StreamMetadata import (
-    StreamMetadata,
-    StreamMetadataError,
-)
+from qm.persistence import BaseStore
+from qm.utils.async_utils import run_async
 from qm.api.job_result_api import JobResultServiceApi
 from qm.api.models.capabilities import ServerCapabilities
-from qm.grpc.results_analyser import GetJobDebugDataResponse
-from qm.persistence import BaseStore
+from qm.utils.general_utils import run_until_with_timeout
+from qm.StreamMetadata import StreamMetadata, StreamMetadataError
+from qm.results.single_streaming_result_fetcher import SingleStreamingResultFetcher
+from qm.results.multiple_streaming_result_fetcher import MultipleStreamingResultFetcher
 from qm.results.base_streaming_result_fetcher import (
+    JobResultSchema,
+    JobResultItemSchema,
     BaseStreamingResultFetcher,
     _parse_dtype,
-    JobResultItemSchema,
-    JobResultSchema,
 )
-from qm.results.multiple_streaming_result_fetcher import MultipleStreamingResultFetcher
-from qm.results.single_streaming_result_fetcher import SingleStreamingResultFetcher
-from qm.utils import run_until_with_timeout
 
 logger = logging.getLogger(__name__)
 
@@ -59,17 +55,18 @@ class StreamingResultFetcher:
         self._job_id = job_id
         self._service = service
         self._store = store
-        self._schema = None
+        self._schema: JobResultSchema = JobResultSchema({})
         self._capabilities = capabilities
 
         self._all_results: Dict[str, BaseStreamingResultFetcher] = {}
         self._add_job_results()
 
-    def _add_job_results(self):
+    def _add_job_results(self) -> None:
         self._schema = StreamingResultFetcher._load_schema(self._job_id, self._service)
         stream_metadata_errors, stream_metadata_dict = self._get_stream_metadata()
         for (name, item_schema) in self._schema.items.items():
             stream_metadata = stream_metadata_dict.get(name)
+            result: BaseStreamingResultFetcher
             if item_schema.is_single:
                 result = SingleStreamingResultFetcher(
                     job_id=self._job_id,
@@ -93,20 +90,20 @@ class StreamingResultFetcher:
                 )
             self._all_results[name] = result
 
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> Optional[BaseStreamingResultFetcher]:
         return self.get(item)
 
-    def __getattr__(self, item: str):
+    def __getattr__(self, item: str) -> Optional[BaseStreamingResultFetcher]:
         if item == "shape" or item == "__len__":
-            return  # this is here because of a bug in pycharm debugger: ver: 2022.3.2 build #PY-223.8617.48 (24/1/23)
+            return (
+                None  # this is here because of a bug in pycharm debugger: ver: 2022.3.2 build #PY-223.8617.48 (24/1/23)
+            )
         return self.get(item)
 
-    def _get_stream_metadata(
-        self,
-    ) -> Optional[Tuple[List[StreamMetadataError], Dict[str, StreamMetadata]]]:
+    def _get_stream_metadata(self) -> Tuple[List[StreamMetadataError], Dict[str, StreamMetadata]]:
         return self._service.get_program_metadata(job_id=self._job_id)
 
-    def __iter__(self) -> Generator[Tuple[str, BaseStreamingResultFetcher], None, None]:
+    def __iter__(self) -> Generator[Tuple[str, Optional[BaseStreamingResultFetcher]], None, None]:
         for item in self._schema.items.values():
             yield item.name, self.get(item.name)
 
@@ -121,9 +118,9 @@ class StreamingResultFetcher:
 
     def save_to_store(
         self,
-        writer: Optional[Union[BufferedWriter, BytesIO, str]] = None,
+        writer: Optional[BinaryIO] = None,
         flat_struct: bool = False,
-    ):
+    ) -> None:
         """Save all results to store (file system by default) in a single NPZ file
 
         Args:
@@ -139,15 +136,14 @@ class StreamingResultFetcher:
             writer = self._store.all_job_results(self._job_id).for_writing()
         zipf = None
         try:
-            zipf = zipfile.ZipFile(
-                writer, allowZip64=True, mode="w", compression=zipfile.ZIP_DEFLATED
-            )
+            zipf = zipfile.ZipFile(writer, allowZip64=True, mode="w", compression=zipfile.ZIP_DEFLATED)
             for (name, result) in self:
-                with zipf.open(f"{name}.npy", "w") as entry:
-                    result.save_to_store(entry, flat_struct)
-                pass
+                if result is not None:
+                    with zipf.open(f"{name}.npy", "w") as entry:
+                        result.save_to_store(cast(BinaryIO, entry), flat_struct)
         finally:
-            zipf.close()
+            if zipf is not None:
+                zipf.close()
             if own_writer:
                 writer.close()
 
@@ -167,9 +163,7 @@ class StreamingResultFetcher:
             }
         )
 
-    def get(
-        self, name: str
-    ) -> Optional[Union[MultipleStreamingResultFetcher, SingleStreamingResultFetcher]]:
+    def get(self, name: str) -> Optional[BaseStreamingResultFetcher]:
         """Get a handle to a named result from [stream_processing][qm.qua._dsl.stream_processing]
 
         Args:
@@ -181,7 +175,7 @@ class StreamingResultFetcher:
         """
         return self._all_results[name] if name in self._all_results else None
 
-    def __contains__(self, name: str):
+    def __contains__(self, name: str) -> bool:
         return name in self._all_results
 
     def wait_for_all_values(self, timeout: Optional[float] = None) -> bool:
@@ -195,17 +189,13 @@ class StreamingResultFetcher:
         """
 
         def on_iteration() -> bool:
-            all_job_states = [
-                result.get_job_state() for result in self._all_results.values()
-            ]
+            all_job_states = [result.get_job_state() for result in self._all_results.values()]
             all_done = all(state.done for state in all_job_states)
             any_closed = any(state.closed for state in all_job_states)
             return all_done or any_closed
 
         def on_complete() -> bool:
-            return all(
-                result.get_job_state().done for result in self._all_results.values()
-            )
+            return all(result.get_job_state().done for result in self._all_results.values())
 
         return run_until_with_timeout(
             on_iteration_callback=on_iteration,
@@ -214,9 +204,7 @@ class StreamingResultFetcher:
             timeout_message="Job was not done in time",
         )
 
-    def get_debug_data(
-        self, writer: Optional[Union[BufferedWriter, BytesIO, str]] = None
-    ):
+    def get_debug_data(self, writer: Optional[Union[BinaryIO, str]] = None) -> None:
         """
         Returns:
             debugging data to report to QM
@@ -225,20 +213,17 @@ class StreamingResultFetcher:
             writer = f"./{self._job_id}-DebugData.zip"
 
         owning_writer = False
-        if type(writer) is str:
+        if isinstance(writer, str):
             writer = open(writer, "wb+")
             owning_writer = True
 
         try:
-            self._fetch_all_job_debug_data(writer)
+            run_async(self._fetch_all_job_debug_data(writer))
 
         finally:
             if owning_writer:
                 writer.close()
 
-    def _fetch_all_job_debug_data(self, writer):
-        def callback(result: GetJobDebugDataResponse) -> bool:
+    async def _fetch_all_job_debug_data(self, writer: BinaryIO) -> None:
+        async for result in self._service.get_job_debug_data(self._job_id):
             writer.write(result.data)
-            return True
-
-        self._service.get_job_debug_data(self._job_id, callback=callback)

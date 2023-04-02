@@ -1,5 +1,7 @@
 import logging
-from typing import Optional, Union
+from typing import Union, Optional, cast
+
+import numpy.typing
 
 from qm.exceptions import QmInvalidSchemaError
 from qm.results.base_streaming_result_fetcher import BaseStreamingResultFetcher
@@ -10,16 +12,18 @@ logger = logging.getLogger(__name__)
 class SingleStreamingResultFetcher(BaseStreamingResultFetcher):
     """A handle to a result of a pipeline terminating with ``save``"""
 
-    def _validate_schema(self):
+    def _validate_schema(self) -> None:
         if not self._schema.is_single:
             raise QmInvalidSchemaError("expecting a single-result schema")
 
-    def wait_for_values(self, count: int = 1, timeout: Optional[float] = None):
+    def wait_for_values(self, count: int = 1, timeout: float = float("inf")) -> None:
         if count != 1:
             raise RuntimeError("single result can wait only for a single value")
-        return super().wait_for_values(1, timeout)
+        super().wait_for_values(1, timeout)
 
-    def fetch_all(self, *, check_for_errors: bool = False, flat_struct: bool = False):
+    def fetch_all(
+        self, *, check_for_errors: bool = False, flat_struct: bool = False
+    ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
         """Fetch a result from the current result stream saved in server memory.
         The result stream is populated by the save() and save_all() statements.
         Note that if save_all() statements are used, calling this function twice
@@ -40,7 +44,7 @@ class SingleStreamingResultFetcher(BaseStreamingResultFetcher):
         *,
         check_for_errors: bool = False,
         flat_struct: bool = False,
-    ):
+    ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
 
         """Fetch a single result from the current result stream saved in server memory.
         The result stream is populated by the save().
@@ -60,20 +64,20 @@ class SingleStreamingResultFetcher(BaseStreamingResultFetcher):
         """
         if (isinstance(item, int) and item != 0) or isinstance(item, slice):
             logger.warning("Fetching single result will always return the single value")
-        value = super().fetch(
-            0, check_for_errors=check_for_errors, flat_struct=flat_struct
-        )
+        value = self.strict_fetch(0, check_for_errors=check_for_errors, flat_struct=flat_struct)
         if flat_struct:
             if len(value) == 0:
+                logger.warning("Nothing to fetch: no results were found. Please wait until the results are ready.")
                 return None
             elif len(value) == 1:
-                return value[0]
+                return cast(numpy.typing.NDArray[numpy.generic], value[0])
             else:
                 return value
         else:
             if len(value) == 0:
+                logger.warning("Nothing to fetch: no results were found. Please wait until the results are ready.")
                 return None
             elif len(value[0]) == 1:
-                return value[0][0]
+                return cast(numpy.typing.NDArray[numpy.generic], value[0][0])
             else:
-                return value[0]
+                return cast(numpy.typing.NDArray[numpy.generic], value[0])

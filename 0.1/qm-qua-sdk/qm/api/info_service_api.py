@@ -1,7 +1,8 @@
-from qm.api.base_api import BaseApi, connection_error_handle
-from qm.api.models.info import ImplementationInfo, QuaMachineInfo
+from qm.utils.async_utils import run_async
 from qm.api.models.server_details import ConnectionDetails
-from qm.io.qualang.api.v1 import InfoServiceStub, GetInfoRequest, GetInfoResponse
+from qm.api.base_api import BaseApi, connection_error_handle
+from qm.io.qualang.api.v1 import GetInfoRequest, InfoServiceStub
+from qm.api.models.info import QuaMachineInfo, ImplementationInfo
 
 
 @connection_error_handle()
@@ -12,7 +13,7 @@ class InfoServiceApi(BaseApi):
 
     def get_info(self) -> QuaMachineInfo:
         request = GetInfoRequest()
-        response: GetInfoResponse = self._execute_on_stub(self._stub.get_info, request)
+        response = run_async(self._stub.get_info(request, timeout=self._timeout))
 
         return QuaMachineInfo(
             capabilities=response.capabilities,

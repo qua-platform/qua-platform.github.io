@@ -1,34 +1,33 @@
-from typing import List, Any, Mapping, Dict
 import logging
+from typing import Any, Dict, List, Mapping
 
 import betterproto
 import numpy as np
-from betterproto.lib.google.protobuf import Empty
-from dependency_injector.wiring import inject, Provide
-from marshmallow import (
-    Schema,
-    fields,
-    post_load,
-    ValidationError,
-    validates_schema,
-    validate,
-)
 from marshmallow_polyfield import PolyField
+from betterproto.lib.google.protobuf import Empty
+from dependency_injector.wiring import Provide, inject
+from marshmallow import Schema, ValidationError, fields, validate, post_load, validates_schema
 
+from qm.grpc import qua_config, octave_models
+from qm.exceptions import ConfigValidationException
+from qm.type_hinting.config_types import DictQuaConfig
 from qm.api.models.capabilities import ServerCapabilities
 from qm.containers.capabilities_container import CapabilitiesContainer
-from qm.exceptions import ConfigValidationException
-
+from qm.grpc.qua_config import QuaConfig, QuaConfigAnalogOutputPortFilter
+from qm.program._qua_config_to_pb import (
+    OctaveConnectionAmbiguity,
+    octave_params_to_pb,
+    get_octave_loopbacks,
+    octave_connection_to_pb,
+)
 from qm.program._validate_config_schema import (
-    validate_output_smearing,
     validate_oscillator,
     validate_output_tof,
-    validate_arbitrary_waveform,
     validate_used_inputs,
+    validate_output_smearing,
+    validate_arbitrary_waveform,
     validate_timetagging_parameters,
 )
-from qm.grpc import qua_config
-from qm.grpc.qua_config import QuaConfigAnalogOutputPortFilter
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +45,7 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
         for el_name, el in pb_config.v1_beta.elements.items():
             if el is not None and el.multiple_inputs:
                 raise ConfigValidationException(
-                    f"Server does not support multiple inputs for elements used in "
-                    f"'{el_name}'"
+                    f"Server does not support multiple inputs for elements used in '{el_name}'"
                 )
 
     if not server_capabilities.supports_analog_delay:
@@ -55,16 +53,14 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
             for port_id, port in con.analog_outputs.items():
                 if port.delay != 0:
                     raise ConfigValidationException(
-                        f"Server does not support analog delay used in controller "
-                        f"'{con_name}', port {port_id}"
+                        f"Server does not support analog delay used in controller " f"'{con_name}', port {port_id}"
                     )
 
     if not server_capabilities.supports_shared_oscillators:
         for el_name, el in pb_config.v1_beta.elements.items():
             if el is not None and el.named_oscillator:
                 raise ConfigValidationException(
-                    f"Server does not support shared oscillators for elements used in "
-                    f"'{el_name}'"
+                    f"Server does not support shared oscillators for elements used in " f"'{el_name}'"
                 )
 
     if not server_capabilities.supports_crosstalk:
@@ -72,32 +68,17 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
             for port_id, port in con.analog_outputs.items():
                 if len(port.crosstalk) > 0:
                     raise ConfigValidationException(
-                        f"Server does not support channel weights used in controller "
-                        f"'{con_name}', port {port_id}"
+                        f"Server does not support channel weights used in controller " f"'{con_name}', port {port_id}"
                     )
 
     if not server_capabilities.supports_shared_ports:
         shared_ports_by_controller = {}
         for (con_name, con) in pb_config.v1_beta.controllers.items():
             shared_ports_by_type = {}
-            analog_outputs = [
-                port_id
-                for port_id, port in con.analog_outputs.items()
-                if port.shareable
-            ]
-            analog_inputs = [
-                port_id for port_id, port in con.analog_inputs.items() if port.shareable
-            ]
-            digital_outputs = [
-                port_id
-                for port_id, port in con.digital_outputs.items()
-                if port.shareable
-            ]
-            digital_inputs = [
-                port_id
-                for port_id, port in con.digital_inputs.items()
-                if port.shareable
-            ]
+            analog_outputs = [port_id for port_id, port in con.analog_outputs.items() if port.shareable]
+            analog_inputs = [port_id for port_id, port in con.analog_inputs.items() if port.shareable]
+            digital_outputs = [port_id for port_id, port in con.digital_outputs.items() if port.shareable]
+            digital_inputs = [port_id for port_id, port in con.digital_inputs.items() if port.shareable]
             if len(analog_outputs):
                 shared_ports_by_type["analog_outputs"] = analog_outputs
             if len(analog_inputs):
@@ -123,7 +104,7 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
             "will be casted to {int_value}."
         )
         for el_name, el in list(pb_config.v1_beta.elements.items()):
-            if el.intermediate_frequency_double != el.intermediate_frequency:
+            if el.intermediate_frequency_double and el.intermediate_frequency_double != el.intermediate_frequency:
                 logger.warning(
                     message_template.format(
                         element_name=el_name,
@@ -134,6 +115,7 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
                 )
             if (
                 betterproto.serialized_on_wire(el.mix_inputs)
+                and el.mix_inputs.lo_frequency_double
                 and el.mix_inputs.lo_frequency != el.mix_inputs.lo_frequency_double
             ):
                 logger.warning(
@@ -146,16 +128,13 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
                 )
 
 
-def load_config(config):
+def load_config(config: DictQuaConfig) -> QuaConfig:
     return QuaConfigSchema().load(config)
 
 
 PortReferenceSchema = fields.Tuple(
     (fields.String(), fields.Int()),
-    metadata={
-        "description": "Controller port to use. "
-        "Tuple of: ([str] controller name, [int] controller port)"
-    },
+    metadata={"description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"},
 )
 
 
@@ -166,9 +145,7 @@ class UnionField(fields.Field):
         self.valid_types = val_types
         super().__init__(**kwargs)
 
-    def _deserialize(
-        self, value: Any, attr: str = None, data: Mapping[str, Any] = None, **kwargs
-    ):
+    def _deserialize(self, value: Any, attr: str = None, data: Mapping[str, Any] = None, **kwargs):
         """
         _deserialize defines a custom Marshmallow Schema Field that takes in
         mutli-type input data to app-level objects.
@@ -206,17 +183,11 @@ class UnionField(fields.Field):
 class AnalogOutputFilterDefSchema(Schema):
     feedforward = fields.List(
         fields.Float(),
-        metadata={
-            "description": "Feedforward taps for the analog output filter, range: [-1,1]. "
-            "List of double"
-        },
+        metadata={"description": "Feedforward taps for the analog output filter, range: [-1,1]. List of double"},
     )
     feedback = fields.List(
         fields.Float(),
-        metadata={
-            "description": "Feedback taps for the analog output filter, range: (-1,1). "
-            "List of double"
-        },
+        metadata={"description": "Feedback taps for the analog output filter, range: (-1,1). List of double"},
     )
 
 
@@ -234,25 +205,31 @@ class AnalogOutputPortDefSchema(Schema):
     )  # TODO: add description
     shareable = fields.Bool(
         dump_default=False,
+        metadata={"description": "Whether the port is shareable with other QM instances"},
+    )
+    connectivity = fields.Tuple(
+        (fields.String(), fields.String()),
         metadata={
-            "description": "Whether the port is shareable with other QM instances"
+            "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
     )
 
     class Meta:
         title = "Analog output port"
-        description = (
-            "The specifications and properties of an analog output "
-            "port of the controller."
-        )
+        description = "The specifications and properties of an analog output port of the controller."
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigAnalogOutputPortDec(
             offset=data["offset"],
-            delay=data.get("delay", 0),
             shareable=data.get("shareable", False),
         )
+
+        if "delay" in data:
+            delay = data.get("delay", 0)
+            if delay < 0:
+                raise ConfigValidationException(f"analog output delay cannot be a negative value, given value: {delay}")
+            item.delay = delay
 
         if "filter" in data:
             filters = data["filter"]
@@ -265,38 +242,37 @@ class AnalogOutputPortDefSchema(Schema):
             for k, v in data["crosstalk"].items():
                 item.crosstalk[k] = v
 
+        if "connectivity" in data:
+            item.octave_connectivity = octave_connection_to_pb("input", port_data=data)
+
         return item
 
 
 class AnalogInputPortDefSchema(Schema):
     offset = fields.Number(
-        metadata={
-            "description": "DC offset to the input, range: (-0.5, 0.5). "
-            "Will be applied only when program runs."
-        }
+        metadata={"description": "DC offset to the input, range: (-0.5, 0.5). Will be applied only when program runs."}
     )
 
     gain_db = fields.Int(
         strict=True,
-        metadata={
-            "description": "Gain of the pre-ADC amplifier, in dB. Accepts integers in the "
-            "range: -12 to 20"
-        },
+        metadata={"description": "Gain of the pre-ADC amplifier, in dB. Accepts integers in the range: -12 to 20"},
     )
 
     shareable = fields.Bool(
         dump_default=False,
+        metadata={"description": "Whether the port is shareable with other QM instances"},
+    )
+
+    connectivity = fields.Tuple(
+        (fields.String(), fields.String()),
         metadata={
-            "description": "Whether the port is shareable with other QM instances"
+            "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
     )
 
     class Meta:
         title = "Analog input port"
-        description = (
-            "The specifications and properties of an analog input "
-            "port of the controller."
-        )
+        description = "The specifications and properties of an analog input port of the controller."
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
@@ -306,65 +282,65 @@ class AnalogInputPortDefSchema(Schema):
             shareable=data.get("shareable", False),
         )
 
+        if "connectivity" in data:
+            item.octave_connectivity = octave_connection_to_pb("output", port_data=data)
+
         return item
 
 
 class DigitalOutputPortDefSchema(Schema):
     shareable = fields.Bool(
         dump_default=False,
-        metadata={
-            "description": "Whether the port is shareable with other QM instances"
-        },
+        metadata={"description": "Whether the port is shareable with other QM instances"},
     )
     inverted = fields.Bool(
         dump_default=False,
+        metadata={"description": "Whether the port is inverted. " "If True, the output will be inverted."},
+    )
+
+    connectivity = fields.Tuple(
+        (fields.String(), fields.String()),
         metadata={
-            "description": "Whether the port is inverted. "
-            "If True, the output will be inverted."
+            "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
     )
 
     class Meta:
         title = "Digital port"
-        description = (
-            "The specifications and properties of a digital "
-            "output port of the controller."
-        )
+        description = "The specifications and properties of a digital output port of the controller."
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigDigitalOutputPortDec(
             shareable=data.get("shareable", False), inverted=data.get("inverted", False)
         )
+        # TODO - once we decide how to add digital connectivity this can be added back
+        # if "connectivity" in data:
+        #     item.octave_connectivity = octave_connection_to_pb("digital_input", port_data=data)
         return item
 
 
 class DigitalInputPortDefSchema(Schema):
-    deadtime = fields.Int(
-        metadata={"description": "The minimal time between pulses, in ns."}
-    )
+    deadtime = fields.Int(metadata={"description": "The minimal time between pulses, in ns."})
     polarity = fields.String(
-        metadata={
-            "description": "The Detection edge - Whether to trigger in the rising or falling edge of the pulse"
-        },
+        metadata={"description": "The Detection edge - Whether to trigger in the rising or falling edge of the pulse"},
         validate=validate.OneOf(["RISING", "FALLING"]),
     )
-    threshold = fields.Number(
-        metadata={"description": "The minimum voltage to trigger when a pulse arrives"}
-    )
+    threshold = fields.Number(metadata={"description": "The minimum voltage to trigger when a pulse arrives"})
     shareable = fields.Bool(
         dump_default=False,
+        metadata={"description": "Whether the port is shareable with other QM instances"},
+    )
+    connectivity = fields.Tuple(
+        (fields.String(), fields.String()),
         metadata={
-            "description": "Whether the port is shareable with other QM instances"
+            "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
     )
 
     class Meta:
         title = "Digital input port"
-        description = (
-            "The specifications and properties of a digital input "
-            "port of the controller."
-        )
+        description = "The specifications and properties of a digital input " "port of the controller."
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
@@ -378,6 +354,25 @@ class DigitalInputPortDefSchema(Schema):
         item.threshold = data["threshold"]
         if "shareable" in data:
             item.shareable = data["shareable"]
+        # TODO - once we decide how to add digital connectivity this can be added back
+        # if "connectivity" in data:
+        #     item.octave_connectivity = octave_connection_to_pb("digital_output", port_data=data)
+        return item
+
+
+class OctaveSchema(Schema):
+    loopbacks = fields.List(
+        fields.Tuple([fields.Tuple([fields.String, fields.String]), fields.String]),
+        metadata={
+            "description": "List of loopbacks that connected to this octave, Each loopback is "
+            "in the form of ((octave_name, octave_port), target_port)"
+        },
+    )
+
+    @post_load(pass_many=False)
+    def build(self, data, **kwargs):
+        item = octave_models.OctaveConfig()
+        item.loopbacks = get_octave_loopbacks(data["loopbacks"])
         return item
 
 
@@ -404,6 +399,12 @@ class ControllerSchema(Schema):
         fields.Nested(DigitalInputPortDefSchema),
         metadata={"description": "The digital inputs ports and their properties."},
     )
+    connectivity = fields.String(
+        metadata={
+            "description": "Here you can specify the connection of the OPX, for now, you can put here the name "
+            "of the octave and it will set the default connection between OPX and Octave."
+        }
+    )
 
     class Meta:
         title = "controller"
@@ -417,10 +418,22 @@ class ControllerSchema(Schema):
         if "analog_outputs" in data:
             for k, v in data["analog_outputs"].items():
                 item.analog_outputs[k] = v
+                if "connectivity" in data:
+                    if betterproto.serialized_on_wire(v.octave_connectivity):
+                        raise OctaveConnectionAmbiguity
+                    item.analog_outputs[k].octave_connectivity = octave_connection_to_pb(
+                        "input", device_name=data["connectivity"], port_num=k
+                    )
 
         if "analog_inputs" in data:
             for k, v in data["analog_inputs"].items():
                 item.analog_inputs[k] = v
+                if "connectivity" in data:
+                    if betterproto.serialized_on_wire(v.octave_connectivity):
+                        raise OctaveConnectionAmbiguity
+                    item.analog_inputs[k].octave_connectivity = octave_connection_to_pb(
+                        "output", device_name=data["connectivity"], port_num=k
+                    )
 
         if "digital_outputs" in data:
             for k, v in data["digital_outputs"].items():
@@ -436,14 +449,14 @@ class ControllerSchema(Schema):
 class DigitalInputSchema(Schema):
     delay = fields.Int(
         metadata={
-            "description": "The delay to apply to the digital pulses. In ns."
+            "description": "The delay to apply to the digital pulses. In ns. "
             "An intrinsic negative delay of 136 ns exists by default"
         }
     )
     buffer = fields.Int(
         metadata={
-            "description": "Digital pulses played to this element will be convolved"
-            "with a digital pulse of value 1 with this length [ns]"
+            "description": "Digital pulses played to this element will be convolved with a digital "
+            "pulse of value 1 with this length [ns]"
         }
     )
     port = PortReferenceSchema
@@ -470,11 +483,10 @@ class IntegrationWeightSchema(Schema):
             fields.List(fields.Float()),
         ],
         metadata={
-            "description": "The integration weights for the cosine. "
-            "Given as a list of tuples, each tuple in the format of: "
-            "([double] weight, [int] duration). "
-            "weight range: [-2048, 2048] in steps of 2**-15. "
-            "duration is in ns and must be a multiple of 4."
+            "description": "The integration weights for the cosine. Given as a list of tuples, "
+            "each tuple in the format of: ([double] weight, [int] duration). "
+            "weight range: [-2048, 2048] in steps of 2**-15. duration is in ns "
+            "and must be a multiple of 4."
         },
     )
     sine = UnionField(
@@ -483,11 +495,10 @@ class IntegrationWeightSchema(Schema):
             fields.List(fields.Float()),
         ],
         metadata={
-            "description": "The integration weights for the sine. "
-            "Given as a list of tuples, each tuple in the format of: "
-            "([double] weight, [int] duration). "
-            "weight range: [-2048, 2048] in steps of 2**-15. "
-            "duration is in ns and must be a multiple of 4."
+            "description": "The integration weights for the sine. Given as a list of tuples, "
+            "each tuple in the format of: ([double] weight, [int] duration). "
+            "weight range: [-2048, 2048] in steps of 2**-15. duration is in ns "
+            "and must be a multiple of 4."
         },
     )
 
@@ -508,9 +519,7 @@ class IntegrationWeightSchema(Schema):
             data = new_data
         res = []
         for s in data:
-            sample = qua_config.QuaConfigIntegrationWeightSample(
-                value=s[0], length=s[1]
-            )
+            sample = qua_config.QuaConfigIntegrationWeightSample(value=s[0], length=s[1])
             res.append(sample)
         return res
 
@@ -530,9 +539,7 @@ class WaveFormSchema(Schema):
 
 class ConstantWaveFormSchema(WaveFormSchema):
     type = fields.String(metadata={"description": '"constant"'})
-    sample = fields.Float(
-        metadata={"description": "Waveform amplitude, range: (-0.5, 0.5)"}
-    )
+    sample = fields.Float(metadata={"description": "Waveform amplitude, range: (-0.5, 0.5)"})
 
     class Meta:
         title = "Constant waveform"
@@ -540,9 +547,7 @@ class ConstantWaveFormSchema(WaveFormSchema):
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
-        item = qua_config.QuaConfigWaveformDec(
-            constant=qua_config.QuaConfigConstantWaveformDec(sample=data["sample"])
-        )
+        item = qua_config.QuaConfigWaveformDec(constant=qua_config.QuaConfigConstantWaveformDec(sample=data["sample"]))
         return item
 
 
@@ -550,26 +555,20 @@ class ArbitraryWaveFormSchema(WaveFormSchema):
     type = fields.String(metadata={"description": '"arbitrary"'})
     samples = fields.List(
         fields.Float(),
-        metadata={
-            "description": "list of values of an arbitrary waveforms, range: (-0.5, 0.5)"
-        },
+        metadata={"description": "list of values of an arbitrary waveforms, range: (-0.5, 0.5)"},
     )
-    max_allowed_error = fields.Float(
-        metadata={"description": '"Maximum allowed error for automatic compression"'}
-    )
+    max_allowed_error = fields.Float(metadata={"description": '"Maximum allowed error for automatic compression"'})
     sampling_rate = fields.Number(
         metadata={
-            "description": '"Sampling rate to use in units of S/s (samples per second). '
-            "Default is 1e9."
-            'Cannot be set when is_overridable=True"'
+            "description": "Sampling rate to use in units of S/s (samples per second). "
+            "Default is 1e9. Cannot be set when is_overridable=True"
         }
     )
     is_overridable = fields.Bool(
         dump_default=False,
         metadata={
-            "description": "Allows overriding the waveform after"
-            "compilation. Cannot use with the "
-            "non-default sampling_rate"
+            "description": "Allows overriding the waveform after compilation. "
+            "Cannot use with the non-default sampling_rate"
         },
     )
 
@@ -581,17 +580,13 @@ class ArbitraryWaveFormSchema(WaveFormSchema):
     def build(self, data, **kwargs):
         is_overridable = data.get("is_overridable", False)
         item = qua_config.QuaConfigWaveformDec(
-            arbitrary=qua_config.QuaConfigArbitraryWaveformDec(
-                samples=data["samples"], is_overridable=is_overridable
-            )
+            arbitrary=qua_config.QuaConfigArbitraryWaveformDec(samples=data["samples"], is_overridable=is_overridable)
         )
         max_allowed_error_key = "max_allowed_error"
         sampling_rate_key = "sampling_rate"
         has_max_allowed_error = max_allowed_error_key in data
         has_sampling_rate = sampling_rate_key in data
-        validate_arbitrary_waveform(
-            is_overridable, has_max_allowed_error, has_sampling_rate
-        )
+        validate_arbitrary_waveform(is_overridable, has_max_allowed_error, has_sampling_rate)
         if has_max_allowed_error:
             item.arbitrary.max_allowed_error = data[max_allowed_error_key]
         elif has_sampling_rate:
@@ -611,11 +606,7 @@ def _waveform_schema_deserialization_disambiguation(object_dict, data):
     except KeyError:
         pass
 
-    raise TypeError(
-        "Could not detect type. "
-        "Did not have a base or a length. "
-        "Are you sure this is a shape?"
-    )
+    raise TypeError("Could not detect type. Did not have a base or a length. Are you sure this is a shape?")
 
 
 _waveform_poly_field = PolyField(
@@ -628,12 +619,10 @@ class DigitalWaveFormSchema(Schema):
     samples = fields.List(
         fields.Tuple([fields.Int(), fields.Int()]),
         metadata={
-            "description": "The digital waveform. "
-            "Given as a list of tuples, each tuple in the format of: "
-            "([int] state, [int] duration). "
-            "state is either 0 or 1 indicating whether the digital output is off or on. "
-            "duration is in ns. "
-            "If the duration is 0, it will be played until the reminder of the analog pulse"
+            "description": "The digital waveform. Given as a list of tuples, each tuple in the format of: "
+            "([int] state, [int] duration). state is either 0 or 1 indicating whether the "
+            "digital output is off or on. duration is in ns. If the duration is 0, "
+            "it will be played until the reminder of the analog pulse"
         },
     )
 
@@ -645,38 +634,29 @@ class DigitalWaveFormSchema(Schema):
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigDigitalWaveformDec()
         for sample in data["samples"]:
-            item.samples.append(
-                qua_config.QuaConfigDigitalWaveformSample(
-                    value=bool(sample[0]), length=int(sample[1])
-                )
-            )
+            item.samples.append(qua_config.QuaConfigDigitalWaveformSample(value=bool(sample[0]), length=int(sample[1])))
         return item
 
 
 class MixerSchema(Schema):
     intermediate_frequency = fields.Float(
-        metadata={
-            "description": "The intermediate frequency associated with the correction matrix"
-        }
+        metadata={"description": "The intermediate frequency associated with the correction matrix"}
     )
-    lo_frequency = fields.Float(
-        metadata={
-            "description": "The LO frequency associated with the correction matrix"
-        }
-    )
+    lo_frequency = fields.Float(metadata={"description": "The LO frequency associated with the correction matrix"})
     correction = fields.Tuple(
         (fields.Number(), fields.Number(), fields.Number(), fields.Number()),
         metadata={
             "description": "A 2x2 matrix entered as a 4 elements list specifying the "
-            "correction matrix. "
-            "Each element is a double in the range of (-2,2)"
+            "correction matrix. Each element is a double in the range of (-2,2)"
         },
     )
 
     class Meta:
         title = "Mixer"
-        description = """The specification of the correction matrix for an IQ mixer. 
-        This is a list of correction matrices for each LO and IF frequencies."""
+        description = (
+            "The specification of the correction matrix for an IQ mixer. "
+            "This is a list of correction matrices for each LO and IF frequencies."
+        )
 
     @post_load(pass_many=False)
     @inject
@@ -686,9 +666,7 @@ class MixerSchema(Schema):
         capabilities: ServerCapabilities = Provide[CapabilitiesContainer.capabilities],
         **kwargs,
     ):
-        item = qua_config.QuaConfigCorrectionEntry(
-            correction=qua_config.QuaConfigMatrix(*data["correction"])
-        )
+        item = qua_config.QuaConfigCorrectionEntry(correction=qua_config.QuaConfigMatrix(*data["correction"]))
 
         if "lo_frequency" in data:
             if capabilities.supports_double_frequency:
@@ -700,9 +678,7 @@ class MixerSchema(Schema):
             if capabilities.supports_double_frequency:
                 item.frequency_double = abs(float(data["intermediate_frequency"]))
             else:
-                item.frequency = abs(
-                    int(data["intermediate_frequency"])
-                )  # backwards compatibility
+                item.frequency = abs(int(data["intermediate_frequency"]))  # backwards compatibility
 
             item.frequency_negative = data["intermediate_frequency"] < 0
 
@@ -717,31 +693,22 @@ class MixerSchema(Schema):
 
 class PulseSchema(Schema):
     operation = fields.String(
-        metadata={
-            "description": "The type of operation. Possible values: 'control', 'measurement'"
-        }
+        metadata={"description": "The type of operation. Possible values: 'control', 'measurement'"}
     )
     length = fields.Int(
-        metadata={
-            "description": "The length of pulse [ns]. Possible values: 16 to 2^31-1 in steps "
-            "of 4"
-        }
+        metadata={"description": "The length of pulse [ns]. Possible values: 16 to 2^31-1 in steps of 4"}
     )
     waveforms = fields.Dict(
         fields.String(),
-        fields.String(
-            metadata={"description": "The name of analog waveform to be played."}
-        ),
+        fields.String(metadata={"description": "The name of analog waveform to be played."}),
         metadata={
-            "description": """The specification of the analog waveform to be played.
-        If the associated element has a single input, then the key is "single".
-        If the associated element has "mixInputs", then the keys are "I" and "Q"."""
+            "description": "The specification of the analog waveform to be played. "
+            "If the associated element has a single input, then the key is 'single'. "
+            "If the associated element has 'mixInputs', then the keys are 'I' and 'Q'."
         },
     )
     digital_marker = fields.String(
-        metadata={
-            "description": "The name of the digital waveform to be played with this pulse."
-        }
+        metadata={"description": "The name of the digital waveform to be played with this pulse."}
     )
     integration_weights = fields.Dict(
         fields.String(),
@@ -751,15 +718,12 @@ class PulseSchema(Schema):
                 ' "integration_weigths" entry in the configuration dict.'
             }
         ),
-        metadata={
-            "description": "The name of the integration weight to be used in the program."
-        },
+        metadata={"description": "The name of the integration weight to be used in the program."},
     )
 
     class Meta:
         title = "pulse"
-        description = """The specification and properties of a single pulse and to the 
-          measurement associated with it."""
+        description = "The specification and properties of a single pulse and to the measurement associated with it."
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
@@ -785,25 +749,19 @@ class SingleInputSchema(Schema):
 
     class Meta:
         title = "Single input"
-        description = (
-            "The specification of the input of an element which has a single input port"
-        )
+        description = "The specification of the input of an element which has a single input port"
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         controller, number = data["port"]
         item = qua_config.QuaConfigSingleInput(
-            port=qua_config.QuaConfigDacPortReference(
-                controller=controller, number=number
-            )
+            port=qua_config.QuaConfigDacPortReference(controller=controller, number=number)
         )
         return item
 
 
 class HoldOffsetSchema(Schema):
-    duration = fields.Int(
-        metadata={"description": """The ramp to zero duration, in ns"""}
-    )
+    duration = fields.Int(metadata={"description": """The ramp to zero duration, in ns"""})
 
     class Meta:
         title = "Hold offset"
@@ -816,16 +774,28 @@ class HoldOffsetSchema(Schema):
         return item
 
 
+class MixInputOctaveParamsSchema(Schema):
+    rf_output_port = fields.Tuple([fields.String(), fields.String()])
+    lo_source = fields.String()
+    output_switch_state = fields.String()
+    output_gain = fields.Int()
+    downconversion_lo_source = fields.String()
+    downconversion_lo_frequency = fields.Float()
+    rf_input_port = fields.Tuple([fields.String(), fields.String()])
+
+    @post_load()
+    def build(
+        self,
+        data,
+        **kwargs,
+    ):
+        return octave_params_to_pb(data)
+
+
 class StickySchema(Schema):
-    analog = fields.Boolean(
-        metadata={"description": """the analog flag must be a True of False"""}
-    )
-    digital = fields.Boolean(
-        metadata={"description": """the digital flag must be a True of False"""}
-    )
-    duration = fields.Int(
-        metadata={"description": """The ramp to zero duration, in ns"""}
-    )
+    analog = fields.Boolean(metadata={"description": """the analog flag must be a True of False"""})
+    digital = fields.Boolean(metadata={"description": """the digital flag must be a True of False"""})
+    duration = fields.Int(metadata={"description": """The ramp to zero duration, in ns"""})
 
     class Meta:
         title = "Sticky"
@@ -846,22 +816,18 @@ class MixInputSchema(Schema):
     Q = PortReferenceSchema
     mixer = fields.String(
         metadata={
-            "description": """The mixer used to drive the input of the element,
-        taken from the names in mixers entry in the main configuration."""
+            "description": "The mixer used to drive the input of the element, "
+            "taken from the names in mixers entry in the main configuration."
         }
     )
     lo_frequency = fields.Float(
-        metadata={
-            "description": "The frequency of the local oscillator which drives the mixer."
-        }
+        metadata={"description": "The frequency of the local oscillator which drives the mixer."}
     )
+    octave_params = fields.Nested(MixInputOctaveParamsSchema)
 
     class Meta:
         title = "Mixer input"
-        description = (
-            "The specification of the input of an element which is driven by an "
-            " IQ mixer"
-        )
+        description = "The specification of the input of an element which is driven by an IQ mixer"
 
     @post_load(pass_many=False)
     @inject
@@ -871,21 +837,20 @@ class MixInputSchema(Schema):
         capabilities: ServerCapabilities = Provide[CapabilitiesContainer.capabilities],
         **kwargs,
     ):
+        lo_frequency = data.get("lo_frequency", 0)
         if capabilities.supports_double_frequency:
-            frequency = {"lo_frequency_double": float(data.get("lo_frequency", 0.0))}
+            frequency = {"lo_frequency_double": float(lo_frequency)}
         else:
-            frequency = {"lo_frequency": int(data.get("lo_frequency", 0))}
+            frequency = {"lo_frequency": int(lo_frequency)}
 
         item = qua_config.QuaConfigMixInputs(
-            i=qua_config.QuaConfigDacPortReference(
-                controller=data["I"][0], number=data["I"][1]
-            ),
-            q=qua_config.QuaConfigDacPortReference(
-                controller=data["Q"][0], number=data["Q"][1]
-            ),
+            i=qua_config.QuaConfigDacPortReference(controller=data["I"][0], number=data["I"][1]),
+            q=qua_config.QuaConfigDacPortReference(controller=data["Q"][0], number=data["Q"][1]),
             mixer=data.get("mixer", ""),
             **frequency,
         )
+        if "octave_params" in data:
+            item.octave_params = data["octave_params"]
         return item
 
 
@@ -893,25 +858,18 @@ class SingleInputCollectionSchema(Schema):
     inputs = fields.Dict(
         keys=fields.String(),
         values=PortReferenceSchema,
-        metadata={
-            "description": """A collection of multiple single inputs to the port"""
-        },
+        metadata={"description": "A collection of multiple single inputs to the port"},
     )
 
     class Meta:
         title = "Single input collection"
-        description = (
-            "Defines a set of single inputs which can be switched during play"
-            " statements"
-        )
+        description = "Defines a set of single inputs which can be switched during play statements"
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigSingleInputCollection()
         for name, (controller, number) in data["inputs"].items():
-            item.inputs[name] = qua_config.QuaConfigDacPortReference(
-                controller=controller, number=number
-            )
+            item.inputs[name] = qua_config.QuaConfigDacPortReference(controller=controller, number=number)
         return item
 
 
@@ -919,9 +877,7 @@ class MultipleInputsSchema(Schema):
     inputs = fields.Dict(
         keys=fields.String(),
         values=PortReferenceSchema,
-        metadata={
-            "description": """A collection of multiple single inputs to the port"""
-        },
+        metadata={"description": "A collection of multiple single inputs to the port"},
     )
 
     class Meta:
@@ -932,27 +888,23 @@ class MultipleInputsSchema(Schema):
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigMultipleInputs()
         for name, (controller, number) in data["inputs"].items():
-            item.inputs[name] = qua_config.QuaConfigDacPortReference(
-                controller=controller, number=number
-            )
+            item.inputs[name] = qua_config.QuaConfigDacPortReference(controller=controller, number=number)
         return item
 
 
 class OscillatorSchema(Schema):
     intermediate_frequency = fields.Float(
-        metadata={"description": """The frequency of this oscillator [Hz]."""},
+        metadata={"description": "The frequency of this oscillator [Hz]."},
         allow_none=True,
     )
     mixer = fields.String(
         metadata={
-            "description": """The mixer used to drive the input of the oscillator,
-        taken from the names in mixers entry in the main configuration"""
+            "description": "The mixer used to drive the input of the oscillator, "
+            "taken from the names in mixers entry in the main configuration"
         }
     )
     lo_frequency = fields.Float(
-        metadata={
-            "description": "The frequency of the local oscillator which drives the mixer [Hz]."
-        }
+        metadata={"description": "The frequency of the local oscillator which drives the mixer [Hz]."}
     )
 
     @post_load(pass_many=False)
@@ -964,10 +916,7 @@ class OscillatorSchema(Schema):
         **kwargs,
     ):
         osc = qua_config.QuaConfigOscillator()
-        if (
-            "intermediate_frequency" in data
-            and data["intermediate_frequency"] is not None
-        ):
+        if "intermediate_frequency" in data and data["intermediate_frequency"] is not None:
             if capabilities.supports_double_frequency:
                 osc.intermediate_frequency_double = data["intermediate_frequency"]
             else:
@@ -984,17 +933,13 @@ class OscillatorSchema(Schema):
 
 class ElementSchema(Schema):
     intermediate_frequency = fields.Float(
-        metadata={
-            "description": """The frequency at which the controller modulates the output to 
-        this element [Hz]."""
-        },
+        metadata={"description": "The frequency at which the controller modulates the output to this element [Hz]."},
         allow_none=True,
     )
     oscillator = fields.String(
         metadata={
-            "description": """The oscillator which is used by the controller to modulates the 
-        output to this element [Hz]. Can be used to share oscillators between 
-        elements"""
+            "description": "The oscillator which is used by the controller to modulates the "
+            "output to this element [Hz]. Can be used to share oscillators between elements"
         },
         allow_none=True,
     )
@@ -1004,14 +949,10 @@ class ElementSchema(Schema):
         keys=fields.String(),
         values=fields.String(
             metadata={
-                "description": 'The name of the pulse as it appears under the "pulses" entry '
-                "in the configuration dict"
+                "description": 'The name of the pulse as it appears under the "pulses" entry in the configuration dict'
             }
         ),
-        metadata={
-            "description": """A collection of all pulse names to be used in play and measure 
-        commands"""
-        },
+        metadata={"description": "A collection of all pulse names to be used in play and measure commands"},
     )
     singleInput = fields.Nested(SingleInputSchema)
     mixInputs = fields.Nested(MixInputSchema)
@@ -1020,14 +961,14 @@ class ElementSchema(Schema):
     time_of_flight = fields.Int(
         metadata={
             "description": """The delay time, in ns, from the start of pulse until it reaches 
-        the controller. Needs to be calibrated by looking at the raw ADC data.
-        Needs to be a multiple of 4 and the minimal value is 24. """
+            the controller. Needs to be calibrated by looking at the raw ADC data. 
+            Needs to be a multiple of 4 and the minimal value is 24. """
         }
     )
     smearing = fields.Int(
         metadata={
-            "description": """Padding time, in ns, to add to both the start and end of the raw
-         ADC data window during a measure command."""
+            "description": """Padding time, in ns, to add to both the start and end of the raw 
+            ADC data window during a measure command."""
         }
     )
     outputs = fields.Dict(
@@ -1035,13 +976,9 @@ class ElementSchema(Schema):
         values=PortReferenceSchema,
         metadata={"description": "The output ports of the element."},
     )
-    digitalInputs = fields.Dict(
-        keys=fields.String(), values=fields.Nested(DigitalInputSchema)
-    )
+    digitalInputs = fields.Dict(keys=fields.String(), values=fields.Nested(DigitalInputSchema))
     digitalOutputs = fields.Dict(keys=fields.String(), values=PortReferenceSchema)
-    outputPulseParameters = fields.Dict(
-        metadata={"description": "Pulse parameters for Time-Tagging"}
-    )
+    outputPulseParameters = fields.Dict(metadata={"description": "Pulse parameters for Time-Tagging"})
 
     hold_offset = fields.Nested(HoldOffsetSchema)
 
@@ -1051,8 +988,7 @@ class ElementSchema(Schema):
 
     class Meta:
         title = "Element"
-        description = """The specifications, parameters and connections of a single
-         element."""
+        description = "The specifications, parameters and connections of a single element."
 
     @post_load(pass_many=False)
     @inject
@@ -1063,20 +999,13 @@ class ElementSchema(Schema):
         **kwargs,
     ):
         el = qua_config.QuaConfigElementDec()
-        if (
-            "intermediate_frequency" in data
-            and data["intermediate_frequency"] is not None
-        ):
+        if "intermediate_frequency" in data and data["intermediate_frequency"] is not None:
             if capabilities.supports_double_frequency:
                 el.intermediate_frequency_double = abs(data["intermediate_frequency"])
-                el.intermediate_frequency_oscillator_double = data[
-                    "intermediate_frequency"
-                ]
+                el.intermediate_frequency_oscillator_double = data["intermediate_frequency"]
             else:
                 el.intermediate_frequency = abs(int(data["intermediate_frequency"]))
-                el.intermediate_frequency_oscillator = int(
-                    data["intermediate_frequency"]
-                )
+                el.intermediate_frequency_oscillator = int(data["intermediate_frequency"])
 
             el.intermediate_frequency_negative = data["intermediate_frequency"] < 0
         elif "oscillator" in data and data["oscillator"] is not None:
@@ -1118,24 +1047,18 @@ class ElementSchema(Schema):
                 )
         if "outputPulseParameters" in data:
             pulse_parameters = data["outputPulseParameters"]
-            el.output_pulse_parameters.signal_threshold = pulse_parameters[
-                "signalThreshold"
-            ]
+            el.output_pulse_parameters.signal_threshold = pulse_parameters["signalThreshold"]
 
             signal_polarity = pulse_parameters["signalPolarity"].upper()
             if signal_polarity == "ABOVE" or signal_polarity == "ASCENDING":
-                el.output_pulse_parameters.signal_polarity = (
-                    qua_config.QuaConfigOutputPulseParametersPolarity.ASCENDING
-                )
+                el.output_pulse_parameters.signal_polarity = qua_config.QuaConfigOutputPulseParametersPolarity.ASCENDING
             elif signal_polarity == "BELOW" or signal_polarity == "DESCENDING":
                 el.output_pulse_parameters.signal_polarity = (
                     qua_config.QuaConfigOutputPulseParametersPolarity.DESCENDING
                 )
 
             if "derivativeThreshold" in pulse_parameters:
-                el.output_pulse_parameters.derivative_threshold = pulse_parameters[
-                    "derivativeThreshold"
-                ]
+                el.output_pulse_parameters.derivative_threshold = pulse_parameters["derivativeThreshold"]
 
                 polarity = pulse_parameters["derivativePolarity"].upper()
                 if polarity == "ABOVE" or polarity == "ASCENDING":
@@ -1152,12 +1075,9 @@ class ElementSchema(Schema):
             else:
                 if data["sticky"].digital:
                     raise ConfigValidationException(
-                        f"Server does not support digital sticky used in element "
-                        f"'{el}'"
+                        f"Server does not support digital sticky used in element " f"'{el}'"
                     )
-                el.hold_offset = qua_config.QuaConfigHoldOffset(
-                    duration=data["sticky"].duration
-                )
+                el.hold_offset = qua_config.QuaConfigHoldOffset(duration=data["sticky"].duration)
 
         elif "hold_offset" in data:
             if capabilities.supports_sticky_elements:
@@ -1192,9 +1112,7 @@ def _build_port(data) -> Dict[str, qua_config.QuaConfigAdcPortReference]:
     outputs = {}
     if data is not None:
         for k, (controller, number) in data.items():
-            outputs[k] = qua_config.QuaConfigAdcPortReference(
-                controller=controller, number=number
-            )
+            outputs[k] = qua_config.QuaConfigAdcPortReference(controller=controller, number=number)
     return outputs
 
 
@@ -1223,6 +1141,12 @@ class QuaConfigSchema(Schema):
         fields.String(),
         fields.Nested(ControllerSchema),
         metadata={"description": """The controllers. """},
+    )
+
+    octaves = fields.Dict(
+        fields.String(),
+        fields.Nested(OctaveSchema),
+        metadata={"description": "The octaves that are in the system, with their interconnected loopbacks."},
     )
 
     integration_weights = fields.Dict(
@@ -1271,13 +1195,11 @@ class QuaConfigSchema(Schema):
 
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
-        configWrapper = qua_config.QuaConfig()
+        config_wrapper = qua_config.QuaConfig()
         config = qua_config.QuaConfigQuaConfigV1()
         version = data["version"]
         if str(version) != "1":
-            raise RuntimeError(
-                "Version must be set to 1 (was set to " + str(version) + ")"
-            )
+            raise RuntimeError("Version must be set to 1 (was set to " + str(version) + ")")
         if "elements" in data:
             for el_name, el in data["elements"].items():
                 config.elements[el_name] = el
@@ -1287,6 +1209,9 @@ class QuaConfigSchema(Schema):
         if "controllers" in data:
             for k, v in data["controllers"].items():
                 config.controllers[k] = v
+        if "octaves" in data:
+            for k, v in data["octaves"].items():
+                config.octaves[k] = v
         if "integration_weights" in data:
             for k, v in data["integration_weights"].items():
                 config.integration_weights[k] = v
@@ -1302,5 +1227,5 @@ class QuaConfigSchema(Schema):
         if "pulses" in data:
             for k, v in data["pulses"].items():
                 config.pulses[k] = v
-        configWrapper.v1_beta = config
-        return configWrapper
+        config_wrapper.v1_beta = config
+        return config_wrapper

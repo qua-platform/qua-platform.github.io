@@ -1,8 +1,7 @@
 from marshmallow_polyfield import PolyField
+from marshmallow import Schema, ValidationError, fields, post_load
 
-from marshmallow import Schema, fields, post_load, ValidationError
-
-from qm.grpc.frontend import ExecutionOverrides, WaveformOverride
+from qm.grpc.frontend import WaveformOverride, ExecutionOverrides
 
 
 def load_overrides(overrides):

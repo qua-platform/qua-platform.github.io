@@ -49,9 +49,7 @@ class AnalogMeasureProcess(object):
 
 
 class BareIntegration(AnalogMeasureProcess):
-    def __init__(
-        self, loc: str, element_output: str, iw: str, target: AnalogProcessTarget
-    ):
+    def __init__(self, loc: str, element_output: str, iw: str, target: AnalogProcessTarget):
         super(BareIntegration, self).__init__(loc)
         self.element_output = element_output
         self.iw = iw
@@ -77,9 +75,7 @@ class DualBareIntegration(AnalogMeasureProcess):
 
 
 class DemodIntegration(AnalogMeasureProcess):
-    def __init__(
-        self, loc: str, element_output: str, iw: str, target: AnalogProcessTarget
-    ):
+    def __init__(self, loc: str, element_output: str, iw: str, target: AnalogProcessTarget):
         super(DemodIntegration, self).__init__(loc)
         self.element_output = element_output
         self.iw = iw

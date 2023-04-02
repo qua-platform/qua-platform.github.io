@@ -28,9 +28,7 @@ class QuaNodeVisitor:
         elif t == "visit":
             self._default_visit(node)
         else:
-            raise Exception(
-                f"unknown call type {t}. only 'enter', 'leave' or 'visit' are supported"
-            )
+            raise Exception(f"unknown call type {t}. only 'enter', 'leave' or 'visit' are supported")
 
     def __call_enter(self, name, node):
         return self.__call(name, node, "enter")

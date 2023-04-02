@@ -1,8 +1,8 @@
 import betterproto
 
-from qm.serialization.qua_node_visitor import QuaNodeVisitor
-from qm.exceptions import QmQuaException
 from qm.grpc import qua
+from qm.exceptions import QmQuaException
+from qm.serialization.qua_node_visitor import QuaNodeVisitor
 
 
 class ExpressionSerializingVisitor(QuaNodeVisitor):
@@ -15,13 +15,9 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         print(f"missing expression: {type_fullname}")
         super()._default_visit(node)
 
-    def visit_qm_grpc_qua_QuaProgramLibFunctionExpression(
-        self, node: qua.QuaProgramLibFunctionExpression
-    ):
+    def visit_qm_grpc_qua_QuaProgramLibFunctionExpression(self, node: qua.QuaProgramLibFunctionExpression):
         if node.library_name == "random":
-            args = [
-                ExpressionSerializingVisitor.serialize(arg) for arg in node.arguments
-            ]
+            args = [ExpressionSerializingVisitor.serialize(arg) for arg in node.arguments]
             self._out = f"call_library_function('{node.library_name}', '{node.function_name}', [{','.join(args)}])"
         else:
             library_name = {
@@ -74,9 +70,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
             if function_name is None:
                 raise Exception(f"Unsupported function name {node.function_name}")
 
-            args = [
-                ExpressionSerializingVisitor.serialize(arg) for arg in node.arguments
-            ]
+            args = [ExpressionSerializingVisitor.serialize(arg) for arg in node.arguments]
 
             self._out = f"{library_name}.{function_name}({','.join(args)})"
 
@@ -89,9 +83,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         else:
             raise QmQuaException(f"Unknown library function argument {name}")
 
-    def visit_qm_grpc_qua_QuaProgramVarRefExpression(
-        self, node: qua.QuaProgramVarRefExpression
-    ):
+    def visit_qm_grpc_qua_QuaProgramVarRefExpression(self, node: qua.QuaProgramVarRefExpression):
         self._out = node.name if node.name else f"IO{node.io_number}"
 
     def visit_qm_grpc_qua_QuaProgramArrayVarRefExpression(self, node):
@@ -125,9 +117,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
     ):
         name = node.integration.name
         output = node.element_output
-        target_name, target_value = betterproto.which_one_of(
-            node.target, "processTarget"
-        )
+        target_name, target_value = betterproto.which_one_of(node.target, "processTarget")
 
         if target_name == "scalar_process":
             target = ExpressionSerializingVisitor.serialize(target_value)
@@ -136,9 +126,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
             target_value: qua.QuaProgramAnalogProcessTargetVectorProcessTarget
             target = ExpressionSerializingVisitor.serialize(target_value.array)
 
-            time_name, time_value = betterproto.which_one_of(
-                target_value.time_division, "timeDivision"
-            )
+            time_name, time_value = betterproto.which_one_of(target_value.time_division, "timeDivision")
             if time_name == "sliced":
                 self._out = f'demod.sliced("{name}", {target}, {time_value.samples_per_chunk}, "{output}")'
             elif time_name == "accumulated":
@@ -153,9 +141,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
     def visit_qm_grpc_qua_QuaProgramAnalogMeasureProcessBareIntegration(self, node):
         name = node.integration.name
         output = node.element_output
-        target_name, target_value = betterproto.which_one_of(
-            node.target, "processTarget"
-        )
+        target_name, target_value = betterproto.which_one_of(node.target, "processTarget")
 
         if target_name == "scalar_process":
             target = ExpressionSerializingVisitor.serialize(target_value)
@@ -163,9 +149,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         elif target_name == "vector_process":
             target = ExpressionSerializingVisitor.serialize(target_value.array)
 
-            time_name, time_value = betterproto.which_one_of(
-                target_value.time_division, "timeDivision"
-            )
+            time_name, time_value = betterproto.which_one_of(target_value.time_division, "timeDivision")
             if time_name == "sliced":
                 self._out = f'integration.sliced("{name}", {target}, {time_value.samples_per_chunk}, "{output}")'
             elif time_name == "accumulated":
@@ -184,9 +168,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         name2 = node.integration2.name
         output1 = node.element_output1
         output2 = node.element_output2
-        target_name, target_value = betterproto.which_one_of(
-            node.target, "processTarget"
-        )
+        target_name, target_value = betterproto.which_one_of(node.target, "processTarget")
 
         if target_name == "scalar_process":
             target = ExpressionSerializingVisitor.serialize(target_value)
@@ -194,9 +176,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         elif target_name == "vector_process":
             target = ExpressionSerializingVisitor.serialize(target_value.array)
 
-            time_name, time_value = betterproto.which_one_of(
-                target_value.time_division, "timeDivision"
-            )
+            time_name, time_value = betterproto.which_one_of(target_value.time_division, "timeDivision")
             if time_name == "sliced":
                 self._out = f'dual_demod.sliced("{name1}", "{output1}", "{name2}", "{output2}", {time_value.samples_per_chunk}, {target})'
             elif time_name == "accumulated":
@@ -213,9 +193,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         name2 = node.integration2.name
         output1 = node.element_output1
         output2 = node.element_output2
-        target_name, target_value = betterproto.which_one_of(
-            node.target, "processTarget"
-        )
+        target_name, target_value = betterproto.which_one_of(node.target, "processTarget")
 
         if target_name == "scalar_process":
             target = ExpressionSerializingVisitor.serialize(target_value)
@@ -223,9 +201,7 @@ class ExpressionSerializingVisitor(QuaNodeVisitor):
         elif target_name == "vector_process":
             target = ExpressionSerializingVisitor.serialize(target_value.array)
 
-            time_name, time_value = betterproto.which_one_of(
-                target_value.time_division, "timeDivision"
-            )
+            time_name, time_value = betterproto.which_one_of(target_value.time_division, "timeDivision")
             if time_name == "sliced":
                 self._out = f'dual_integration.sliced("{name1}", "{output1}", "{name2}", "{output2}", {time_value.samples_per_chunk}, {target})'
             elif time_name == "accumulated":

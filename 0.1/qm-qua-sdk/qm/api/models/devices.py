@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import List, Dict, Union
+from typing import Dict, List, Union
+from dataclasses import asdict, dataclass
 
 from qm.grpc.qm_api import DigitalInputPortPolarity
 
@@ -9,10 +9,10 @@ from qm.grpc.qm_api import DigitalInputPortPolarity
 class MixerInfo:
     mixer: str
     frequency_negative: bool
-    intermediate_frequency: int = field(default=None)
-    intermediate_frequency_double: float = field(default=None)
-    lo_frequency: int = field(default=None)
-    lo_frequency_double: float = field(default=None)
+    intermediate_frequency: int
+    intermediate_frequency_double: float
+    lo_frequency: int
+    lo_frequency_double: float
 
     def as_dict(self) -> Dict[str, Union[str, bool, int, float]]:
         return {key: value for key, value in asdict(self).items() if value is not None}

@@ -22,16 +22,11 @@ class ServerCapabilities:
     supports_fast_frame_rotation: bool
 
     @staticmethod
-    def build(qua_implementation: Optional[QuaMachineInfo]):
-        caps = (
-            qua_implementation.capabilities
-            if qua_implementation is not None
-            else list()
-        )
+    def build(qua_implementation: Optional[QuaMachineInfo] = None) -> "ServerCapabilities":
+        caps = qua_implementation.capabilities if qua_implementation is not None else list()
         return ServerCapabilities(
             has_job_streaming_state="qm.job_streaming_state" in caps,
-            supports_multiple_inputs_for_element="qm.multiple_inputs_for_element"
-            in caps,
+            supports_multiple_inputs_for_element="qm.multiple_inputs_for_element" in caps,
             supports_analog_delay="qm.analog_delay" in caps,
             supports_shared_oscillators="qm.shared_oscillators" in caps,
             supports_crosstalk="qm.crosstalk" in caps,

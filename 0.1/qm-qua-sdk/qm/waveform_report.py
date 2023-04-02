@@ -1,18 +1,55 @@
 import base64
-import dataclasses
-import datetime
-import functools
 import logging
 import os.path
-
-from typing import Dict, List, Optional, Any, Union, Tuple, Iterable
-from abc import abstractmethod
-from abc import ABCMeta
+import datetime
+import functools
+import dataclasses
+from copy import deepcopy
 from dataclasses import dataclass
+from typing_extensions import Protocol
+from abc import ABCMeta, abstractmethod
+from typing import (
+    Any,
+    Set,
+    Dict,
+    List,
+    Type,
+    Tuple,
+    Union,
+    Mapping,
+    TypeVar,
+    Callable,
+    Iterable,
+    Optional,
+    Sequence,
+    MutableMapping,
+    cast,
+)
 
 import numpy as np
-import plotly.colors
-import plotly.graph_objects as go
+import plotly.colors  # type: ignore[import]
+import plotly.graph_objects as go  # type: ignore[import]
+
+from qm.type_hinting.simulator_types import (
+    IqInfoType,
+    ChirpInfoType,
+    AdcAcquisitionType,
+    PlayedWaveformType,
+    PulserLocationType,
+    WaveformReportType,
+    PlayedAnalogWaveformType,
+)
+
+
+class HasPortsProtocol(Protocol):
+    controller: str
+
+    @property
+    def ports(self) -> List[int]:
+        return [1]
+
+
+T = TypeVar("T", bound="PlayedWaveform")
 
 
 @dataclass(frozen=True)
@@ -21,15 +58,23 @@ class PlayedWaveform(metaclass=ABCMeta):
     pulse_name: str
     length: int
     timestamp: int
-    iq_info: Dict[str, Any]
+    iq_info: IqInfoType
     element: str
     output_ports: List[int]
     controller: str
     pulser: Dict[str, Any]
 
-    @classmethod
-    def from_job_dict(cls, dict_description: Dict, formated_attribute_dict: Dict):
-        formated_attribute_dict.update(
+    @staticmethod
+    def _build_initialization_dict(
+        dict_description: PlayedWaveformType, formatted_attribute_dict: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        attribute_dict: Dict[str, Any]
+        if formatted_attribute_dict is None:
+            attribute_dict = {}
+        else:
+            attribute_dict = deepcopy(formatted_attribute_dict)
+
+        attribute_dict.update(
             pulse_name=dict_description["pulseName"],
             waveform_name=dict_description["waveformName"],
             timestamp=int(dict_description["timestamp"]),
@@ -40,7 +85,11 @@ class PlayedWaveform(metaclass=ABCMeta):
             pulser=dict_description["pulser"],
             controller=dict_description["pulser"]["controllerName"],
         )
-        return cls(**formated_attribute_dict)
+        return attribute_dict
+
+    @classmethod
+    def from_job_dict(cls: Type[T], dict_description: PlayedWaveformType) -> T:
+        return cls(**cls._build_initialization_dict(dict_description))
 
     @property
     def ports(self) -> List[int]:
@@ -68,21 +117,21 @@ class PlayedWaveform(metaclass=ABCMeta):
     def to_string(self) -> str:
         return ""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.to_string()
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return dataclasses.asdict(self)
 
     def _common_attributes_to_printable_str_list(self) -> List[str]:
         waveform_type_string = "Type="
         if self.is_iq:
-            waveform_type_string += f"IQ Type ({'I' if self.iq_info['isI']  else 'Q'})"
+            waveform_type_string += f"IQ Type ({'I' if self.iq_info['isI'] else 'Q'})"
         else:
             waveform_type_string += "Single"
         return [
             f"Waveform Name={self.waveform_name}",
-            f"Pulse name={self.pulse_name.removeprefix('OriginPulseName=')}",
+            f"Pulse name={remove_prefix(self.pulse_name, 'OriginPulseName=')}",
             f"Start Time={self.timestamp} ns",
             f"Length={self.length} ns",
             f"Element={self.element}",
@@ -91,18 +140,25 @@ class PlayedWaveform(metaclass=ABCMeta):
         ]
 
 
-def format_float(f) -> str:
+# str.removeprefix exists only for python 3.9+, this is here for backward compatibility
+def remove_prefix(text: str, prefix: str) -> str:
+    if text.startswith(prefix):
+        return text[len(prefix) :]
+    return text
+
+
+def format_float(f: float) -> str:
     return "{:.3f}".format(f)
 
 
-def pretty_string_freq(f) -> str:
+def pretty_string_freq(f: float) -> str:
     if f < 1000:
-        div, units = 1, "Hz"
+        div, units = 1.0, "Hz"
     elif 1000 <= f < 1_000_000:
-        div, units = 1000, "kHz"
+        div, units = 1000.0, "kHz"
     else:
         div, units = 10e6, "MHz"
-    return f"{format_float(f/div).rstrip('0').rstrip('.')}{units}"
+    return f"{format_float(f / div).rstrip('0').rstrip('.')}{units}"
 
 
 @dataclass(frozen=True)
@@ -112,29 +168,26 @@ class PlayedAnalogWaveform(PlayedWaveform):
     current_intermediate_frequency: float
     current_frame: List[float]
     current_correction_elements: List[float]
-    chirp_info: Optional[Dict]
+    chirp_info: Optional[ChirpInfoType]
     current_phase: float
 
     @classmethod
-    def from_job_dict(cls, dict_description: Dict):
+    def from_job_dict(cls: Type[T], dict_description: PlayedWaveformType) -> T:
+        dict_description = cast(PlayedAnalogWaveformType, dict_description)
         pulse_chirp_info = dict_description["chirpInfo"]
-        is_pulse_have_chirp = (
-            len(pulse_chirp_info["units"]) > 0 or len(pulse_chirp_info["rate"]) > 0
-        )
+        is_pulse_have_chirp = len(pulse_chirp_info["units"]) > 0 or len(pulse_chirp_info["rate"]) > 0
         formated_attribute_list = dict(
             current_amp_elements=dict_description["currentGMatrixElements"],
             current_dc_offset_by_port=dict_description["currentDCOffsetByPort"],
-            current_intermediate_frequency=dict_description[
-                "currentIntermediateFrequency"
-            ],
+            current_intermediate_frequency=dict_description["currentIntermediateFrequency"],
             current_frame=dict_description["currentFrame"],
             current_correction_elements=dict_description["currentCorrectionElements"],
             chirp_info=pulse_chirp_info if is_pulse_have_chirp else None,
             current_phase=dict_description.get("currentPhase", 0),
         )
-        return super(cls, cls).from_job_dict(dict_description, formated_attribute_list)
+        return cls(**cls._build_initialization_dict(dict_description, formated_attribute_list))
 
-    def _to_custom_string(self, show_chirp=True) -> str:
+    def _to_custom_string(self, show_chirp: bool = True) -> str:
         _attributes = super()._common_attributes_to_printable_str_list()
         _attributes += (
             [
@@ -159,17 +212,9 @@ class PlayedAnalogWaveform(PlayedWaveform):
                 f"Current DC Offset (By output ports)={ {k: format_float(v) for k, v in self.current_dc_offset_by_port.items()} }",
                 f"Current Phase={format_float(self.current_phase)},",
             ]
-            + (
-                []
-                if (self.chirp_info is None or not show_chirp)
-                else [f"chirp_info={self.chirp_info}"]
-            )
+            + ([] if (self.chirp_info is None or not show_chirp) else [f"chirp_info={self.chirp_info}"])
         )
-        s = (
-            "AnalogWaveform("
-            + ("\n" + len("AnalogWaveform(") * " ").join(_attributes)
-            + ")"
-        )
+        s = "AnalogWaveform(" + ("\n" + len("AnalogWaveform(") * " ").join(_attributes) + ")"
         return s
 
     def to_string(self) -> str:
@@ -179,15 +224,13 @@ class PlayedAnalogWaveform(PlayedWaveform):
 @dataclass(frozen=True)
 class PlayedDigitalWaveform(PlayedWaveform):
     @classmethod
-    def from_job_dict(cls, dict_description: Dict):
-        return super(cls, cls).from_job_dict(dict_description, {})
+    def from_job_dict(cls: Type[T], dict_description: PlayedWaveformType) -> T:
+        return cls(**cls._build_initialization_dict(dict_description))
 
     def to_string(self) -> str:
         s = (
             "DigitalWaveform("
-            + ("\n" + len("DigitalWaveform(") * " ").join(
-                self._common_attributes_to_printable_str_list()
-            )
+            + ("\n" + len("DigitalWaveform(") * " ").join(self._common_attributes_to_printable_str_list())
             + ")"
         )
         return s
@@ -198,13 +241,13 @@ class AdcAcquisition:
     start_time: int
     end_time: int
     process: str
-    pulser: Dict[str, dict]
+    pulser: PulserLocationType
     quantum_element: str
     adc_ports: List[int]
     controller: str
 
     @classmethod
-    def from_job_dict(cls, dict_description: Dict):
+    def from_job_dict(cls, dict_description: AdcAcquisitionType) -> "AdcAcquisition":
         return cls(
             start_time=int(dict_description["startTime"]),
             end_time=int(dict_description["endTime"]),
@@ -216,7 +259,7 @@ class AdcAcquisition:
         )
 
     @property
-    def ports(self):
+    def ports(self) -> List[int]:
         return self.adc_ports
 
     def to_string(self) -> str:
@@ -234,133 +277,127 @@ class AdcAcquisition:
             + ")"
         )
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return dataclasses.asdict(self)
 
 
 class WaveformReport:
-    def __init__(self, descriptor_dict: Optional[Dict] = None, job_id=-1):
+    def __init__(self, descriptor_dict: Optional[WaveformReportType] = None, job_id: Union[int, str] = -1):
         self.analog_waveforms: List[PlayedAnalogWaveform] = []
         self.digital_waveforms: List[PlayedDigitalWaveform] = []
         self.adc_acquisitions: List[AdcAcquisition] = []
         self.job_id = job_id
         if descriptor_dict is not None:
-            for wf in descriptor_dict["analogWaveforms"]:
-                self.analog_waveforms.append(PlayedAnalogWaveform.from_job_dict(wf))
-            for wf in descriptor_dict["digitalWaveforms"]:
-                self.digital_waveforms.append(PlayedDigitalWaveform.from_job_dict(wf))
+            for awf in descriptor_dict["analogWaveforms"]:
+                self.analog_waveforms.append(PlayedAnalogWaveform.from_job_dict(awf))
+            for dwf in descriptor_dict["digitalWaveforms"]:
+                self.digital_waveforms.append(PlayedDigitalWaveform.from_job_dict(dwf))
             if "adcAcquisitions" in descriptor_dict:
                 for acq in descriptor_dict["adcAcquisitions"]:
                     self.adc_acquisitions.append(AdcAcquisition.from_job_dict(acq))
-        return
 
     @classmethod
-    def from_dict(cls, d: Dict, job_id=-1) -> "WaveformReport":
+    def from_dict(cls, d: WaveformReportType, job_id: Union[int, str] = -1) -> "WaveformReport":
         return cls(d, job_id)
 
     @property
-    def waveforms(self) -> List[PlayedWaveform]:
-        return self.analog_waveforms + self.digital_waveforms
+    def waveforms(self) -> Sequence[PlayedWaveform]:
+        return cast(List[PlayedWaveform], self.analog_waveforms) + cast(List[PlayedWaveform], self.digital_waveforms)
 
     @property
-    def controllers_in_use(self) -> List[str]:
-        return list(
-            set([c.controller for c in (self.waveforms + self.adc_acquisitions)])
-        )
+    def controllers_in_use(self) -> Sequence[str]:
+        waveform_controllers = [c.controller for c in self.waveforms]
+        adc_controller = [c.controller for c in self.adc_acquisitions]
+        return list(set(adc_controller + waveform_controllers))
 
     @property
     def num_controllers_in_use(self) -> int:
         return len(self.controllers_in_use)
 
-    def _sort_ports_dict(self, ports_in_use):
+    @staticmethod
+    def _sort_ports_dict(ports_in_use: Mapping[str, Iterable[int]]) -> Mapping[str, Sequence[int]]:
+        output: MutableMapping[str, Sequence[int]] = {}
         for k, v in ports_in_use.items():
-            ports_in_use[k] = sorted(v)
-        return ports_in_use
+            output[k] = sorted(v)
+        return output
 
-    def _get_output_ports_in_use(self, src: List, on_controller):
-        ports_in_use = {c: set() for c in self.controllers_in_use}
+    def _get_output_ports_in_use(
+        self, src: List[HasPortsProtocol], on_controller: Optional[str]
+    ) -> Union[Mapping[str, Sequence[int]], Sequence[int]]:
+        ports_in_use: MutableMapping[str, Set[int]] = {c: set() for c in self.controllers_in_use}
         for ap in src:
             ports_in_use[ap.controller].update(ap.ports)
-        self._sort_ports_dict(ports_in_use)
+        sorted_ports: Mapping[str, Sequence[int]] = self._sort_ports_dict(ports_in_use)
         if on_controller is None:
             if self.num_controllers_in_use == 1:
-                return ports_in_use[self.controllers_in_use[0]]
+                return sorted_ports[self.controllers_in_use[0]]
             else:
-                return ports_in_use
+                return sorted_ports
         else:
-            return ports_in_use[on_controller]
+            return sorted_ports[on_controller]
 
     def analog_output_ports_in_use(
         self, on_controller: Optional[str] = None
-    ) -> Union[List[int], Dict[str, List[int]]]:
-        return self._get_output_ports_in_use(self.analog_waveforms, on_controller)
+    ) -> Union[Mapping[str, Sequence[int]], Sequence[int]]:
+        return self._get_output_ports_in_use(self.analog_waveforms, on_controller)  # type: ignore[arg-type]
 
     def digital_output_ports_in_use(
         self, on_controller: Optional[str] = None
-    ) -> Union[List[int], Dict[str, List[int]]]:
-        return self._get_output_ports_in_use(self.digital_waveforms, on_controller)
+    ) -> Union[Mapping[str, Sequence[int]], Sequence[int]]:
+        return self._get_output_ports_in_use(self.digital_waveforms, on_controller)  # type: ignore[arg-type]
 
     def adcs_ports_in_use(
         self, on_controller: Optional[str] = None
-    ) -> Union[List[int], Dict[str, List[int]]]:
-        return self._get_output_ports_in_use(self.adc_acquisitions, on_controller)
+    ) -> Union[Mapping[str, Sequence[int]], Sequence[int]]:
+        return self._get_output_ports_in_use(self.adc_acquisitions, on_controller)  # type: ignore[arg-type]
 
-    def to_string(self):
-        return "\n".join(
-            [wf.to_string() for wf in (self.waveforms + self.adc_acquisitions)]
-        )
+    def to_string(self) -> str:
+        waveforms_str = [wf.to_string() for wf in self.waveforms]
+        adc_string = [adc.to_string() for adc in self.adc_acquisitions]
+        return "\n".join(waveforms_str + adc_string)
 
-    def _transform_report_by_func(self, func) -> "WaveformReport":
+    def _transform_report_by_func(self, func: Callable[..., Any]) -> "WaveformReport":
         new_report = WaveformReport(job_id=self.job_id)
         new_report.analog_waveforms = list(filter(func, self.analog_waveforms))
         new_report.digital_waveforms = list(filter(func, self.digital_waveforms))
         new_report.adc_acquisitions = list(filter(func, self.adc_acquisitions))
         return new_report
 
-    def report_by_controllers(self) -> Dict[str, "WaveformReport"]:
-        by_controller_map = {k: None for k in self.controllers_in_use}
-
-        def _filter_func(r, conn):
+    def report_by_controllers(self) -> Mapping[str, "WaveformReport"]:
+        def _filter_func(r: HasPortsProtocol, conn: str) -> bool:
             return r.controller == conn
 
-        for con_name in by_controller_map.keys():
+        by_controller_map: Dict[str, "WaveformReport"] = {}
+        for con_name in self.controllers_in_use:
             con_filter = functools.partial(_filter_func, conn=con_name)
             by_controller_map[con_name] = self._transform_report_by_func(con_filter)
 
         return by_controller_map
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "analog_waveforms": [awf.to_dict() for awf in self.analog_waveforms],
             "digital_waveforms": [dwf.to_dict() for dwf in self.digital_waveforms],
             "adc_acquisitions": [acq.to_dict() for acq in self.adc_acquisitions],
         }
 
-    def get_report_by_output_ports(self, on_controller: Optional[str] = None):
+    def get_report_by_output_ports(self, on_controller: Optional[str] = None) -> Dict[str, Any]:
 
-        map_by_output_ports = {
+        map_by_output_ports: Dict[str, Dict[str, Any]] = {
             con_name: {
-                "analog_out": {
-                    k: []
-                    for k in self.analog_output_ports_in_use(on_controller=con_name)
-                },
-                "digital_out": {
-                    k: []
-                    for k in self.digital_output_ports_in_use(on_controller=con_name)
-                },
-                "analog_in": {
-                    k: [] for k in self.adcs_ports_in_use(on_controller=con_name)
-                },
+                "analog_out": {k: [] for k in self.analog_output_ports_in_use(on_controller=con_name)},
+                "digital_out": {k: [] for k in self.digital_output_ports_in_use(on_controller=con_name)},
+                "analog_in": {k: [] for k in self.adcs_ports_in_use(on_controller=con_name)},
             }
             for con_name in self.controllers_in_use
         }
 
-        for wf in self.analog_waveforms:
-            for p in wf.output_ports:
-                map_by_output_ports[wf.controller]["analog_out"][p].append(wf)
-        for wf in self.digital_waveforms:
-            for p in wf.output_ports:
-                map_by_output_ports[wf.controller]["digital_out"][p].append(wf)
+        for awf in self.analog_waveforms:
+            for p in awf.output_ports:
+                map_by_output_ports[awf.controller]["analog_out"][p].append(awf)
+        for dwf in self.digital_waveforms:
+            for p in dwf.output_ports:
+                map_by_output_ports[dwf.controller]["digital_out"][p].append(dwf)
         for adc in self.adc_acquisitions:
             for p in adc.adc_ports:
                 map_by_output_ports[adc.controller]["analog_in"][p].append(adc)
@@ -375,11 +412,11 @@ class WaveformReport:
 
     def create_plot(
         self,
-        samples: Optional[Iterable] = None,
+        samples: Optional[Iterable[Any]] = None,  # TODO: for liran - fill type
         controllers: Optional[List[str]] = None,
         plot: bool = True,
         save_path: Optional[str] = None,
-    ):
+    ) -> None:
 
         if save_path is None:
             dirname, filename = "./", f"waveform_report_{self.job_id}"
@@ -389,11 +426,7 @@ class WaveformReport:
                 filename = f"waveform_report_{self.job_id}"
 
         report_by_controllers = self.report_by_controllers()
-        filter_func = (
-            (lambda item: item[0] in controllers)
-            if controllers is not None
-            else (lambda x: True)
-        )
+        filter_func = (lambda item: item[0] in controllers) if controllers is not None else (lambda x: True)
         for con_name, report in filter(filter_func, report_by_controllers.items()):
             con_samples = None
             if samples is not None:
@@ -409,7 +442,7 @@ class WaveformReport:
 
 
 class _WaveformPlotBuilder:
-    def __init__(self, wf_report: WaveformReport, samples=None, job_id=-1):
+    def __init__(self, wf_report: WaveformReport, samples: Any = None, job_id: Union[int, str] = -1):
         self._report = wf_report
         if wf_report.num_controllers_in_use > 1:
             raise RuntimeError(
@@ -418,18 +451,17 @@ class _WaveformPlotBuilder:
             )
         self._samples = samples
         self._job_id = job_id
-        self._figure: Union[go.Figure, None] = None
-        self._already_registered_qe = set()
-        self._colormap = {}
-        self._max_parallel_traces_per_row = {}
+        self._figure: Optional[go.Figure] = None
+        self._already_registered_qe: Set[str] = set()
+        self._colormap: Dict[str, Any] = {}
+        self._max_parallel_traces_per_row: Dict[str, Any] = {}  # TODO: for liran - fill type
         return
 
     @property
     def _num_rows(self) -> int:
         with_samples = self._samples is not None
         num_rows = (
-            len(self._report.analog_output_ports_in_use())
-            + len(self._report.digital_output_ports_in_use())
+            len(self._report.analog_output_ports_in_use()) + len(self._report.digital_output_ports_in_use())
         ) * (1 + with_samples)
         num_rows += len(self._report.adcs_ports_in_use())
         return num_rows
@@ -440,23 +472,19 @@ class _WaveformPlotBuilder:
 
     @property
     def _num_analog_rows(self) -> int:
-        return len(self._report.analog_output_ports_in_use()) * (
-            1 + (self._samples is not None)
-        )
+        return len(self._report.analog_output_ports_in_use()) * (1 + (self._samples is not None))
 
     @property
     def _num_digital_rows(self) -> int:
-        return len(self._report.digital_output_ports_in_use()) * (
-            1 + (self._samples is not None)
-        )
+        return len(self._report.digital_output_ports_in_use()) * (1 + (self._samples is not None))
 
-    def _is_row_analog(self, r) -> bool:
+    def _is_row_analog(self, r: int) -> bool:
         return 1 <= r <= self._num_analog_rows
 
-    def _is_row_digital(self, r) -> bool:
+    def _is_row_digital(self, r: int) -> bool:
         return self._num_analog_rows < r <= self._num_output_rows
 
-    def _is_row_analog_input(self, r) -> bool:
+    def _is_row_analog_input(self, r: int) -> bool:
         return self._num_output_rows < r <= self._num_rows
 
     @property
@@ -467,15 +495,15 @@ class _WaveformPlotBuilder:
             else max(self._report.waveforms, key=lambda x: x.ends_at).ends_at + 100
         )
 
-    def _pre_setup(self):
+    def _pre_setup(self) -> None:
         self._setup_qe_colorscale()
         self._calculate_max_parallel_traces_per_row()
         return
 
-    def _get_all_qe_used(self):
+    def _get_all_qe_used(self) -> Sequence[str]:
         return list(set([wf.element for wf in self._report.waveforms]))
 
-    def _setup_qe_colorscale(self):
+    def _setup_qe_colorscale(self) -> None:
         qe_in_use = self._get_all_qe_used()
         n_colors = len(qe_in_use)
         samples = plotly.colors.qualitative.Pastel + plotly.colors.qualitative.Safe
@@ -487,42 +515,33 @@ class _WaveformPlotBuilder:
         self._colormap = dict(zip(qe_in_use, samples))
         return
 
-    def _calculate_max_parallel_traces_per_row(self):
+    def _calculate_max_parallel_traces_per_row(self) -> None:
         report_by_output_port = self._report.get_report_by_output_ports()
         self._max_parallel_traces_per_row["analog"] = {}
         self._max_parallel_traces_per_row["digital"] = {}
 
-        def calc_row(waveform_list):
+        def calc_row(waveform_list: List[Any]) -> int:  # TODO: for liran - fill type
             max_in_row = 0
             functional_ts = sorted(
-                [(r.timestamp, 1) for r in waveform_list]
-                + [(r.ends_at, -1) for r in waveform_list],
-                key=lambda t: t[0],
+                [(r.timestamp, 1) for r in waveform_list] + [(r.ends_at, -1) for r in waveform_list],
+                key=lambda t: t[0],  # type: ignore[no-any-return]
             )
             for _, f in functional_ts:
                 max_in_row = max(max_in_row, max_in_row + f)
             return max_in_row
 
         for output_port, waveform_list in report_by_output_port["analog_out"].items():
-            self._max_parallel_traces_per_row["analog"][output_port] = calc_row(
-                waveform_list
-            )
+            self._max_parallel_traces_per_row["analog"][output_port] = calc_row(waveform_list)
 
         for output_port, waveform_list in report_by_output_port["digital_out"].items():
-            self._max_parallel_traces_per_row["digital"][output_port] = calc_row(
-                waveform_list
-            )
+            self._max_parallel_traces_per_row["digital"][output_port] = calc_row(waveform_list)
 
         return
 
     def _is_intersect(self, r1: Tuple[int, int], r2: Tuple[int, int]) -> bool:
-        return (
-            (r1[0] <= r2[0] <= r1[1])
-            or (r1[0] <= r2[1] <= r1[1])
-            or (r2[0] < r1[0] and r2[1] > r1[1])
-        )
+        return (r1[0] <= r2[0] <= r1[1]) or (r1[0] <= r2[1] <= r1[1]) or (r2[0] < r1[0] and r2[1] > r1[1])
 
-    def _get_hover_text(self, played_waveform):
+    def _get_hover_text(self, played_waveform: PlayedWaveform) -> str:
         waveform_desc = played_waveform.to_string()
         if isinstance(played_waveform, PlayedAnalogWaveform):
             if played_waveform.chirp_info is not None:
@@ -538,22 +557,18 @@ class _WaveformPlotBuilder:
         return "%{x}ns<br>" + waveform_desc.replace("\n", "</br>") + "<extra></extra>"
 
     def _get_output_port_waveform_plot_data(
-        self, port_played_waveforms: List[PlayedWaveform], gui_args
-    ):
-        graph_data = []
-        annotations = []
-        levels = []
+        self, port_played_waveforms: List[PlayedWaveform], gui_args: Dict[str, Any]
+    ) -> Any:  # TODO: for liran - fill type
+        graph_data: List[Any] = []  # TODO: for liran - fill type
+        annotations: List[Any] = []  # TODO: for liran - fill type
+        levels: List[Any] = []  # TODO: for liran - fill type
         x_axis_name = gui_args["x_axis_name"]
         max_in_row = gui_args["max_in_row"]
-        diff_between_traces, start_y = (
-            (0.2, 1.2) if max_in_row <= 7 else (1.4 / max_in_row, 1.45)
-        )
+        diff_between_traces, start_y = (0.2, 1.2) if max_in_row <= 7 else (1.4 / max_in_row, 1.45)
         y_level = [start_y] * 3
         for wf in port_played_waveforms:
             x_axis_points = (wf.timestamp, wf.ends_at)
-            num_intersections = len(
-                [l for l in levels if self._is_intersect(l, x_axis_points)]
-            )
+            num_intersections = len([l for l in levels if self._is_intersect(l, x_axis_points)])
             levels.append(x_axis_points)
             prev_y = start_y if num_intersections == 0 else y_level[0]
             y_level = [prev_y - diff_between_traces] * 3
@@ -564,7 +579,7 @@ class _WaveformPlotBuilder:
                     mode="lines+markers+text",
                     text=[
                         "",
-                        f"{wf.pulse_name.removeprefix('OriginPulseName=')}"
+                        f"{remove_prefix(wf.pulse_name, 'OriginPulseName=')}"
                         + (f"({wf.get_iq_association})" if wf.is_iq else ""),
                         "",
                     ],
@@ -586,8 +601,8 @@ class _WaveformPlotBuilder:
         return graph_data, annotations
 
     def _add_plot_data_for_analog_output_port(
-        self, figure_row_number, output_port, port_waveforms: List[PlayedWaveform]
-    ):
+        self, figure_row_number: int, output_port: int, port_waveforms: List[PlayedWaveform]
+    ) -> None:
         if len(port_waveforms) == 0:
             return
         use_samples = self._samples is not None
@@ -601,11 +616,9 @@ class _WaveformPlotBuilder:
             },
         )
         row_number = figure_row_number * (1 + use_samples)
+        assert isinstance(self._figure, go.Figure)
         self._figure.add_traces(port_wf_plot, rows=row_number, cols=1)
-        [
-            self._figure.add_annotation(annot, row=row_number, col=1)
-            for annot in annotations
-        ]
+        [self._figure.add_annotation(annot, row=row_number, col=1) for annot in annotations]
 
         if use_samples:
             port_samples = self._samples.analog[str(output_port)]
@@ -624,8 +637,8 @@ class _WaveformPlotBuilder:
         return
 
     def _add_plot_data_for_digital_output_port(
-        self, figure_row_number, output_port, port_waveforms: List[PlayedWaveform]
-    ):
+        self, figure_row_number: int, output_port: int, port_waveforms: List[PlayedWaveform]
+    ) -> None:
         if len(port_waveforms) == 0:
             return
         use_samples = self._samples is not None
@@ -639,16 +652,12 @@ class _WaveformPlotBuilder:
             },
         )
         row_number = figure_row_number * (1 + use_samples)
+        assert isinstance(self._figure, go.Figure)
         self._figure.add_traces(port_wf_plot, rows=row_number, cols=1)
-        [
-            self._figure.add_annotation(annot, row=row_number, col=1)
-            for annot in annotations
-        ]
+        [self._figure.add_annotation(annot, row=row_number, col=1) for annot in annotations]
 
         if use_samples:
-            port_samples = self._samples.digital.get(
-                str(output_port), np.zeros(shape=self._xrange)
-            )
+            port_samples = self._samples.digital.get(str(output_port), np.zeros(shape=self._xrange))
             if port_samples is None:
                 logging.log(
                     logging.WARNING,
@@ -672,18 +681,16 @@ class _WaveformPlotBuilder:
 
     def _add_plot_data_for_adc_port(
         self,
-        figure_row_number,
-        adc_port_number,
+        figure_row_number: int,
+        adc_port_number: int,
         adc_port_acquisitions: List[AdcAcquisition],
-    ):
-        graph_data = []
-        levels = []
+    ) -> None:
+        graph_data: List[Any] = []
+        levels: List[Any] = []
         y_level = [1.2] * 3
         for adc in adc_port_acquisitions:
             x_axis_points = (adc.start_time, adc.end_time)
-            num_intersections = len(
-                [l for l in levels if self._is_intersect(l, x_axis_points)]
-            )
+            num_intersections = len([l for l in levels if self._is_intersect(l, x_axis_points)])
             levels.append(x_axis_points)
             prev_y = 1.2 if num_intersections == 0 else y_level[0]
             y_level = [prev_y - 0.2] * 3
@@ -698,9 +705,7 @@ class _WaveformPlotBuilder:
                         "",
                     ],
                     textfont=dict(size=10),
-                    hovertemplate="%{x}ns<br>"
-                    + adc.to_string().replace("\n", "</br>")
-                    + "<extra></extra>",
+                    hovertemplate="%{x}ns<br>" + adc.to_string().replace("\n", "</br>") + "<extra></extra>",
                     name=adc.quantum_element,
                     legendgroup=adc.quantum_element,
                     showlegend=not (adc.quantum_element in self._already_registered_qe),
@@ -713,17 +718,16 @@ class _WaveformPlotBuilder:
             )
             self._already_registered_qe.add(adc.quantum_element)
 
+        assert isinstance(self._figure, go.Figure)
         self._figure.add_traces(graph_data, rows=figure_row_number, cols=1)
 
         return
 
-    def _add_data(self):
+    def _add_data(self) -> None:
         for (figure_row_number, (output_port, port_waveforms_list)) in enumerate(
             self._report.get_report_by_output_ports()["analog_out"].items()
         ):
-            self._add_plot_data_for_analog_output_port(
-                figure_row_number + 1, output_port, port_waveforms_list
-            )
+            self._add_plot_data_for_analog_output_port(figure_row_number + 1, output_port, port_waveforms_list)
 
         for (figure_row_number, (output_port, port_waveforms_list)) in enumerate(
             self._report.get_report_by_output_ports()["digital_out"].items()
@@ -744,18 +748,14 @@ class _WaveformPlotBuilder:
             )
         return
 
-    def _update_extra_features(self):
+    def _update_extra_features(self) -> None:
+        assert isinstance(self._figure, go.Figure)
         all_xaxis_names = sorted(
             [a for a in self._figure.layout.__dir__() if a.startswith("xaxis")],
-            key=lambda s: int(s.removeprefix("xaxis"))
-            if s.removeprefix("xaxis").isnumeric()
-            else 0,
+            key=lambda s: int(s.removeprefix("xaxis")) if s.removeprefix("xaxis").isnumeric() else 0,
         )
         all_xaxis_names_short = {
-            k: "x" + k.removeprefix("xaxis")
-            if k.removeprefix("xaxis").isnumeric()
-            else ""
-            for k in all_xaxis_names
+            k: "x" + k.removeprefix("xaxis") if k.removeprefix("xaxis").isnumeric() else "" for k in all_xaxis_names
         }
         bottomost_x_axis = all_xaxis_names[-1]
         self._figure.update_layout(
@@ -768,24 +768,13 @@ class _WaveformPlotBuilder:
                         [
                             dict(
                                 args=[
-                                    {
-                                        k
-                                        + ".matches": all_xaxis_names_short[
-                                            bottomost_x_axis
-                                        ]
-                                        for k in all_xaxis_names
-                                    }
+                                    {k + ".matches": all_xaxis_names_short[bottomost_x_axis] for k in all_xaxis_names}
                                 ],
                                 label="Shared",
                                 method="relayout",
                             ),
                             dict(
-                                args=[
-                                    {
-                                        k + ".matches": v
-                                        for k, v in all_xaxis_names_short.items()
-                                    }
-                                ],
+                                args=[{k + ".matches": v for k, v in all_xaxis_names_short.items()}],
                                 label="Distinct",
                                 method="relayout",
                             ),
@@ -821,9 +810,7 @@ class _WaveformPlotBuilder:
             ]
         )
 
-        source_path = os.path.join(
-            os.path.dirname(__file__), "sources", "logo_qm_square.png"
-        )
+        source_path = os.path.join(os.path.dirname(__file__), "sources", "logo_qm_square.png")
 
         im = base64.b64encode(open(source_path, "rb").read())
         self._figure.add_layout_image(
@@ -839,24 +826,22 @@ class _WaveformPlotBuilder:
         )
         return
 
-    def _setup_figure(self):
+    def _setup_figure(self) -> None:
         self._figure = go.Figure()
         with_samples = self._samples is not None
         num_rows = max(self._num_rows, 4)
-        titles = [
-            f"Analog-Out-{a}" for a in self._report.analog_output_ports_in_use()
-        ] + [f"Digital-Out-{d}" for d in self._report.digital_output_ports_in_use()]
+        titles = [f"Analog-Out-{a}" for a in self._report.analog_output_ports_in_use()] + [
+            f"Digital-Out-{d}" for d in self._report.digital_output_ports_in_use()
+        ]
         if with_samples:
-            zipped = list(zip(titles, [[]] * self._num_output_rows))
-            titles = [item for z in zipped for item in z]
+            zipped: List[Any] = list(zip(titles, [[]] * self._num_output_rows))
+            titles: List[Any] = [item for z in zipped for item in z]  # type: ignore[no-redef]
         titles += [f"Analog-In-{a}" for a in self._report.adcs_ports_in_use()]
 
         if with_samples:
-            specs = (
-                [[{"t": 1.2 / (num_rows * 5)}]] + [[{"b": 1.2 / (num_rows * 5)}]]
-            ) * (self._num_output_rows // 2) + [[{"t": 1 / (num_rows * 4)}]] * len(
-                self._report.adcs_ports_in_use()
-            )
+            specs = ([[{"t": 1.2 / (num_rows * 5)}]] + [[{"b": 1.2 / (num_rows * 5)}]]) * (
+                self._num_output_rows // 2
+            ) + [[{"t": 1 / (num_rows * 4)}]] * len(self._report.adcs_ports_in_use())
         else:
             specs = [[{"t": 1 / (num_rows * 4)}]] * num_rows
         self._figure.set_subplots(
@@ -874,11 +859,7 @@ class _WaveformPlotBuilder:
             title=dict(
                 text=(
                     f"Waveform Report (connection: {self._report.controllers_in_use[0]})"
-                    + (
-                        " for job: {}".format(self._job_id)
-                        if self._job_id != -1
-                        else ""
-                    )
+                    + (" for job: {}".format(self._job_id) if self._job_id != -1 else "")
                 ),
                 x=0.5,
                 xanchor="center",
@@ -923,9 +904,9 @@ class _WaveformPlotBuilder:
                     col=1,
                 )
 
-        for r in list(
-            range(1 + with_samples, self._num_output_rows + 1, 1 + with_samples)
-        ) + [p + self._num_output_rows for p in self._report.adcs_ports_in_use()]:
+        for r in list(range(1 + with_samples, self._num_output_rows + 1, 1 + with_samples)) + [
+            p + self._num_output_rows for p in self._report.adcs_ports_in_use()  # type: ignore[operator]
+        ]:
             self._figure.update_yaxes(
                 range=[-0.5, 1.5],
                 showticklabels=False,
@@ -937,29 +918,26 @@ class _WaveformPlotBuilder:
                 row=r,
                 col=1,
             )
-            self._figure.update_xaxes(
-                title=dict(text="Time(ns)", standoff=5, font=dict(size=9)), row=r, col=1
-            )
+            self._figure.update_xaxes(title=dict(text="Time(ns)", standoff=5, font=dict(size=9)), row=r, col=1)
             title_text = ""
 
         return
 
-    def build(self):
+    def build(self) -> None:
         self._pre_setup()
         self._setup_figure()
         self._add_data()
         self._update_extra_features()
         return
 
-    def plot(self):
+    def plot(self) -> None:
         if self._figure is None:
-            raise RuntimeError(
-                "No graph has been built. Use 'build' on the instance to first build the figure."
-            )
+            raise RuntimeError("No graph has been built. Use 'build' on the instance to first build the figure.")
         self._figure.show()
         return
 
-    def save(self, basedir="", filename=""):
+    def save(self, basedir: str = "", filename: str = "") -> None:
+        assert isinstance(self._figure, go.Figure)
         if not os.path.exists(basedir):
             os.makedirs(basedir)
         if filename == "":

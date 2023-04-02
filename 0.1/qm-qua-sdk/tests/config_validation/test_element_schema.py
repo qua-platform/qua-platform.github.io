@@ -1,3 +1,6 @@
+import functools
+import itertools
+
 import pytest
 from marshmallow import ValidationError
 
@@ -10,7 +13,7 @@ from qm.program._qua_config_schema import (
     ControllerSchema,
     validate_config_capabilities,
 )
-from tests.conftest import ignore_deprecation_warnings
+from tests.conftest import ignore_deprecation_warnings_context
 
 _POSSIBLE_INPUTS = [
     {
@@ -69,7 +72,9 @@ def _create_server_capabilities(
     )
 
 
-class TestElementWithCombinedInputs:
+@pytest.mark.parametrize("two_elements", itertools.permutations(_POSSIBLE_INPUTS, r=2))
+def test_valid_multiple_inputs(two_elements):
+    a, b = two_elements
     _valid_config = {
         "intermediate_frequency": 100e6,
         "outputs": {
@@ -80,32 +85,22 @@ class TestElementWithCombinedInputs:
         "smearing": 0,
     }
 
-    @pytest.mark.parametrize("a", _POSSIBLE_INPUTS)
-    @pytest.mark.parametrize("b", _POSSIBLE_INPUTS)
-    def test_valid_multiple_inputs(self, a, b):
-        import functools
+    def conf(*args):
+        return {
+            "version": "1",
+            "elements": {
+                "el1": {
+                    **_valid_config,
+                    **functools.reduce(lambda x, y: ({**x, **y}), args),
+                }
+            },
+        }
 
-        if a == b:
-            pytest.skip("a and b are the same")
-
-        def conf(*args):
-            return {
-                "version": "1",
-                "elements": {
-                    "el1": {
-                        **self._valid_config,
-                        **functools.reduce(lambda a, b: ({**a, **b}), args),
-                    }
-                },
-            }
-
-        # make sure we can load each
-        QuaConfigSchema().load(conf(a))
-        QuaConfigSchema().load(conf(b))
-        with pytest.raises(
-            ValidationError, match="Can't support more than a single input type"
-        ):
-            QuaConfigSchema().load(conf(a, b))
+    # make sure we can load each
+    QuaConfigSchema().load(conf(a))
+    QuaConfigSchema().load(conf(b))
+    with pytest.raises(ValidationError, match="Can't support more than a single input type"):
+        QuaConfigSchema().load(conf(a, b))
 
 
 class TestElementWithMultipleInputs:
@@ -655,7 +650,7 @@ class TestElementWithDoubleIntermediateFreq:
 
     @pytest.mark.parametrize("element", argvalues=list(_elements.values()), ids=list(_elements.keys()))
     def test_many_elements_schema_with_float_freq(self, element: dict, capability_container):
-        with ignore_deprecation_warnings():
+        with ignore_deprecation_warnings_context():
             capability_container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True,
                                                                           True, False, True, True, True, True, True))
             schema = ElementSchema()
@@ -689,21 +684,19 @@ class TestElementWithSticky:
     }
 
     def test_element_scheme_with_sticky(self, capability_container):
-        with ignore_deprecation_warnings():
+        with ignore_deprecation_warnings_context():
             capability_container.capabilities.override(
                 ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
             )
             schema = ElementSchema()
             conf = schema.load(self._single_element)
             sticky = conf.sticky
-            assert (
-                sticky.duration == self._single_element["sticky"]["duration"],
-                sticky.analog == self._single_element["sticky"]["analog"],
-                sticky.digital == self._single_element["sticky"]["digital"]
-            )
+            assert sticky.duration == self._single_element["sticky"]["duration"]
+            assert sticky.analog == self._single_element["sticky"]["analog"]
+            assert sticky.digital == self._single_element["sticky"]["digital"]
 
     def test_element_scheme_sticky_without_capabilities(self, capability_container):
-        with ignore_deprecation_warnings():
+        with ignore_deprecation_warnings_context():
             capability_container.capabilities.override(
                 ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, False, True)
             )

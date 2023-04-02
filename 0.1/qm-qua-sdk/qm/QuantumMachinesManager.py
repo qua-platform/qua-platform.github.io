@@ -1,44 +1,50 @@
+import ssl
 import json
 import logging
-from typing import Optional, List, Dict
+import warnings
+from typing_extensions import TypedDict
+from typing import Any, Dict, List, Optional
 
-from qm.api.models.compiler import CompilerOptionArguments
-from qm.containers.capabilities_container import create_capabilities_container
-from qm.QuantumMachine import QuantumMachine
+from qm.octave import QmOctaveConfig
 from qm._controller import Controller
-from qm.api.async_thread import AsyncThread
-from qm.api.frontend_api import FrontendApi
-from qm.api.models.debug_data import DebugData
-from qm.api.models.server_details import ServerDetails
-from qm.api.server_detector import detect_server
-from qm.api.simulation_api import SimulationApi
+from qm.user_config import UserConfig
 from qm.exceptions import QmmException
+from qm.utils import deprecation_message
+from qm.api.frontend_api import FrontendApi
+from qm.program import Program, load_config
+from qm.QuantumMachine import QuantumMachine
+from qm.api.models.debug_data import DebugData
 from qm.jobs.simulated_job import SimulatedJob
 from qm.logging_utils import set_logging_level
-from qm.octave import OctaveManager, QmOctaveConfig
-from qm.octave.calibration_db import load_from_calibration_db
-from qm.persistence import SimpleFileStore, BaseStore
-from qm.program import load_config
-from qm.program.ConfigBuilder import convert_msg_to_config
-from qm.program._qua_config_schema import validate_config_capabilities
+from qm.api.simulation_api import SimulationApi
+from qm.api.server_detector import detect_server
+from qm.octave.octave_manager import OctaveManager
+from qm.simulate.interface import SimulationConfig
+from qm.persistence import BaseStore, SimpleFileStore
+from qm.api.models.server_details import ServerDetails
+from qm.type_hinting.config_types import DictQuaConfig
 from qm.program._qua_config_to_pb import load_config_pb
-from qm.user_config import UserConfig
+from qm.api.models.compiler import CompilerOptionArguments
+from qm.octave.calibration_db import load_from_calibration_db
+from qm.program._qua_config_schema import validate_config_capabilities
+from qm.containers.capabilities_container import create_capabilities_container
 
 logger = logging.getLogger(__name__)
+
+Version = TypedDict("Version", {"client": str, "server": Optional[str]})
 
 
 class QuantumMachinesManager:
     def __init__(
         self,
-        host: str = None,
-        port: int = None,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
         *,
-        cluster_name: Optional[str] = None,
         timeout: Optional[float] = None,
         log_level: int = logging.INFO,
         connection_headers: Optional[Dict[str, str]] = None,
         add_debug_data: bool = False,
-        credentials: Optional[str] = None,
+        credentials: Optional[ssl.SSLContext] = None,
         store: Optional[BaseStore] = None,
         file_store_root: str = ".",
         octave: Optional[QmOctaveConfig] = None,
@@ -55,15 +61,17 @@ class QuantumMachinesManager:
         self._user_config = UserConfig.create_from_file()
 
         self._port = port
-        self._host = host or self._user_config.manager_host
+        self._host = host or self._user_config.manager_host or ""
         if self._host is None:
             message = "Failed to connect to QuantumMachines server. No host given."
             logger.error(message)
             raise QmmException(message)
 
         self._credentials = credentials
-        self._cluster_name = cluster_name
         self._store = store if store else SimpleFileStore(file_store_root)
+
+        self._octave_config = octave
+        self._octave_manager = OctaveManager(octave, self)
 
         self._server_details = self._initialize_connection(
             timeout=timeout,
@@ -83,14 +91,13 @@ class QuantumMachinesManager:
 
     def _initialize_connection(
         self,
-        timeout: float,
+        timeout: Optional[float],
         add_debug_data: bool,
         connection_headers: Optional[Dict[str, str]],
     ) -> ServerDetails:
         server_details = detect_server(
-            cluster_name=self._cluster_name,
             user_token=self._user_config.user_token,
-            credentials=self._credentials,
+            ssl_context=self._credentials,
             host=self._host,
             port_from_user_config=self._user_config.manager_port,
             user_provided_port=self._port,
@@ -101,26 +108,16 @@ class QuantumMachinesManager:
         create_capabilities_container(server_details.qua_implementation)
         return server_details
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        return False
-
     @property
     def store(self) -> BaseStore:
         return self._store
 
     @property
     def octave_manager(self) -> OctaveManager:
+        warnings.warn("Do not use OctaveManager, it will be removed in the next version", DeprecationWarning)
         return self._octave_manager
 
-    @property
-    def cluster_name(self) -> str:
-        return self._cluster_name
-
-    def perform_healthcheck(self, strict: bool = True):
+    def perform_healthcheck(self, strict: bool = True) -> None:
         """Perform a health check against the QM server.
 
         Args:
@@ -128,7 +125,7 @@ class QuantumMachinesManager:
         """
         self._frontend.healthcheck(strict)
 
-    def version(self):
+    def version(self) -> Version:
         """
         Returns:
             The SDK and QOP versions
@@ -138,16 +135,25 @@ class QuantumMachinesManager:
 
         return {"client": __version__, "server": server_version}
 
-    def reset_data_processing(self):
+    def reset_data_processing(self) -> None:
         """Stops current data processing for ALL running jobs"""
         self._frontend.reset_data_processing()
 
-    def close(self):
+    def close(self) -> None:
         """Closes the Quantum machine manager"""
-        AsyncThread().stop()
+        warnings.warn(
+            deprecation_message("QuantumMachineManager.close()", "1.1.0", "1.2.0", "close will be removed."),
+            category=DeprecationWarning,
+        )
+        pass
 
     def open_qm(
-        self, config, close_other_machines: bool = True, **kwargs
+        self,
+        config: DictQuaConfig,
+        close_other_machines: bool = True,
+        validate_with_protobuf: bool = False,
+        use_calibration_data: bool = True,
+        **kwargs: Any,
     ) -> QuantumMachine:
         """Opens a new quantum machine. A quantum machine can use multiple OPXes, and a
         single OPX can also be used by multiple quantum machines as long as they do not
@@ -166,19 +172,12 @@ class QuantumMachinesManager:
         Returns:
             A quantum machine obj that can be used to execute programs
         """
+        if kwargs:
+            logger.warning(f"unused kwargs: {list(kwargs)}, please remove them.")
 
-        use_calibration_data = True
-        if "use_calibration_data" in kwargs:
-            use_calibration_data = kwargs.get("use_calibration_data")
-
-        if (
-            use_calibration_data
-            and self._octave_config is not None
-            and self._octave_config.calibration_db is not None
-        ):
+        if use_calibration_data and self._octave_config is not None and self._octave_config.calibration_db is not None:
             load_from_calibration_db(config, self._octave_config.calibration_db)
 
-        validate_with_protobuf = kwargs.get("validate_with_protobuf", False)
         if validate_with_protobuf:
             loaded_config = load_config_pb(config)
         else:
@@ -193,12 +192,11 @@ class QuantumMachinesManager:
             frontend_api=self._frontend,
             capabilities=self._caps,
             store=self._store,
+            octave_config=self._octave_config,
             octave_manager=self._octave_manager,
         )
 
-    def open_qm_from_file(
-        self, filename: str, close_other_machines: bool = True
-    ) -> QuantumMachine:
+    def open_qm_from_file(self, filename: str, close_other_machines: bool = True) -> QuantumMachine:
         """Opens a new quantum machine with config taken from a file on the local file system
 
         Args:
@@ -212,7 +210,7 @@ class QuantumMachinesManager:
         with open(filename) as json_file:
             json1_str = json_file.read()
 
-            def remove_nulls(d):
+            def remove_nulls(d: Dict[Any, Any]) -> Dict[Any, Any]:
                 return {k: v for k, v in d.items() if v is not None}
 
             config = json.loads(json1_str, object_hook=remove_nulls)
@@ -220,9 +218,9 @@ class QuantumMachinesManager:
 
     def simulate(
         self,
-        config,
-        program,
-        simulate,
+        config: DictQuaConfig,
+        program: Program,
+        simulate: SimulationConfig,
         compiler_options: Optional[CompilerOptionArguments] = None,
     ) -> SimulatedJob:
         """Simulate the outputs of a deterministic QUA program.
@@ -255,9 +253,7 @@ class QuantumMachinesManager:
         if compiler_options is None:
             compiler_options = CompilerOptionArguments()
 
-        job_id, simulated_response_part = self._simulation_api.simulate(
-            config, program, simulate, compiler_options
-        )
+        job_id, simulated_response_part = self._simulation_api.simulate(config, program, simulate, compiler_options)
         return SimulatedJob(
             job_id=job_id,
             frontend_api=self._frontend,
@@ -284,21 +280,24 @@ class QuantumMachinesManager:
             A quantum machine obj that can be used to execute programs
         """
         qm_data = self._frontend.get_quantum_machine(machine_id)
-        parsed_config = convert_msg_to_config(qm_data.config)
-        return QuantumMachine(qm_data.machine_id, qm_data.config, parsed_config, self)
+        return QuantumMachine(
+            machine_id=qm_data.machine_id,
+            pb_config=qm_data.config,
+            frontend_api=self._frontend,
+            capabilities=self._caps,
+            store=self.store,
+            octave_manager=self.octave_manager,
+        )
 
-    def close_all_quantum_machines(self):
+    def close_all_quantum_machines(self) -> None:
         """Closes ALL open quantum machines"""
         self._frontend.close_all_quantum_machines()
 
     def get_controllers(self) -> List[Controller]:
         """Returns a list of all the controllers that are available"""
-        return [
-            Controller.build_from_message(message)
-            for message in self._frontend.get_controllers()
-        ]
+        return [Controller.build_from_message(message) for message in self._frontend.get_controllers()]
 
-    def clear_all_job_results(self):
+    def clear_all_job_results(self) -> None:
         """Deletes all data from all previous jobs"""
         self._frontend.clear_all_job_results()
 
@@ -306,5 +305,5 @@ class QuantumMachinesManager:
         return self._frontend.send_debug_command(controller_name, command)
 
     @property
-    def _debug_data(self) -> DebugData:
+    def _debug_data(self) -> Optional[DebugData]:
         return self._server_details.connection_details.debug_data

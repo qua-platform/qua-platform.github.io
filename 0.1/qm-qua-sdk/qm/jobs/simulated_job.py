@@ -1,42 +1,45 @@
+import warnings
 import json as _json
-from dataclasses import dataclass
 from io import BytesIO
-from typing import Dict, Union
+from dataclasses import dataclass
+from typing import Any, Dict, BinaryIO, Callable, Optional
 
-import betterproto
 import numpy
-from betterproto.lib.google.protobuf import Value, Struct
-from deprecation import deprecated
+import betterproto
+import numpy.typing
 from numpy.lib import format as _format
+from betterproto.lib.google.protobuf import Value, Struct
 
-from qm.api.async_thread import CallbackStopIteration
-from qm.api.frontend_api import FrontendApi
-from qm.api.models.capabilities import ServerCapabilities
-from qm.api.simulation_api import SimulationApi
-from qm.exceptions import QMSimulationError
-from qm.grpc.frontend import SimulatedResponsePart
-from qm.grpc.results_analyser import SimulatorSamplesResponse
-from qm.jobs.running_qm_job import RunningQmJob
 from qm.persistence import BaseStore
-from qm.results.simulator_samples import SimulatorSamples
+from qm.utils import deprecation_message
+from qm.utils.async_utils import run_async
+from qm.api.frontend_api import FrontendApi
+from qm.exceptions import QMSimulationError
 from qm.waveform_report import WaveformReport
+from qm.api.simulation_api import SimulationApi
+from qm.jobs.running_qm_job import RunningQmJob
+from qm.grpc.frontend import SimulatedResponsePart
+from qm.api.models.capabilities import ServerCapabilities
+from qm.results.simulator_samples import SimulatorSamples
+from qm.grpc.results_analyser import SimulatorSamplesResponseData, SimulatorSamplesResponseHeader
+from qm.type_hinting.simulator_types import AnalogOutputsType, DigitalOutputsType, WaveformInPortsType
 
 
 @dataclass
 class DensityMatrix:
     timestamp: int
-    data: numpy.ndarray
+    data: numpy.typing.NDArray[numpy.cdouble]
 
 
 class SimulatorOutput:
     def __init__(self, job_id: str, frontend: FrontendApi) -> None:
         super().__init__()
         self._id = job_id
-        self._frontend = frontend
+        self._simulation_api = SimulationApi.from_api(frontend)
 
     def get_quantum_state(self) -> DensityMatrix:
 
-        state = self._frontend.get_simulated_quantum_state()
+        state = self._simulation_api.get_simulated_quantum_state(self._id)
         flatten = numpy.array([complex(item.re, item.im) for item in state.data])
         n = int(numpy.sqrt(len(flatten)))
         if len(flatten) != (n * n):
@@ -49,26 +52,24 @@ class SimulatorOutput:
         return DensityMatrix(timestamp, matrix)
 
 
-def extract_value(value: Value):
+def extract_value(value: Value) -> Any:
     name, one_of = betterproto.which_one_of(value, "kind")
     if name in VALUE_MAPPING:
         return VALUE_MAPPING[name](one_of)
 
 
-def extract_struct_value(struct_value: Struct) -> Dict[str, Union[Dict[str, str], str]]:
+def extract_struct_value(struct_value: Struct) -> Any:
     output = {}
     for name, value in struct_value.fields.items():
         output[name] = extract_value(value)
     return output
 
 
-VALUE_MAPPING = {
+VALUE_MAPPING: Dict[str, Callable[[Any], Any]] = {
     "number_value": float,
     "string_value": str,
     "bool_value": bool,
-    "list_value": lambda list_value: [
-        extract_value(value) for value in list_value.values
-    ],
+    "list_value": lambda list_value: [extract_value(value) for value in list_value.values],
     "struct_value": extract_struct_value,
     "null_value": lambda x: None,
 }
@@ -84,38 +85,33 @@ class SimulatedJob(RunningQmJob):
         simulated_response: SimulatedResponsePart,
     ):
         super().__init__(job_id, "", frontend_api, capabilities, store)
-        self._waveform_report = None
+        self._waveform_report: Optional[WaveformReport] = None
 
-        self._simulated_analog_outputs = {"samples": None, "waveforms": None}
-        self._simulated_digital_outputs = {"samples": None, "waveforms": None}
+        self._simulated_analog_outputs: AnalogOutputsType = {"waveforms": None}
+        self._simulated_digital_outputs: DigitalOutputsType = {"waveforms": None}
         if betterproto.serialized_on_wire(simulated_response.analog_outputs):
-            self._simulated_analog_outputs = extract_struct_value(
-                simulated_response.analog_outputs
-            )
+            self._simulated_analog_outputs = extract_struct_value(simulated_response.analog_outputs)
         if betterproto.serialized_on_wire(simulated_response.digital_outputs):
-            self._simulated_digital_outputs = extract_struct_value(
-                simulated_response.digital_outputs
-            )
+            self._simulated_digital_outputs = extract_struct_value(simulated_response.digital_outputs)
         if betterproto.serialized_on_wire(simulated_response.waveform_report):
             self._waveform_report = WaveformReport.from_dict(
                 extract_struct_value(simulated_response.waveform_report), self.id
             )
         if simulated_response.errors:
-            raise RuntimeError("\n".join(simulated_response.simulated.errors))
+            raise QMSimulationError("\n".join(simulated_response.errors))
 
         self._simulation_api = SimulationApi.from_api(self._frontend)
 
-    def _initialize_from_job_status(self):
+    def _initialize_from_job_status(self) -> None:
         """
         Overriding this for simulated jobs to do nothing
         """
         pass
 
-    def get_simulated_waveform_report(self) -> WaveformReport:
+    def get_simulated_waveform_report(self) -> Optional[WaveformReport]:
         return self._waveform_report
 
-    @deprecated("1.1.0", "1.2.0", details="use 'get_simulated_waveform_report'")
-    def simulated_analog_waveforms(self):
+    def simulated_analog_waveforms(self) -> Optional[WaveformInPortsType]:
         """
         Return the results of the simulation of elements and analog outputs.
 
@@ -139,10 +135,18 @@ class SimulatedJob(RunningQmJob):
             A dictionary containing output information for the analog outputs of the controller.
 
         """
+        warnings.warn(
+            deprecation_message(
+                method="SimulatedJob.simulated_analog_waveforms",
+                deprecated_in="1.1.0",
+                removed_in="1.2.0",
+                details="use 'get_simulated_waveform_report' instead.",
+            ),
+            DeprecationWarning,
+        )
         return self._simulated_analog_outputs["waveforms"]
 
-    @deprecated("1.1.0", "1.2.0", details="use 'get_simulated_waveform_report'")
-    def simulated_digital_waveforms(self):
+    def simulated_digital_waveforms(self) -> Optional[WaveformInPortsType]:
         """
         Return the results of the simulation of digital outputs.
 
@@ -161,17 +165,25 @@ class SimulatedJob(RunningQmJob):
         Returns:
             A dictionary containing output information for the analog outputs of the controller.
         """
+        warnings.warn(
+            deprecation_message(
+                method="SimulatedJob.simulated_digital_waveforms",
+                deprecated_in="1.1.0",
+                removed_in="1.2.0",
+                details="use 'get_simulated_waveform_report' instead.",
+            ),
+            DeprecationWarning,
+        )
         return self._simulated_digital_outputs["waveforms"]
 
-    def _get_np_simulated_samples(self, include_analog=True, include_digital=True):
-        writer = BytesIO()
-        data_writer = BytesIO()
-
-        def callback(result: SimulatorSamplesResponse) -> bool:
+    async def _pull_simulator_samples(
+        self, include_analog: bool, include_digital: bool, writer: BinaryIO, data_writer: BinaryIO
+    ) -> None:
+        async for result in self._simulation_api.pull_simulator_samples(self._id, include_analog, include_digital):
             if result.ok:
                 name, value = betterproto.which_one_of(result, "body")
-                if name == "header":
-                    _format.write_array_header_2_0(
+                if name == "header" and isinstance(value, SimulatorSamplesResponseHeader):
+                    _format.write_array_header_2_0(  # type: ignore[no-untyped-call]
                         writer,
                         {
                             "descr": _json.loads(value.simple_d_type),
@@ -179,26 +191,28 @@ class SimulatedJob(RunningQmJob):
                             "shape": (value.count_of_items,),
                         },
                     )
-                elif name == "data":
+                elif name == "data" and isinstance(value, SimulatorSamplesResponseData):
                     data_writer.write(value.data)
+            else:
+                raise QMSimulationError("Error while pulling samples")
 
-            return result.ok
+    def _get_np_simulated_samples(
+        self, include_analog: bool = True, include_digital: bool = True
+    ) -> numpy.typing.NDArray[numpy.generic]:
+        writer = BytesIO()
+        data_writer = BytesIO()
 
-        try:
-            self._simulation_api.pull_simulator_samples(
-                self._id, include_analog, include_digital, callback=callback
-            )
-        except CallbackStopIteration:
-            raise QMSimulationError("Error while pulling samples")
+        run_async(self._pull_simulator_samples(include_analog, include_digital, writer, data_writer))
 
         data_writer.seek(0)
         for d in data_writer:
             writer.write(d)
 
         writer.seek(0)
-        return numpy.load(writer)
+        ret: numpy.typing.NDArray[numpy.generic] = numpy.load(writer)  # type: ignore[no-untyped-call]
+        return ret
 
-    def get_simulated_samples(self, include_analog=True, include_digital=True):
+    def get_simulated_samples(self, include_analog: bool = True, include_digital: bool = True) -> SimulatorSamples:
         """
         Obtain the output samples of a QUA program simulation.
 
@@ -238,9 +252,7 @@ class SimulatedJob(RunningQmJob):
             The simulated samples of the job.
         """
         return SimulatorSamples.from_np_array(
-            self._get_np_simulated_samples(
-                include_analog=include_analog, include_digital=include_digital
-            )
+            self._get_np_simulated_samples(include_analog=include_analog, include_digital=include_digital)
         )
 
     @property

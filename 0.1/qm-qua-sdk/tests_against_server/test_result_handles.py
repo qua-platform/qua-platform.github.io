@@ -1,5 +1,3 @@
-import pytest
-
 from qm.qua import *
 from qm.QuantumMachinesManager import QuantumMachinesManager
 from tests.simulate.opx_config import config

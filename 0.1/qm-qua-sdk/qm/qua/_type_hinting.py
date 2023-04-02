@@ -1,10 +1,12 @@
-from typing import Tuple, List, Union, TypeVar, TYPE_CHECKING, Type
-from qm.grpc import qua
+from typing import TYPE_CHECKING, List, Type, Tuple, Union, TypeVar
+
 import numpy as np
 import numpy.typing as npt
 
+from qm.grpc import qua
+
 if TYPE_CHECKING:
-    from _dsl import _Expression, _Variable, fixed, _ResultSource  # noqa
+    from _dsl import fixed, _Variable, _Expression, _ResultSource  # noqa
 
 MessageExpressionType = qua.QuaProgramAnyScalarExpression
 MessageArrayVarType = qua.QuaProgramArrayVarRefExpression

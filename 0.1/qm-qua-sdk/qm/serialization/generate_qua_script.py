@@ -1,20 +1,20 @@
-import datetime
 import re
 import sys
-import traceback
 import types
-from typing import Optional, Dict, Any
+import datetime
+import traceback
+from typing import Any, Dict, Optional
 
 import betterproto
 import numpy as np
 
 from qm import Program, version
+from qm.program import load_config
+from qm.grpc.qua_config import QuaConfig
+from qm.exceptions import ConfigSerializationException
+from qm.program.ConfigBuilder import convert_msg_to_config
 from qm.serialization.qua_node_visitor import QuaNodeVisitor
 from qm.serialization.qua_serializing_visitor import QuaSerializingVisitor
-from qm.exceptions import ConfigSerializationException
-from qm.grpc.qua_config import QuaConfig
-from qm.program import load_config
-from qm.program.ConfigBuilder import convert_msg_to_config
 
 SERIALIZATION_VALIDATION_ERROR = "SERIALIZATION VALIDATION ERROR"
 
@@ -42,9 +42,7 @@ def generate_qua_script(prog: Program, config: Optional[dict] = None) -> str:
     return _generate_qua_script_pb(proto_prog, proto_config, config)
 
 
-def _generate_qua_script_pb(
-    proto_prog, proto_config: Optional, original_config: Optional
-):
+def _generate_qua_script_pb(proto_prog, proto_config: Optional, original_config: Optional):
     extra_info = ""
     serialized_program = ""
     pretty_original_config = None
@@ -74,9 +72,7 @@ def _generate_qua_script_pb(
         extra_info = extra_info + _validate_program(proto_prog, serialized_program)
     except Exception as e:
         trace = traceback.format_exception(*sys.exc_info())
-        extra_info = extra_info + _error_string(
-            e, trace, SERIALIZATION_VALIDATION_ERROR
-        )
+        extra_info = extra_info + _error_string(e, trace, SERIALIZATION_VALIDATION_ERROR)
 
     return f"""
 # Single QUA script generated at {datetime.datetime.now()}
@@ -131,9 +127,7 @@ def _switched_strings(prog1_str, prog2_str):
     for line1, line2 in zip(prog1_str_split, prog2_str_split):
         if line1 != line2:
             if not re.match(tag, line1) or not re.match(tag, line2):
-                if not re.match(string_value, line1) or not re.match(
-                    string_value, line2
-                ):
+                if not re.match(string_value, line1) or not re.match(string_value, line2):
                     return False
     return True
 
@@ -175,20 +169,14 @@ def _print_config(config_part: Dict[str, Any], indent_level: int = 1) -> str:
     :returns str: The string representation of the dictionary.
     """
     if indent_level > 100:
-        raise ConfigSerializationException(
-            "Reached maximum depth of config pretty print"
-        )
+        raise ConfigSerializationException("Reached maximum depth of config pretty print")
 
     config_part_str = ""
     if len(config_part) > 0:
         config_part_str += "{\n"
 
         for key, value in config_part.items():
-            config_part_str += (
-                "    " * indent_level
-                + f'"{str(key)}": '
-                + _value_to_str(indent_level, value)
-            )
+            config_part_str += "    " * indent_level + f'"{str(key)}": ' + _value_to_str(indent_level, value)
 
         if indent_level > 1:
             # add an indentation and go down a line
@@ -255,9 +243,7 @@ def _make_compact_string_from_list(list_data):
             elif number_of_identical > 1:
                 list_string += f"[{list_data[curr_index]}] * {number_of_identical}"
             else:
-                raise ConfigSerializationException(
-                    "number_of_identical can not be negative"
-                )
+                raise ConfigSerializationException("number_of_identical can not be negative")
 
         else:
             if number_of_identical == 1 and prev_number_of_identical == 1:
@@ -269,9 +255,7 @@ def _make_compact_string_from_list(list_data):
             elif number_of_identical > 1 and prev_number_of_identical > 1:
                 list_string += f" + [{list_data[curr_index]}] * {number_of_identical}"
             else:
-                raise ConfigSerializationException(
-                    "number_of_identical can not be negative"
-                )
+                raise ConfigSerializationException("number_of_identical can not be negative")
 
         prev_index = curr_index
         prev_number_of_identical = number_of_identical

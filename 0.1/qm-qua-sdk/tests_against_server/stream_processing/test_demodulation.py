@@ -2,7 +2,7 @@ from qm.qua import *
 from qm.QuantumMachinesManager import QuantumMachinesManager
 from qm import SimulationConfig, LoopbackInterface
 import numpy as np
-from .configuration_basic import config, rr_IF
+from .configuration_basic import config
 
 
 def test_demodulation_work():

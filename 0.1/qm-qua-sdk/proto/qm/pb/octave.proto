@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package qm.grpc.octave_models;
+
+message Octave {
+    message Config {
+        repeated Loopback loopbacks = 1;
+    }
+
+    message Loopback {
+        LOSourceInput lo_source_input = 1;
+        SynthesizerPort lo_source_generator = 2;
+    }
+
+
+    message IFOutputPort {
+        string device_name = 1;
+        IFOutputPortName port_name = 2;
+    }
+
+    message IFInputPort {
+        string device_name = 1;
+        IFInputPortName port_name = 2;
+    }
+
+    message RFInputPort {
+        string device_name = 1;
+        RFInputPortName port_name = 2;
+    }
+
+    enum RFInputPortName {
+        RF_IN1 = 0;
+        RF_IN2 = 1;
+    }
+
+    enum IFOutputPortName {
+        IF1 = 0;
+        IF2 = 1;
+    }
+
+    enum IFInputPortName {
+        I1 = 0;
+        Q1 = 1;
+        I2 = 2;
+        Q2 = 3;
+        I3 = 4;
+        Q3 = 5;
+        I4 = 6;
+        Q4 = 7;
+        I5 = 8;
+        Q5 = 9;
+    }
+
+    enum SynthesizerOutputName {
+        Synth1 = 0;
+        Synth2 = 1;
+        Synth3 = 2;
+        Synth4 = 3;
+        Synth5 = 4;
+    }
+
+    enum RFOutputPortName {
+        RF1 = 0;
+        RF2 = 1;
+        RF3 = 2;
+        RF4 = 3;
+        RF5 = 4;
+    }
+
+    enum DigitalOutputPortName {
+        DigOut1 = 0;
+        DigOut2 = 1;
+    }
+
+    enum DigitalInputPortName {
+        DigIn1 = 0;
+        DigIn2 = 1;
+        DigIn3 = 2;
+        DigIn4 = 3;
+        DigIn5 = 4;
+    }
+
+    message SynthesizerPort {
+        string device_name = 1;
+        SynthesizerOutputName port_name = 2;
+    }
+
+    message OutputPort {
+        string device_name = 1;
+        RFOutputPortName port_name = 2;
+    }
+
+    message DigitalOutputPort {
+        string device_name = 1;
+        DigitalOutputPortName port_name = 2;
+    }
+
+    message DigitalInputPort {
+        string device_name = 1;
+        DigitalInputPortName port_name = 2;
+    }
+
+    enum LOSourceInput {
+        Internal = 0;
+        Off = -1;
+        Dmd1LO = 1;
+        Dmd2LO = 2;
+        reserved 3 to 9;
+        LO1 = 10;
+        LO2 = 11;
+        LO3 = 12;
+        LO4 = 13;
+        LO5 = 14;
+        reserved 15 to 19;
+    //    RF_IN1 = 20;
+    //    RF_IN2 = 21;
+        IF1_LO_I = 22;
+        IF1_LO_Q = 23;
+        IF2_LO_I = 24;
+        IF2_LO_Q = 25;
+    }
+}

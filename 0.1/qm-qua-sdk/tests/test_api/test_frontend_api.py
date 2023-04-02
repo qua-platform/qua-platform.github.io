@@ -1,4 +1,3 @@
-import dataclasses
 import logging
 from typing import Dict
 from unittest.mock import AsyncMock, MagicMock
@@ -10,10 +9,9 @@ from betterproto.lib.google.protobuf import Empty, StringValue
 from qm.api.frontend_api import FrontendApi
 from qm.api.models.compiler import CompilerOptionArguments
 from qm.api.models.devices import MixerInfo
-from qm.api.models.info import QuaMachineInfo, ImplementationInfo
 from qm.api.models.jobs import InsertDirection
 from qm.api.models.quantum_machine import QuantumMachineData
-from qm.api.models.server_details import ServerDetails, ConnectionDetails
+from qm.api.models.server_details import ConnectionDetails
 from qm.exceptions import QMHealthCheckError, OpenQmException, QMFailedToGetQuantumMachineError, \
     QmFailedToCloseQuantumMachineError, QMFailedToCloseAllQuantumMachinesError, FailedToAddJobToQueueException, \
     CompilationException
@@ -405,7 +403,7 @@ def test_add_to_queue_success(frontend_api, caplog: LogCaptureFixture):
             high_level_program=QuaProgram(compiler_options=QuaProgramCompilerOptions(flags=[])),
             queue_position=QueuePosition(end=Empty()),
         ),
-        timeout=frontend_api._timeout
+        timeout=None
     )
 
     assert result == "job_1"
@@ -439,7 +437,7 @@ def test_add_to_queue_failure(frontend_api, caplog: LogCaptureFixture):
             high_level_program=QuaProgram(compiler_options=QuaProgramCompilerOptions(flags=[])),
             queue_position=QueuePosition(end=Empty()),
         ),
-        timeout=frontend_api._timeout
+        timeout=None
     )
 
     _assert_logging_message_printed(caplog, "Job job_1 failed. Failed to execute program.", logging.ERROR)
@@ -524,7 +522,7 @@ def test_compiled_success(frontend_api, caplog: LogCaptureFixture):
             quantum_machine_id="machine_1",
             high_level_program=QuaProgram(compiler_options=QuaProgramCompilerOptions(flags=["flag1"])),
         ),
-        timeout=frontend_api._timeout
+        timeout=None
     )
 
     assert result == "prog_1"
@@ -553,24 +551,24 @@ def test_compile_errors(frontend_api, caplog: LogCaptureFixture):
             quantum_machine_id="machine_1",
             high_level_program=QuaProgram(compiler_options=QuaProgramCompilerOptions(flags=["flag1"])),
         ),
-        timeout=frontend_api._timeout
+        timeout=None
     )
 
     _assert_logging_message_printed(caplog, "Compilation of program prog_1 failed", logging.ERROR)
 
 
-def test_set_correction(frontend_api):
+def test_set_correction(frontend_api, ignore_deprecation):
     frontend_api._stub.compile.return_value = HighQmApiResponse(
         ok=True,
         errors=[]
     )
 
-    frontend_api.set_correction("machine 1", MixerInfo("m1", False, lo_frequency_double=0.0, intermediate_frequency_double=1.1), Matrix(1.0, 0.0, 0.0, 1.0))
+    frontend_api.set_correction("machine 1", MixerInfo("m1", False, lo_frequency_double=0.0, intermediate_frequency_double=1.1, lo_frequency=1, intermediate_frequency=2), Matrix(1.0, 0.0, 0.0, 1.0))
 
     frontend_api._stub.perform_qm_request.assert_called_with(
         HighQmApiRequest(
             set_correction=HighQmApiRequestSetCorrection(
-                mixer=HighQmApiRequestSetCorrectionMixerInfo(**MixerInfo("m1", False, lo_frequency_double=0.0, intermediate_frequency_double=1.1).as_dict()),
+                mixer=HighQmApiRequestSetCorrectionMixerInfo(**MixerInfo("m1", False, lo_frequency_double=0.0, intermediate_frequency_double=1.1, lo_frequency=1, intermediate_frequency=2).as_dict()),
                 correction=Matrix(1.0, 0.0, 0.0, 1.0),
             ),
             quantum_machine_id="machine 1"

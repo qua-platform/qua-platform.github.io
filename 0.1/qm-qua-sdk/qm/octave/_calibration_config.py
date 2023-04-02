@@ -27,15 +27,11 @@ def _prep_config(iq_channels, adc_channels, if_freq, lo_freq, optimizer_paramete
     time_of_flight = 192
     correction_matrix = _iq_imbalance_corr(g, phi)
 
-    down_mixer_offset, signal_freq, image_freq = _get_frequencies(
-        if_freq, optimizer_parameters
-    )
+    down_mixer_offset, signal_freq, image_freq = _get_frequencies(if_freq, optimizer_parameters)
 
     i_port = iq_channels[0]
     q_port = iq_channels[1]
-    controller_names = set(
-        [ch[0] for ch in iq_channels] + [ch[0] for ch in adc_channels]
-    )
+    controller_names = set([ch[0] for ch in iq_channels] + [ch[0] for ch in adc_channels])
     controllers = {
         name: {
             "type": "opx1",

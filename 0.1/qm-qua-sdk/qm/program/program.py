@@ -1,18 +1,18 @@
 import dataclasses
-from typing import Optional, List
+from typing import List, Optional
 
+from qm.grpc.qua_config import QuaConfig
+from qm.program._ResultAnalysis import _ResultAnalysis
+from qm.program.StatementsCollection import StatementsCollection
 from qm.grpc.qua import (
     QuaProgram,
     QuaProgramType,
-    QuaProgramLiteralExpression,
-    QuaProgramVarDeclaration,
     QuaProgramScript,
     QuaResultAnalysis,
+    QuaProgramVarDeclaration,
+    QuaProgramLiteralExpression,
     QuaProgramStatementsCollection,
 )
-from qm.grpc.qua_config import QuaConfig
-from qm.program.StatementsCollection import StatementsCollection
-from qm.program._ResultAnalysis import _ResultAnalysis
 
 
 @dataclasses.dataclass
@@ -29,9 +29,7 @@ class Program:
     ):
         if program is None:
             program = QuaProgram(
-                script=QuaProgramScript(
-                    variables=[], body=QuaProgramStatementsCollection(statements=[])
-                ),
+                script=QuaProgramScript(variables=[], body=QuaProgramStatementsCollection(statements=[])),
                 result_analysis=QuaResultAnalysis(model=[]),
             )
 
@@ -39,9 +37,7 @@ class Program:
         self._qua_config = config
         self._result_analysis = _ResultAnalysis(self._program.result_analysis)
         self._is_in_scope = False
-        self._metadata = ProgramMetadata(
-            uses_command_timestamps=False, uses_fast_frame_rotation=False
-        )
+        self._metadata = ProgramMetadata(uses_command_timestamps=False, uses_fast_frame_rotation=False)
 
     def _declare_var(
         self,

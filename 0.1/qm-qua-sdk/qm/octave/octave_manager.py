@@ -1,29 +1,20 @@
 import logging
+import warnings
+import contextlib
+from enum import Enum
+from time import perf_counter
+from collections import defaultdict
+from typing import TYPE_CHECKING, Dict, List, Tuple, Optional
+
+from octave_sdk.octave import ClockInfo
+from octave_sdk import IFMode, ClockType, RFOutputMode, ClockFrequency, OctaveLOSource, RFInputLOSource, RFInputRFSource
 
 from qm import QuantumMachine
-from qm.api.models.capabilities import ServerCapabilities
 from qm.exceptions import OpenQmException
-from qm.octave._calibration_config import (
-    _prep_config,
-    _get_frequencies,
-)
-from qm.octave.calibration_db import (
-    CalibrationResult,
-    octave_output_mixer_name,
-)
-from qm.octave.enums import (
-    OctaveLOSource,
-    RFInputRFSource,
-    ClockType,
-    ClockFrequency,
-    ClockInfo,
-    RFOutputMode,
-    RFInputLOSource,
-    IFMode,
-)
-from qm.octave.octave_config import _convert_octave_port_to_number, QmOctaveConfig
-
-from typing import Dict, Tuple, Optional, List, TYPE_CHECKING
+from qm.api.models.capabilities import ServerCapabilities
+from qm.octave._calibration_config import _prep_config, _get_frequencies
+from qm.octave.calibration_db import CalibrationResult, octave_output_mixer_name
+from qm.octave.octave_config import QmOctaveConfig, _convert_octave_port_to_number
 
 if TYPE_CHECKING:
     from qm.QuantumMachinesManager import QuantumMachinesManager
@@ -47,6 +38,13 @@ class OctaveSDKException(Exception):
 
 class SetFrequencyException(Exception):
     pass
+
+
+class ClockMode(Enum):
+    Internal = (ClockType.Internal, None)
+    External_10MHz = (ClockType.External, ClockFrequency.MHZ_10)
+    External_100MHz = (ClockType.External, ClockFrequency.MHZ_100)
+    External_1000MHz = (ClockType.Buffered, ClockFrequency.MHZ_1000)
 
 
 def _run_compiled(compiled_id: str, qm: QuantumMachine):
@@ -183,10 +181,7 @@ class OctaveManager:
                 raise OctaveSDKException("Octave sdk is not installed")
             for device_name, connection_info in devices.items():
                 loop_backs = self._octave_config.get_lo_loopbacks_by_octave(device_name)
-                loop_backs = {
-                    (input_port.to_sdk()): (output_port.to_sdk())
-                    for input_port, output_port in loop_backs.items()
-                }
+                loop_backs = {input_port: output_port for input_port, output_port in loop_backs.items()}
                 self._octave_clients[device_name] = Octave(
                     host=connection_info.host,
                     port=connection_info.port,
@@ -225,11 +220,27 @@ class OctaveManager:
     def restore_default_state(self, octave_name):
         self._octave_clients[octave_name].restore_default_state()
 
+    def start_batch_mode(self):
+        for client in self._octave_clients.values():
+            client.start_batch_mode()
+
+    def end_batch_mode(self):
+        for client in self._octave_clients.values():
+            client.end_batch_mode()
+
+    @contextlib.contextmanager
+    def batch_mode(self):
+
+        self.start_batch_mode()
+        yield
+        self.end_batch_mode()
+
     def set_clock(
         self,
         octave_name: str,
-        clock_type: ClockType,
-        frequency: Optional[ClockFrequency],
+        clock_type: Optional[ClockType] = None,
+        frequency: Optional[ClockFrequency] = None,
+        clock_mode: Optional[ClockMode] = None,
     ):
 
         """This function will set the octave clock type - internal, external or buffered.
@@ -239,13 +250,21 @@ class OctaveManager:
             octave_name: str
             clock_type: ClockType
             frequency: ClockFrequency
+            clock_mode: ClockMode
 
         Returns:
 
         """
-        self._octave_clients[octave_name].set_clock(
-            clock_type.to_sdk(), frequency.to_sdk()
-        )
+        if clock_mode is None:
+            warnings.warn(
+                "set_clock is changing its API, and the 'clock_type' and 'frequency' arguments will be "
+                "removed in the next version, please use the 'mode' parameter.",
+                category=DeprecationWarning,
+            )
+        else:
+            clock_type, frequency = clock_mode.value
+
+        self._octave_clients[octave_name].set_clock(clock_type, frequency)
         self._octave_clients[octave_name].save_default_state(only_clock=True)
 
     def get_clock(self, octave_name: str) -> ClockInfo:
@@ -257,11 +276,8 @@ class OctaveManager:
         Returns:
             ClockInfo
         """
-        sdk_clock = self._octave_clients[octave_name].get_clock()
-        return ClockInfo(
-            ClockType.from_sdk(sdk_clock.clock_type),
-            ClockFrequency.from_sdk(sdk_clock.frequency),
-        )
+        clock = self._octave_clients[octave_name].get_clock()
+        return ClockInfo(clock.clock_type, clock.frequency)
 
     def set_lo_frequency(
         self,
@@ -284,19 +300,15 @@ class OctaveManager:
         loop_backs = self._octave_config.get_lo_loopbacks_by_octave(octave_name)
 
         if lo_source != OctaveLOSource.Internal and lo_source not in loop_backs:
-            raise SetFrequencyException(
-                f"Cannot set frequency to an external lo source" f" {lo_source.name}"
-            )
+            raise SetFrequencyException(f"Cannot set frequency to an external lo source" f" {lo_source.name}")
 
         if set_source:
-            octave.rf_outputs[port_index].set_lo_source(lo_source.to_sdk())
+            octave.rf_outputs[port_index].set_lo_source(lo_source)
 
-        octave.rf_outputs[port_index].set_lo_frequency(lo_source.to_sdk(), lo_frequency)
+        octave.rf_outputs[port_index].set_lo_frequency(lo_source, lo_frequency)
         # octave.save_default_state()
 
-    def set_lo_source(
-        self, octave_output_port: Tuple[str, int], lo_port: OctaveLOSource
-    ):
+    def set_lo_source(self, octave_output_port: Tuple[str, int], lo_port: OctaveLOSource):
         """Sets the source of LO going to the upconverter associated with element.
 
         Args:
@@ -304,12 +316,10 @@ class OctaveManager:
             lo_port
         """
         octave = self._get_client(octave_output_port)
-        octave.rf_outputs[octave_output_port[1]].set_lo_source(lo_port.to_sdk())
+        octave.rf_outputs[octave_output_port[1]].set_lo_source(lo_port)
         # octave.save_default_state()
 
-    def set_rf_output_mode(
-        self, octave_output_port: Tuple[str, int], switch_mode: RFOutputMode
-    ):
+    def set_rf_output_mode(self, octave_output_port: Tuple[str, int], switch_mode: RFOutputMode):
         """Configures the output switch of the upconverter associated to element.
         switch_mode can be either: 'always_on', 'always_off', 'normal' or 'inverted'
         When in 'normal' mode a high trigger will turn the switch on and a low
@@ -324,7 +334,7 @@ class OctaveManager:
             switch_mode
         """
         octave = self._get_client(octave_output_port)
-        octave.rf_outputs[octave_output_port[1]].set_output(switch_mode.to_sdk())
+        octave.rf_outputs[octave_output_port[1]].set_output(switch_mode)
         # octave.save_default_state()
 
     def set_rf_output_gain(
@@ -362,18 +372,11 @@ class OctaveManager:
             disable_warning
         """
         octave = self._get_client(octave_input_port)
-        octave.rf_inputs[octave_input_port[1]].set_lo_source(lo_source.to_sdk())
-        octave.rf_inputs[octave_input_port[1]].set_rf_source(
-            RFInputRFSource.RF_in.to_sdk()
-        )
-        internal = (
-            lo_source == RFInputLOSource.Internal
-            or lo_source == RFInputLOSource.Analyzer
-        )
+        octave.rf_inputs[octave_input_port[1]].set_lo_source(lo_source)
+        octave.rf_inputs[octave_input_port[1]].set_rf_source(RFInputRFSource.RF_in)
+        internal = lo_source == RFInputLOSource.Internal or lo_source == RFInputLOSource.Analyzer
         if lo_frequency is not None and internal:
-            octave.rf_inputs[octave_input_port[1]].set_lo_frequency(
-                source_name=lo_source.to_sdk(), frequency=lo_frequency
-            )
+            octave.rf_inputs[octave_input_port[1]].set_lo_frequency(source_name=lo_source, frequency=lo_frequency)
         # octave.save_default_state()
 
     def set_downconversion_if_mode(
@@ -401,8 +404,8 @@ class OctaveManager:
         """
 
         octave = self._get_client(octave_input_port)
-        octave.rf_inputs[octave_input_port[1]].set_if_mode_i(if_mode_i.to_sdk())
-        octave.rf_inputs[octave_input_port[1]].set_if_mode_q(if_mode_q.to_sdk())
+        octave.rf_inputs[octave_input_port[1]].set_if_mode_i(if_mode_i)
+        octave.rf_inputs[octave_input_port[1]].set_if_mode_q(if_mode_q)
 
     def reset(self, octave_name: str) -> bool:
         """
@@ -424,6 +427,7 @@ class OctaveManager:
         lo_if_frequencies_tuple_list: List[Tuple] = None,
         save_to_db=True,
         close_open_quantum_machines=True,
+        optimizer_parameters: Optional[dict] = None,
         **kwargs,
     ) -> Dict[Tuple[int, int], CalibrationResult]:
         """calibrates IQ mixer associated with element
@@ -436,68 +440,56 @@ class OctaveManager:
                 for which the calibration is to be performed [(LO1,
                 IF1), (LO2, IF2), ...]
             save_to_db
+            optimizer_parameters
         will be closed for the calibration. Otherwise,
         calibration might fail if there are not enough resources for the calibration
         """
+        calibration_start = perf_counter()
+        if kwargs:
+            logger.warning(f"unused kwargs: {list(kwargs)}, please remove them.")
 
         octave = self._get_client(octave_output_port)
         output_port = octave_output_port[1]
         calibration_input = 2
+        optimizer_parameters = self._get_optimizer_parameters(optimizer_parameters)
 
-        sdk_lo_source = octave.rf_outputs[output_port].get_lo_source()
-        lo_source = OctaveLOSource.from_sdk(sdk_lo_source)
-        only_one_unique_lo = all(
-            lo_if_frequencies_tuple_list[0][0] == tup[0]
-            for tup in lo_if_frequencies_tuple_list
-        )
-        if lo_source != OctaveLOSource.Internal:
-            if not only_one_unique_lo:
-                raise Exception(
-                    "If the LO source is external, "
-                    "only one lo frequency is allowed in calibration"
-                )
+        lo_to_if_mapping = create_lo_to_if_list_mapping(lo_if_frequencies_tuple_list)
+        if len(lo_to_if_mapping) > 1:  # TODO fix loop bug and remove this error, from here the code assumes 1 lo_freq
+            raise NotImplementedError("Multiple lo frequencies is not yet supported.")
 
-        # TODO fix loop bug and remove this error:
-        if not only_one_unique_lo:
-            raise ValueError("multiple lo frequencies are not yed supported")
+        lo_freq, if_freq_list = lo_to_if_mapping.popitem()
 
-        optimizer_parameters = self._get_optimizer_parameters(
-            kwargs.get("optimizer_parameters", None),
-        )
-        first_lo, first_if = lo_if_frequencies_tuple_list[0]
+        first_if = if_freq_list[0]
+        t_end_preparation = perf_counter()
+        logger.debug(f"Pre calibration preparation took {t_end_preparation - calibration_start}")
         compiled, qm = self._compile_calibration_program(
-            first_lo,
+            lo_freq,
             first_if,
             octave_output_port,
             optimizer_parameters,
             close_open_quantum_machines,
         )
+        t_start_setup = perf_counter()
 
         state_name_before = self._set_octave_for_calibration(
-            octave, calibration_input, output_port
+            octave,
+            calibration_input,
+            output_port,
+            skewed_lo_freq=lo_freq + optimizer_parameters["calibration_offset_frequency"],
         )
+        t_end_setup = perf_counter()
+        logger.debug(f"Setting octave for LO took {t_end_setup - t_start_setup}.")
 
         result = {}
-        current_lo = first_lo
-        for lo_freq, if_freq in lo_if_frequencies_tuple_list:
-            if current_lo != lo_freq and lo_source == OctaveLOSource.Internal:
-                octave.rf_outputs[output_port].set_lo_frequency(
-                    lo_source.to_sdk(), lo_freq
-                )  # if lo_source is not internal then don't do anything
-                current_lo = lo_freq
-
-            octave.rf_inputs[calibration_input].set_lo_source(
-                RFInputLOSource.Analyzer.to_sdk()
-            )
-
-            octave.rf_inputs[calibration_input].set_lo_frequency(
-                RFInputLOSource.Analyzer.to_sdk(),
-                lo_freq + optimizer_parameters["calibration_offset_frequency"],
-            )
-
+        for if_freq in if_freq_list:
+            t_start_setup = perf_counter()
             self._set_if_freq(qm, if_freq, optimizer_parameters)
+            t_end_setup = perf_counter()
+            logger.debug(f"Setting octave for IF took {t_end_setup - t_start_setup}.")
 
             dc_offsets, correction = _run_compiled(compiled, qm)
+            t_end_run = perf_counter()
+            logger.debug(f"Running QUA calibration took {t_end_setup - t_end_run}.")
             temp = octave.rf_outputs[output_port].get_temperature()
 
             result[lo_freq, if_freq] = CalibrationResult(
@@ -512,15 +504,16 @@ class OctaveManager:
             )
 
             if save_to_db and self._octave_config.calibration_db is not None:
-                self._octave_config.calibration_db.update_calibration_data(
-                    result[lo_freq, if_freq]
-                )
+                self._octave_config.calibration_db.update_calibration_data(result[lo_freq, if_freq])
 
         # set to previous state
+        t_start_restoration = perf_counter()
         octave.restore_state(state_name_before)
         # Close the qm
         qm.close()
-
+        t_end = perf_counter()
+        logger.debug(f"Restoring setup and closing QM took QUA calibration took {t_end - t_start_restoration}.")
+        logger.debug(f"Calibration took {t_end - calibration_start}.")
         return result
 
     def _get_optimizer_parameters(self, optimizer_parameters):
@@ -543,7 +536,7 @@ class OctaveManager:
         first_lo,
         first_if,
         octave_output_port,
-        optimizer_parameters_defaults,
+        optimizer_parameters,
         close_open_quantum_machines=True,
     ):
         from qm.octave._calibration_program import _generate_program
@@ -556,43 +549,53 @@ class OctaveManager:
             adc_channels,
             first_if,
             first_lo,
-            optimizer_parameters_defaults,
+            optimizer_parameters,
         )
-        prog = _generate_program(optimizer_parameters_defaults)
+        prog = _generate_program(optimizer_parameters)
         try:
-            qm = self._qmm.open_qm(
-                config, close_other_machines=close_open_quantum_machines
-            )
+            t0 = perf_counter()
+            qm = self._qmm.open_qm(config, close_other_machines=close_open_quantum_machines)
+            logger.debug(f"Creating dedicated QM for calibration took {perf_counter() - t0}")
         except OpenQmException as e:
-            raise OpenQmException(
-                "Mixer calibration failed: Could not open a quantum machine."
-            ) from e
+            raise OpenQmException("Mixer calibration failed: Could not open a quantum machine.") from e
 
+        t0 = perf_counter()
         compiled = qm.compile(prog)
+        logger.debug(f"Compiling calibration program took {perf_counter() - t0}.")
 
         return compiled, qm
 
-    def _set_if_freq(self, qm, if_freq, optimizer_parameters):
-        down_mixer_offset, signal_freq, image_freq = _get_frequencies(
-            if_freq, optimizer_parameters
-        )
-        qm.set_intermediate_frequency("IQmixer", if_freq)
-        qm.set_intermediate_frequency("signal_analyzer", signal_freq)
-        qm.set_intermediate_frequency("lo_analyzer", down_mixer_offset)
-        qm.set_intermediate_frequency("image_analyzer", image_freq)
+    @staticmethod
+    def _set_if_freq(qm, if_freq, optimizer_parameters):
+        down_mixer_offset, signal_freq, image_freq = _get_frequencies(if_freq, optimizer_parameters)
+        with qm.octave.batch_mode():
+            qm.set_intermediate_frequency("IQmixer", if_freq)
+            qm.set_intermediate_frequency("signal_analyzer", signal_freq)
+            qm.set_intermediate_frequency("lo_analyzer", down_mixer_offset)
+            qm.set_intermediate_frequency("image_analyzer", image_freq)
 
-    def _set_octave_for_calibration(
-        self, octave, calibration_input, output_port
-    ) -> str:
+    @staticmethod
+    def _set_octave_for_calibration(octave, calibration_input, output_port, skewed_lo_freq) -> str:
+        octave.start_batch_mode()
         state_name_before = "before_cal"
         octave.snapshot_state(state_name_before)
         # switch to loopback mode to listen in on the RF output
-        octave.rf_inputs[calibration_input].set_rf_source(
-            _convert_rf_output_index_to_input_source(output_port).to_sdk()
-        )
-        octave.rf_inputs[calibration_input].set_if_mode_i(IFMode.direct.to_sdk())
-        octave.rf_inputs[calibration_input].set_if_mode_q(IFMode.direct.to_sdk())
-        octave.rf_inputs[1].set_if_mode_i(IFMode.off.to_sdk())
-        octave.rf_inputs[1].set_if_mode_q(IFMode.off.to_sdk())
-        octave.rf_outputs[output_port].set_output(RFOutputMode.on.to_sdk())
+        octave.rf_inputs[calibration_input].set_rf_source(_convert_rf_output_index_to_input_source(output_port))
+        octave.rf_inputs[calibration_input].set_if_mode_i(IFMode.direct)
+        octave.rf_inputs[calibration_input].set_if_mode_q(IFMode.direct)
+        octave.rf_inputs[1].set_if_mode_i(IFMode.off)
+        octave.rf_inputs[1].set_if_mode_q(IFMode.off)
+        octave.rf_outputs[output_port].set_output(RFOutputMode.on)
+
+        octave.rf_inputs[calibration_input].set_lo_source(RFInputLOSource.Analyzer)
+
+        octave.rf_inputs[calibration_input].set_lo_frequency(RFInputLOSource.Analyzer, skewed_lo_freq)
+        octave.end_batch_mode()
         return state_name_before
+
+
+def create_lo_to_if_list_mapping(lo_if_frequencies_tuple_list: List[Tuple[int, int]]) -> Dict[int, List[int]]:
+    lo_to_if_mapping = defaultdict(list)
+    for lo_freq, if_freq in lo_if_frequencies_tuple_list:
+        lo_to_if_mapping[lo_freq].append(if_freq)
+    return lo_to_if_mapping

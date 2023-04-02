@@ -1,6 +1,4 @@
-import re
 from copy import deepcopy
-from re import Match
 
 import pytest
 from _pytest.logging import LogCaptureFixture

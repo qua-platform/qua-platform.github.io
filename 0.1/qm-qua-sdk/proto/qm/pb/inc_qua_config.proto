@@ -4,6 +4,7 @@ option java_multiple_files = true;
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
+import "qm/pb/octave.proto";
 
 package qm.grpc.qua_config;
 
@@ -25,6 +26,7 @@ message QuaConfig {
         map<string, WaveformDec> waveforms = 6;
         map<string, DigitalWaveformDec> digitalWaveforms = 7;
         map<string, IntegrationWeightDec> integrationWeights = 8;
+        map<string, qm.grpc.octave_models.Octave.Config> octaves = 11;
     }
 
     message ControllerDec {
@@ -60,6 +62,9 @@ message QuaConfig {
         map<uint32, double> channelWeights = 4 [deprecated = true];
         bool shareable = 5;
         map<uint32, double> crosstalk = 6;
+        oneof connectivity_oneof {
+            qm.grpc.octave_models.Octave.IFInputPort octave_connectivity = 10;
+        }
      }
 
      message AnalogOutputPortFilter {
@@ -71,11 +76,17 @@ message QuaConfig {
         double offset = 1;
         google.protobuf.Int32Value gainDb = 2;
         bool shareable = 3;
+        oneof connectivity {
+            qm.grpc.octave_models.Octave.IFOutputPort octave_connectivity = 10;
+        }
     }
 
     message DigitalOutputPortDec {
         bool shareable = 1;
         bool inverted = 2;
+        oneof connectivity {
+            qm.grpc.octave_models.Octave.DigitalInputPort octave_connectivity = 10;
+        }
     }
 
     message DigitalInputPortDec {
@@ -86,6 +97,9 @@ message QuaConfig {
         enum Polarity {
             RISING = 0;
             FALLING = 1;
+        }
+        oneof connectivity {
+            qm.grpc.octave_models.Octave.DigitalOutputPort octave_connectivity = 10;
         }
     }
 
@@ -111,6 +125,25 @@ message QuaConfig {
         string mixer = 3;
         uint64 loFrequency = 4 [deprecated = true];
         double loFrequencyDouble = 5;
+        UpConverted octave_params = 6;
+    }
+
+    message UpConverted {
+        qm.grpc.octave_models.Octave.OutputPort rf_output_port = 1;
+        qm.grpc.octave_models.Octave.LOSourceInput lo_source = 3;
+        OutputSwitchState output_switch_state = 4;
+        google.protobuf.Int32Value output_gain = 5;
+        qm.grpc.octave_models.Octave.LOSourceInput downconversion_lo_source = 6;
+        double downconversion_lo_frequency = 7;
+        qm.grpc.octave_models.Octave.RFInputPort rf_input_port = 8;
+    }
+
+    enum OutputSwitchState {
+        unset = 0;
+        always_on = 1;
+        always_off = 2;
+        triggered = 3;
+        triggered_reversed = 4;
     }
 
     message SingleInputCollection {
@@ -131,6 +164,7 @@ message QuaConfig {
             MixInputs mixInputs = 6;
             SingleInputCollection singleInputCollection = 50;
             MultipleInputs multipleInputs = 51;
+            UpConverted upConverted = 52;
         }
 
         google.protobuf.UInt32Value timeOfFlight = 7;
@@ -291,5 +325,4 @@ message QuaConfig {
         double v10 = 3;
         double v11 = 4;
     }
-
 }

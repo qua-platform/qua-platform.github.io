@@ -1,9 +1,6 @@
-from qm.results import (
-    StreamingResultFetcher,
-    SingleStreamingResultFetcher,
-    MultipleStreamingResultFetcher,
-)  # noqa
 import warnings
+
+from qm.results import StreamingResultFetcher, SingleStreamingResultFetcher, MultipleStreamingResultFetcher  # noqa
 
 # Backward compatible names
 JobResults = StreamingResultFetcher

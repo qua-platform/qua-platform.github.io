@@ -1,24 +1,24 @@
 from qm.octave._calibration_config import offset_amp
 from qm.qua import (
-    assign,
-    for_,
-    reset_phase,
-    align,
-    play,
-    measure,
-    dual_demod,
-    if_,
-    save,
     amp,
-    update_correction,
-    else_,
-    while_,
-    program,
-    declare,
-    fixed,
-    declare_stream,
+    if_,
+    for_,
+    play,
+    save,
     wait,
+    align,
+    else_,
+    fixed,
+    assign,
+    while_,
+    declare,
+    measure,
+    program,
+    dual_demod,
+    reset_phase,
+    declare_stream,
     stream_processing,
+    update_correction,
 )
 
 
@@ -305,29 +305,17 @@ def _generate_program(calibration_parameters):
             assign(bool_too_many_iterations, counter >= iterations)
 
             assign(bool_lo_power_small, avg_lo_power < 2**-27)
-            assign(
-                bool_lo_step_size_small, step_size_lo < 2**-16
-            )  # opx fixed point resolution
+            assign(bool_lo_step_size_small, step_size_lo < 2**-16)  # opx fixed point resolution
             assign(
                 lo_cont,
-                ~(
-                    bool_lo_power_small
-                    | bool_lo_step_size_small
-                    | bool_too_many_iterations
-                ),
+                ~(bool_lo_power_small | bool_lo_step_size_small | bool_too_many_iterations),
             )
 
             assign(bool_image_power_small, avg_image_power < 2**-27)
-            assign(
-                bool_image_step_size_small, step_size_image < 2**-16
-            )  # opx fixed point resolution
+            assign(bool_image_step_size_small, step_size_image < 2**-16)  # opx fixed point resolution
             assign(
                 image_cont,
-                ~(
-                    bool_image_power_small
-                    | bool_image_step_size_small
-                    | bool_too_many_iterations
-                ),
+                ~(bool_image_power_small | bool_image_step_size_small | bool_too_many_iterations),
             )
 
         save(bool_lo_power_small, "bool_lo_power_small")

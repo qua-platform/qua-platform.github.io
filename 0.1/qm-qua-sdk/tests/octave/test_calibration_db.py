@@ -1,4 +1,4 @@
-import os
+import pytest
 
 from qm.octave.calibration_db import (
     CalibrationResult,
@@ -10,102 +10,91 @@ from tests_against_server.stream_processing.configuration_basic import IQ_imbala
 
 
 def test_save_and_load(tmp_path):
-    try:
-        db = CalibrationDB(tmp_path)
-        orig = CalibrationResult(
-            [1, 2, 3, 4],
-            0.15,
-            -0.03,
-            0.1,
-            0.2,
-            0.3,
-            octave_output_mixer_name("octave1", 1),
-            {"x": "y"},
-        )
+    db = CalibrationDB(tmp_path)
+    orig = CalibrationResult(
+        [1, 2, 3, 4],
+        0.15,
+        -0.03,
+        0.1,
+        0.2,
+        0.3,
+        octave_output_mixer_name("octave1", 1),
+        {},
+    )
 
-        db.update_calibration_data(orig)
-        assert db.get(octave_output_mixer_name("octave1", 1), 0.1, 0.2) == orig
-        del db
+    db.update_calibration_data(orig)
+    assert db.get(octave_output_mixer_name("octave1", 1), 0.1, 0.2) == orig
+    del db
 
-        db = CalibrationDB(tmp_path)
-        assert db.get(octave_output_mixer_name("octave1", 1), 0.1, 0.2) == orig
-        assert db[octave_output_mixer_name("octave1", 1), 0.1, 0.2] == orig
+    db = CalibrationDB(tmp_path)
+    assert db.get(octave_output_mixer_name("octave1", 1), 0.1, 0.2) == orig
+    assert db[octave_output_mixer_name("octave1", 1), 0.1, 0.2] == orig
 
-        second = CalibrationResult(
-            [1, 2, 3, 4],
-            0.15,
-            -0.03,
-            0.1,
-            0.3,
-            0.3,
-            octave_output_mixer_name("octave1", 1),
-            {"x": "y"},
-        )
-        db.update_calibration_data([second])
-        calibrations_for_lo = db.get_for_lo_frequency(
-            octave_output_mixer_name("octave1", 1), 0.1
-        )
-        assert orig in calibrations_for_lo
-        assert second in calibrations_for_lo
-
-    finally:
-        del db
-        # test that we can delete the file after destroying object
-        os.remove(os.path.join(tmp_path, "calibration_db.json"))
+    second = CalibrationResult(
+        [1, 2, 3, 4],
+        0.15,
+        -0.03,
+        0.1,
+        0.3,
+        0.3,
+        octave_output_mixer_name("octave1", 1),
+        {},
+    )
+    db.update_calibration_data([second])
+    calibrations_for_lo = db.get_for_lo_frequency(
+        octave_output_mixer_name("octave1", 1), 0.1
+    )
+    assert orig in calibrations_for_lo
+    assert second in calibrations_for_lo
 
 
 def test_save_and_get_all(tmp_path):
-    try:
-        db = CalibrationDB(tmp_path)
-        mixer_name = octave_output_mixer_name("octave1", 1)
-        # adding values for different combination of the same lo and if freqs:
-        # different if and lo
-        # same if and different lo
-        # different if and same lo
-        orig = [CalibrationResult(
-            [1, 2, 3, 4],
-            0.15 * i,
-            -0.03 * i,
-            1.5e9 * i,
-            50e6 + i * 1e6,
-            0.3,
-            mixer_name,
-            {"x": "y"},
-        ) for i in range(1, 15)] + [CalibrationResult(
-            [1, 2, 3, 4],
-            0.15 * i,
-            -0.03 * i,
-            1.6e9 * i,
-            60e6 + i * 1e6,
-            0.3,
-            mixer_name,
-            {"x": "y"},
-        ) for i in range(1, 15)] + [CalibrationResult(
-            [1, 2, 3, 4],
-            0.15 * i,
-            -0.03 * i,
-            1.5e9 * i,
-            60e6 + i * 1e6,
-            0.3,
-            mixer_name,
-            {"x": "y"},
-        ) for i in range(1, 15)]
+    db = CalibrationDB(tmp_path)
+    mixer_name = octave_output_mixer_name("octave1", 1)
+    # adding values for different combination of the same lo and if freqs:
+    # different if and lo
+    # same if and different lo
+    # different if and same lo
+    orig = [CalibrationResult(
+        [1, 2, 3, 4],
+        0.15 * i,
+        -0.03 * i,
+        1.5e9 * i,
+        50e6 + i * 1e6,
+        0.3,
+        mixer_name,
+        {},
+    ) for i in range(1, 15)] + [CalibrationResult(
+        [1, 2, 3, 4],
+        0.15 * i,
+        -0.03 * i,
+        1.6e9 * i,
+        60e6 + i * 1e6,
+        0.3,
+        mixer_name,
+        {},
+    ) for i in range(1, 15)] + [CalibrationResult(
+        [1, 2, 3, 4],
+        0.15 * i,
+        -0.03 * i,
+        1.5e9 * i,
+        60e6 + i * 1e6,
+        0.3,
+        mixer_name,
+        {},
+    ) for i in range(1, 15)]
 
-        # trying to add twice to make sure it replaced
-        db.update_calibration_data(orig)
-        db.update_calibration_data(orig)
-        assert len(set([(r.lo_frequency, r.if_frequency) for r in orig])) == 42
-        assert len(db.get_all(mixer_name)) == 42
-        assert len(db.get_all_or_default(mixer_name)) == 42
-        assert db.get_all_or_default("blah") == []
-        assert len(db.get_for_lo_frequency(mixer_name, 1.5e9)) == 2
-        assert db.get(mixer_name, 1.5e9 * 2, 52e6) == orig[1]
-        assert db.get_or_none(mixer_name, 1.5e9 * 2, 52e6) == orig[1]
-        assert db.get_or_none(mixer_name, 1.5e9 * 2, 152e6) is None
-    finally:
-        del db
-        # test that we can delete the file after destroying object
-        os.remove(os.path.join(tmp_path, "calibration_db.json"))
+    # trying to add twice to make sure it replaced
+    db.update_calibration_data(orig)
+    db.update_calibration_data(orig)
+    assert len(set([(r.lo_frequency, r.if_frequency) for r in orig])) == 42
+    assert len(db.get_all(mixer_name)) == 42
+    assert len(db.get_all_or_default(mixer_name)) == 42
+    assert db.get_all_or_default("blah") == []
+    assert len(db.get_for_lo_frequency(mixer_name, 1.5e9)) == 2
+    assert db.get(mixer_name, 1.5e9 * 2, 52e6) == orig[1]
+    with pytest.raises(AttributeError):
+        db.get(mixer_name, 1.5e9 * 2, 152e6)
 
 
 def test_load_from_calibration_db(tmp_path):
@@ -218,7 +207,7 @@ def test_load_from_calibration_db(tmp_path):
     db = CalibrationDB(tmp_path)
     orig = CalibrationResult(
         [1, 2, 3, 4], 0.15, -0.03, 2e9, 30e6, 0.3,
-        octave_output_mixer_name("octave1", 1), {"x": "y"}
+        octave_output_mixer_name("octave1", 1), {}
     )
 
     db.update_calibration_data(orig)

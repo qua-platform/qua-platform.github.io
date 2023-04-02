@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from betterproto.lib.google.protobuf import ListValue, Value
+from betterproto.lib.google.protobuf import Value, ListValue
 
 from qm.grpc.qua import QuaResultAnalysis
 

@@ -1,37 +1,30 @@
 import logging
-from typing import Tuple, Callable
+from typing import Tuple, AsyncIterator
 
 from qm.simulate import interface
-from qm.simulate.interface import SimulationConfig
-from qm.program import Program
 from qm.api.base_api import BaseApi
-from qm.api.models.compiler import (
-    CompilerOptionArguments,
-    _get_request_compiler_options,
-)
+from qm.utils.async_utils import run_async
+from qm.program import Program, load_config
+from qm.utils.protobuf_utils import LOG_LEVEL_MAP
+from qm.simulate.interface import SimulationConfig
+from qm.type_hinting.config_types import DictQuaConfig
 from qm.api.models.server_details import ConnectionDetails
 from qm.exceptions import QMSimulationError, FailedToExecuteJobException
+from qm.api.models.compiler import CompilerOptionArguments, _get_request_compiler_options
+from qm.grpc.results_analyser import SimulatorSamplesResponse, PullSimulatorSamplesRequest
 from qm.grpc.frontend import (
     FrontendStub,
-    SimulatedResponsePart,
-    SimulationRequest,
-    ExecutionRequestSimulate,
+    DensityMatrix,
     InterOpxAddress,
-    InterOpxConnection,
-    InterOpxConnectionAddressToAddress,
     InterOpxChannel,
-    InterOpxConnectionChannelToChannel,
-    SimulationResponse,
+    SimulationRequest,
+    InterOpxConnection,
+    SimulatedResponsePart,
+    ExecutionRequestSimulate,
     GetSimulatedQuantumStateRequest,
-    GetSimulatedQuantumStateResponse,
+    InterOpxConnectionAddressToAddress,
+    InterOpxConnectionChannelToChannel,
 )
-from qm.grpc.qua_config import QuaConfig
-from qm.grpc.results_analyser import (
-    PullSimulatorSamplesRequest,
-    SimulatorSamplesResponse,
-)
-from qm.program import load_config
-from qm.utils import _level_map
 
 logger = logging.getLogger(__name__)
 
@@ -40,13 +33,14 @@ class SimulationApi(BaseApi):
     def __init__(self, connection_details: ConnectionDetails):
         super().__init__(connection_details)
         self._stub = FrontendStub(self._channel)
+        self._timeout = None
 
     def simulate(
         self,
-        config: QuaConfig,
+        config: DictQuaConfig,
         program: Program,
         simulate: SimulationConfig,
-        compiler_options: CompilerOptionArguments(),
+        compiler_options: CompilerOptionArguments,
     ) -> Tuple[str, SimulatedResponsePart]:
 
         if type(program) is not Program:
@@ -73,7 +67,9 @@ class SimulationApi(BaseApi):
                         f"{type(connection.target).__name__}"
                     )
 
-                if isinstance(connection.source, interface.InterOpxAddress):
+                if isinstance(connection.source, interface.InterOpxAddress) and isinstance(
+                    connection.target, interface.InterOpxAddress
+                ):
                     con = InterOpxConnection(
                         address_to_address=InterOpxConnectionAddressToAddress(
                             source=InterOpxAddress(
@@ -86,7 +82,9 @@ class SimulationApi(BaseApi):
                             ),
                         )
                     )
-                elif isinstance(connection.source, interface.InterOpxChannel):
+                elif isinstance(connection.source, interface.InterOpxChannel) and isinstance(
+                    connection.target, interface.InterOpxChannel
+                ):
                     con = InterOpxConnection(
                         channel_to_channel=InterOpxConnectionChannelToChannel(
                             source=InterOpxChannel(
@@ -110,22 +108,15 @@ class SimulationApi(BaseApi):
                 request.controller_connections.append(con)
 
         request.high_level_program = program.build(msg_config)
-        request.high_level_program.compiler_options = _get_request_compiler_options(
-            compiler_options
-        )
+        request.high_level_program.compiler_options = _get_request_compiler_options(compiler_options)
 
         logger.info("Simulating program")
 
-        response: SimulationResponse = self._execute_on_stub(
-            self._stub.simulate, request
-        )
+        response = run_async(self._stub.simulate(request, timeout=self._timeout))
 
-        messages = [(_level_map[msg.level], msg.message) for msg in response.messages]
+        messages = [(LOG_LEVEL_MAP[msg.level], msg.message) for msg in response.messages]
 
-        config_messages = [
-            (_level_map[msg.level], msg.message)
-            for msg in response.config_validation_errors
-        ]
+        config_messages = [(LOG_LEVEL_MAP[msg.level], msg.message) for msg in response.config_validation_errors]
 
         job_id = response.job_id
 
@@ -143,11 +134,9 @@ class SimulationApi(BaseApi):
 
         return job_id, response.simulated
 
-    def get_simulated_quantum_state(self, job_id: str):
+    def get_simulated_quantum_state(self, job_id: str) -> DensityMatrix:
         request = GetSimulatedQuantumStateRequest(job_id=job_id)
-        response: GetSimulatedQuantumStateResponse = self._execute_on_stub(
-            self._stub.get_simulated_quantum_state, request
-        )
+        response = run_async(self._stub.get_simulated_quantum_state(request, timeout=self._timeout))
 
         if response.ok:
             return response.state
@@ -155,12 +144,8 @@ class SimulationApi(BaseApi):
         raise QMSimulationError("Error while pulling quantum state")
 
     def pull_simulator_samples(
-        self,
-        job_id: str,
-        include_analog: bool,
-        include_digital: bool,
-        callback: Callable[[SimulatorSamplesResponse], bool],
-    ):
+        self, job_id: str, include_analog: bool, include_digital: bool
+    ) -> AsyncIterator[SimulatorSamplesResponse]:
         request = PullSimulatorSamplesRequest(
             job_id=job_id,
             include_analog=include_analog,
@@ -168,6 +153,4 @@ class SimulationApi(BaseApi):
             include_all_connections=True,
         )
 
-        self._execute_iterator_on_stub(
-            self._stub.pull_simulator_samples, callback, request
-        )
+        return self._stub.pull_simulator_samples(request)

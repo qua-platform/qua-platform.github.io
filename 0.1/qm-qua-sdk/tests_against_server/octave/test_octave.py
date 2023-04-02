@@ -1,19 +1,21 @@
 import pytest
 
+from tests.conftest import ignore_deprecation_warnings_context
 from qm.QuantumMachinesManager import QuantumMachinesManager
-from qm.octave.octave_manager import OctaveManager
 from qm.octave.octave_config import QmOctaveConfig
 from tests.simulate.opx_config import config
 
 
 @pytest.mark.skip("no simulated server yet")
-def test_octave_init():
-    octave_config = QmOctaveConfig()
-    octave_config.add_device_info("octave1", "127.0.0.1", 333)
-    octave_config.add_opx_octave_port_mapping(
-        {("con1", 1): ("octave1", "I1"), ("con1", 2): ("octave1", "Q1")}
-    )
-    octave = OctaveManager(octave_config)
+@pytest.mark.parametrize("validate_with_protobuf", [True, False])
+def test_creating_an_element_with_octave_from_config(
+    qmm_with_octave: QuantumMachinesManager,
+    validate_with_protobuf: bool,
+    qua_single_element_config: dict,
+):
+    with ignore_deprecation_warnings_context():
+        qmm_with_octave.open_qm(config=qua_single_element_config, validate_with_protobuf=validate_with_protobuf)
+    assert True
 
 
 @pytest.mark.skip("playground")
@@ -45,3 +47,15 @@ def test_octave_with_qmm(host_port, tmpdir):
     qm.octave.load_lo_frequency_from_config("qb1")
 
     # qm.set_lo_frequency("qb1",7e9)
+
+
+def test_setting_an_attribute_both_element_and_gateway():
+    pass
+
+
+def test_two_elements_share_the_same_octave_different_ports():
+    pass
+
+
+def test_two_elements_share_ports():
+    pass

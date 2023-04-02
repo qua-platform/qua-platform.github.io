@@ -1,13 +1,13 @@
-from typing import Optional, Union, List
 import re
+from typing import List, Union, Optional
 
 import betterproto
-from betterproto.lib.google.protobuf import ListValue, Value
+from betterproto.lib.google.protobuf import Value, ListValue
 
-from qm.serialization.expression_serializing_visitor import ExpressionSerializingVisitor
-from qm.serialization.qua_node_visitor import QuaNodeVisitor
-from qm.exceptions import QmQuaException
 from qm.grpc import qua
+from qm.exceptions import QmQuaException
+from qm.serialization.qua_node_visitor import QuaNodeVisitor
+from qm.serialization.expression_serializing_visitor import ExpressionSerializingVisitor
 
 
 class QuaSerializingVisitor(QuaNodeVisitor):
@@ -63,9 +63,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
 
     @staticmethod
     def _search_auto_added_stream(values: List[Value]):
-        is_auto_added_result = (
-            isinstance(values[2], Value) and values[2].string_value == "auto"
-        )
+        is_auto_added_result = isinstance(values[2], Value) and values[2].string_value == "auto"
         return is_auto_added_result
 
     def _fix_legacy_save(self, sp_line, node: ListValue):
@@ -78,12 +76,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             self._lines.pop()
             line_to_remove_index = None
             for i in range(len(self._lines)):
-                if (
-                    self._lines[i].find(
-                        f"{trace_name} = declare_stream(adc_trace=True)"
-                    )
-                    > 0
-                ):
+                if self._lines[i].find(f"{trace_name} = declare_stream(adc_trace=True)") > 0:
                     line_to_remove_index = i
                 self._lines[i] = self._lines[i].replace(trace_name, f'"{save_name}"')
             if line_to_remove_index:
@@ -96,21 +89,15 @@ class QuaSerializingVisitor(QuaNodeVisitor):
         else:
             return False
 
-    def enter_qm_grpc_qua_QuaProgramSaveStatement(
-        self, node: qua.QuaProgramSaveStatement
-    ) -> bool:
+    def enter_qm_grpc_qua_QuaProgramSaveStatement(self, node: qua.QuaProgramSaveStatement) -> bool:
         if node.tag not in self.tags:
             self._line(f"{node.tag} = declare_stream()")
             self.tags.append(node.tag)
-        save_line = (
-            f"save({ExpressionSerializingVisitor.serialize(node.source)}, {node.tag})"
-        )
+        save_line = f"save({ExpressionSerializingVisitor.serialize(node.source)}, {node.tag})"
         self._line(save_line)
         return False
 
-    def enter_qm_grpc_qua_QuaProgramVarDeclaration(
-        self, node: qua.QuaProgramVarDeclaration
-    ):
+    def enter_qm_grpc_qua_QuaProgramVarDeclaration(self, node: qua.QuaProgramVarDeclaration):
         args = self._get_declare_var_args(node)
 
         if node.is_input_stream:
@@ -120,9 +107,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
                 f"{node.name} = declare_input_stream({_var_type_dec[node.type]}, '{stream_name}', {_dict_to_python_call(args)})"
             )
         else:
-            self._line(
-                f"{node.name} = declare({_var_type_dec[node.type]}, {_dict_to_python_call(args)})"
-            )
+            self._line(f"{node.name} = declare({_var_type_dec[node.type]}, {_dict_to_python_call(args)})")
 
         return False
 
@@ -140,9 +125,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             del args["size"]
         return args
 
-    def enter_qm_grpc_qua_QuaProgramMeasureStatement(
-        self, node: qua.QuaProgramMeasureStatement
-    ):
+    def enter_qm_grpc_qua_QuaProgramMeasureStatement(self, node: qua.QuaProgramMeasureStatement):
         if node.timestamp_label and node.timestamp_label not in self.tags:
             self._line(f"{node.timestamp_label} = declare_stream()")
             self.tags.append(node.timestamp_label)
@@ -154,17 +137,13 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             self.tags.append(node.stream_as)
         return self._default_enter(node)
 
-    def visit_qm_grpc_qua_QuaProgramForStatement(
-        self, node: qua.QuaProgramForStatement
-    ):
+    def visit_qm_grpc_qua_QuaProgramForStatement(self, node: qua.QuaProgramForStatement):
         if len(node.body.statements) > 0:
             super()._default_visit(node.body)
         else:
             self._line("pass")
 
-    def visit_qm_grpc_qua_QuaProgramForEachStatement(
-        self, node: qua.QuaProgramForEachStatement
-    ):
+    def visit_qm_grpc_qua_QuaProgramForEachStatement(self, node: qua.QuaProgramForEachStatement):
         if len(node.body.statements) > 0:
             super()._default_visit(node.body)
         else:
@@ -180,9 +159,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             elseif_block = elseif.body
             condition = elseif.condition
             self._leave_block()
-            self._line(
-                f"with elif_({ExpressionSerializingVisitor.serialize(condition)}):"
-            )
+            self._line(f"with elif_({ExpressionSerializingVisitor.serialize(condition)}):")
             self._enter_block()
             if len(elseif_block.statements) > 0:
                 super()._default_visit(elseif_block)
@@ -196,9 +173,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             self._enter_block()
             super()._default_visit(else_block)
 
-    def visit_qm_grpc_qua_QuaProgramPlayStatement(
-        self, node: qua.QuaProgramPlayStatement
-    ):
+    def visit_qm_grpc_qua_QuaProgramPlayStatement(self, node: qua.QuaProgramPlayStatement):
         pulse_one_of, value = betterproto.which_one_of(node, "pulseType")
         if pulse_one_of == "named_pulse":
             pulse = f'"{node.named_pulse.name}"'
@@ -376,9 +351,7 @@ def _wait_for_trigger_statement(node: qua.QuaProgramWaitForTriggerStatement):
         args.append(f'"{node.pulse_to_play.name}"')
     if node.element_output.element:
         if node.element_output.output:
-            args.append(
-                f'trigger_element=("{node.element_output.element}", "{node.element_output.output}")'
-            )
+            args.append(f'trigger_element=("{node.element_output.element}", "{node.element_output.output}")')
         else:
             args.append(f'trigger_element="{node.element_output.element}"')
     if node.time_tag_target.name != "":
@@ -597,9 +570,7 @@ def _stream_processing_operator(array: List[Value]) -> str:
 
     if operator == "bufferAndSkip":
         chain = _default_stream_processing_chain(array)
-        return (
-            f"{chain}.buffer_and_skip({array[1].string_value}, {array[2].string_value})"
-        )
+        return f"{chain}.buffer_and_skip({array[1].string_value}, {array[2].string_value})"
 
     if operator == "skip":
         chain = _default_stream_processing_chain(array)

@@ -1,9 +1,10 @@
 import random
-import qm.program.expressions as _exp
-from qm.qua._dsl import _Expression, _to_expression, declare, assign
 from functools import wraps
-from qm.utils import get_iterable_elements_datatype as _get_iterable_elements_datatype
 from collections.abc import Iterable
+
+import qm.program.expressions as _exp
+from qm.qua._dsl import assign, declare, _Expression, _to_expression
+from qm.utils import get_iterable_elements_datatype as _get_iterable_elements_datatype
 
 
 def _library_function(lib_name, func_name):
@@ -25,11 +26,7 @@ def _sanitize_arg(arg):
 
 
 def call_library_function(lib_name, func_name, args):
-    return _Expression(
-        _exp.lib_func(
-            lib_name, func_name, *[_to_expression(_sanitize_arg(x)) for x in args]
-        )
-    )
+    return _Expression(_exp.lib_func(lib_name, func_name, *[_to_expression(_sanitize_arg(x)) for x in args]))
 
 
 class Math:
@@ -592,9 +589,7 @@ class Random:
             seed: Optional. An integer seed for the pseudo-random number
                 generator.
         """
-        self._seed = declare(
-            int, value=seed if seed is not None else random.randrange((1 << 28) - 1)
-        )
+        self._seed = declare(int, value=seed if seed is not None else random.randrange((1 << 28) - 1))
 
     def set_seed(self, exp):
         r"""Set the seed for the pseudo-random number generator

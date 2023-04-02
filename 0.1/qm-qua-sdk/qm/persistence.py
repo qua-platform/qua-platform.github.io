@@ -1,6 +1,6 @@
 import abc
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 
 
 class BinaryAsset(metaclass=abc.ABCMeta):
@@ -32,9 +32,9 @@ class FileBinaryAsset(BinaryAsset):
     def __init__(self, path: Path) -> None:
         super().__init__()
         self._path = path
-        self._opened_fd = None
+        self._opened_fd: Optional[BinaryIO] = None
 
-    def close(self):
+    def close(self) -> None:
         if self._opened_fd:
             self._opened_fd.close()
 
@@ -54,7 +54,7 @@ class SimpleFileStore(BaseStore):
         super().__init__()
         self._root = Path(root).absolute()
 
-    def _job_path(self, job_id: str):
+    def _job_path(self, job_id: str) -> Path:
         path = Path(f"{self._root}/{job_id}")
         path.mkdir(parents=True, exist_ok=True)
         return path

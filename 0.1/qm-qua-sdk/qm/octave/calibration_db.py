@@ -1,13 +1,12 @@
 import os
 import logging
-from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import List, Dict, Union, Any, Optional
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Union, Optional
 
-from tinydb import TinyDB, Query
+from tinydb import Query, TinyDB
 
-from qm.octave.enums import OctaveLOSource
-
+from qm.type_hinting.config_types import DictQuaConfig
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,6 @@ class CalibrationResult:
     if_frequency: float
     temperature: float
     mixer_id: str
-    lo_source = OctaveLOSource
     optimizer_parameters: Dict[str, Any]
 
 
@@ -36,9 +34,7 @@ class CalibrationDB:
     def file_path(self):
         return self._file_path
 
-    def update_calibration_data(
-        self, data: Union[CalibrationResult, List[CalibrationResult]]
-    ):
+    def update_calibration_data(self, data: Union[CalibrationResult, List[CalibrationResult]]):
         if isinstance(data, CalibrationResult):
             data = [data]
 
@@ -54,23 +50,17 @@ class CalibrationDB:
     def get(self, mixer, lo_freq, if_freq) -> Optional[CalibrationResult]:
         query = Query()
         doc = self._db.get(
-            (query.mixer_id == mixer)
-            & (query.lo_frequency == lo_freq)
-            & (query.if_frequency == if_freq),
+            (query.mixer_id == mixer) & (query.lo_frequency == lo_freq) & (query.if_frequency == if_freq),
         )
         if doc is not None:
             return self._doc_to_result(doc)
         else:
-            raise AttributeError(
-                f"calibration for {mixer}, lo {lo_freq}, if {if_freq} was not found"
-            )
+            raise AttributeError(f"calibration for {mixer}, lo {lo_freq}, if {if_freq} was not found")
 
     def get_or_none(self, mixer, lo_freq, if_freq) -> Optional[CalibrationResult]:
         query = Query()
         doc = self._db.get(
-            (query.mixer_id == mixer)
-            & (query.lo_frequency == lo_freq)
-            & (query.if_frequency == if_freq)
+            (query.mixer_id == mixer) & (query.lo_frequency == lo_freq) & (query.if_frequency == if_freq)
         )
         if doc is not None:
             return self._doc_to_result(doc)
@@ -79,9 +69,7 @@ class CalibrationDB:
 
     def get_for_lo_frequency(self, mixer, lo_freq) -> List[CalibrationResult]:
         query = Query()
-        table = self._db.search(
-            (query.mixer_id == mixer) & (query.lo_frequency == lo_freq)
-        )
+        table = self._db.search((query.mixer_id == mixer) & (query.lo_frequency == lo_freq))
         return [self._doc_to_result(doc) for doc in table]
 
     def get_all(self, mixer) -> List[CalibrationResult]:
@@ -121,7 +109,7 @@ def octave_output_mixer_name(octave: str, port: int) -> str:
     return f"octave_{octave}_{port}"
 
 
-def load_from_calibration_db(config: Dict, calibration_db: CalibrationDB) -> None:
+def load_from_calibration_db(config: DictQuaConfig, calibration_db: CalibrationDB) -> None:
     if calibration_db is None:
         return
     for mixer in config["mixers"].keys():
@@ -164,9 +152,5 @@ def load_from_calibration_db(config: Dict, calibration_db: CalibrationDB) -> Non
                     q_port = element["mixInputs"]["Q"]
                     result = calibration_db.get_or_none(mixer, lo_freq, if_freq)
                     if result is not None:
-                        config["controllers"][i_port[0]]["analog_outputs"][i_port[1]][
-                            "offset"
-                        ] = result.i_offset
-                        config["controllers"][q_port[0]]["analog_outputs"][q_port[1]][
-                            "offset"
-                        ] = result.q_offset
+                        config["controllers"][i_port[0]]["analog_outputs"][i_port[1]]["offset"] = result.i_offset
+                        config["controllers"][q_port[0]]["analog_outputs"][q_port[1]]["offset"] = result.q_offset

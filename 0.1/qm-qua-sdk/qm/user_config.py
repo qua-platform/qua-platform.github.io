@@ -1,10 +1,25 @@
 import os
 import json
 import uuid
-from typing import Optional, Union
-from dataclasses import dataclass, field, asdict
+from typing_extensions import TypedDict
+from dataclasses import field, asdict, dataclass
+from typing import Any, Dict, Union, Optional, cast
+
+from qm.type_hinting.general import PathLike
 
 CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".qm", "config.json")
+
+
+class UserConfigType(TypedDict, total=False):
+    quantumMachinesManager_port: Optional[int]
+    quantumMachinesManager_host: str
+    quantumMachinesManager_strict_healthcheck: bool
+    quantumMachinesManager_user_token: str
+    quantumMachinesManager_managerPort: Optional[int]
+    logging_level: Union[int, str]
+    upload_logs: bool
+    datadog_token: str
+    organization: str
 
 
 @dataclass
@@ -22,54 +37,54 @@ class UserConfig:
     organization: str = field(default="Unknown")
 
     @property
-    def manager_port(self):
+    def manager_port(self) -> Optional[int]:
         return self.quantumMachinesManager_port
 
     @property
-    def manager_host(self):
+    def manager_host(self) -> Optional[str]:
         return self.quantumMachinesManager_host
 
     @property
-    def strict_healthcheck(self):
+    def strict_healthcheck(self) -> bool:
         return self.quantumMachinesManager_strict_healthcheck
 
     @property
-    def user_token(self):
+    def user_token(self) -> str:
         return self.quantumMachinesManager_user_token
 
     @classmethod
-    def create_from_file(cls):
+    def create_from_file(cls) -> "UserConfig":
         raw_dict = cls._read_json(CONFIG_PATH)
         return cls(**raw_dict)
 
-    def write_to_file(self):
-        config_dict = asdict(self)
+    def write_to_file(self) -> None:
+        config_dict: UserConfigType = cast(UserConfigType, asdict(self))
         self._write_json(config_dict, CONFIG_PATH)
 
     @staticmethod
-    def _read_json(file_path) -> dict:
+    def _read_json(file_path: PathLike) -> UserConfigType:
         if os.path.exists(file_path):
             with open(file_path, "r") as file:
-                return json.load(file)
+                return cast(UserConfigType, json.load(file))
         else:
             return {}
 
     @staticmethod
-    def _write_json(config: dict, file_path: str) -> None:
+    def _write_json(config: UserConfigType, file_path: str) -> None:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w") as file:
             return json.dump(config, file, indent=4)
 
     @property
-    def enable_user_stdout(self):
+    def enable_user_stdout(self) -> bool:
         return os.environ.get("QM_DISABLE_STREAMOUTPUT", None) is None
 
     @property
-    def default_logging_format(self):
+    def default_logging_format(self) -> str:
         return "%(asctime)s - qm - %(levelname)-8s - %(message)s"
 
     @property
-    def datadog_handler_config(self):
+    def datadog_handler_config(self) -> Dict[str, Any]:
         assert self.user_token, "No user token is defined"
         return {
             "class": "qm.datadog_api.DatadogHandler",
@@ -80,7 +95,7 @@ class UserConfig:
         }
 
     @property
-    def logging_config_dict(self):
+    def logging_config_dict(self) -> Dict[str, Any]:
         default_formatter = "default"
         formatters = {default_formatter: {"format": self.default_logging_format}}
         handlers = {}
@@ -96,32 +111,28 @@ class UserConfig:
             "version": 1,
             "formatters": formatters,
             "handlers": handlers,
-            "loggers": {
-                "qm": {"level": self.logging_level, "handlers": list(handlers)}
-            },
+            "loggers": {"qm": {"level": self.logging_level, "handlers": list(handlers)}},
         }
 
 
-def load_user_config():
+def load_user_config() -> UserConfig:
     return UserConfig.create_from_file()
 
 
-def _generate_random_id():
+def _generate_random_id() -> str:
     return str(uuid.uuid4()).split("-")[-1]
 
 
 def update_old_user_config(
-    old_config,
-    host=None,
-    port=None,
-    send_anonymous_logs=None,
-    datadog_token="",
-    organization="Unknown",
-):
+    old_config: UserConfig,
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+    send_anonymous_logs: Optional[bool] = None,
+    datadog_token: str = "",
+    organization: str = "Unknown",
+) -> UserConfig:
     user_token = old_config.user_token or _generate_random_id()
-    upload_logs = (
-        old_config.upload_logs if send_anonymous_logs is None else send_anonymous_logs
-    )
+    upload_logs = old_config.upload_logs if send_anonymous_logs is None else send_anonymous_logs
     return UserConfig(
         upload_logs=upload_logs,
         quantumMachinesManager_user_token=user_token,
@@ -133,12 +144,12 @@ def update_old_user_config(
 
 
 def create_new_user_config(
-    host=None,
-    port=None,
-    send_anonymous_logs=None,
-    datadog_token="",
-    organization="Unknown",
-):
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+    send_anonymous_logs: Optional[bool] = None,
+    datadog_token: str = "",
+    organization: str = "Unknown",
+) -> None:
     """Creates a user config file (running it requires writing permission). Setting
     a host and a port removes the need to specify them each time opening a QuantumMachinesManager.
     All parameters are optional.

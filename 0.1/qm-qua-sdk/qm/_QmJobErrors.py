@@ -1,14 +1,27 @@
-from typing import Tuple
+from typing import Dict, Type, Tuple, Union, cast
 
-from qm.grpc.errors import (
-    JobManagerErrorTypes,
-    JobOperationSpecificErrorTypes,
-    ConfigQueryErrorTypes,
+from qm.exceptions import QmQuaException
+from qm.grpc.errors import JobManagerErrorTypes, ConfigQueryErrorTypes, JobOperationSpecificErrorTypes
+from qm.grpc.job_manager import (
+    InsertInputStreamRequest,
+    JobManagerResponseHeader,
+    InsertInputStreamResponse,
+    GetElementCorrectionRequest,
+    SetElementCorrectionRequest,
+    GetElementCorrectionResponse,
+    SetElementCorrectionResponse,
 )
-from qm.grpc.job_manager import JobManagerResponseHeader
+
+ResponseType = Union[InsertInputStreamResponse, SetElementCorrectionResponse, GetElementCorrectionResponse]
+
+RequestType = Union[InsertInputStreamRequest, SetElementCorrectionRequest, GetElementCorrectionRequest]
 
 
-class QmApiError(BaseException):
+class QmApiError(QmQuaException):
+    @staticmethod
+    def build_from_response(request: RequestType, response: ResponseType) -> "QmApiError":
+        return QmApiError(0, str(response))
+
     def __init__(self, code: int, message: str = "") -> None:
         super().__init__(message)
         self.message = message
@@ -16,6 +29,10 @@ class QmApiError(BaseException):
 
 
 class UnspecifiedError(QmApiError):
+    @staticmethod
+    def build_from_response(request: RequestType, response: ResponseType) -> "UnspecifiedError":
+        return UnspecifiedError("Unspecified operation specific error")
+
     def __init__(self, message: str) -> None:
         super().__init__(0, message)
 
@@ -61,10 +78,8 @@ class MissingElementError(ConfigQueryError):
     """"""
 
     @staticmethod
-    def _build_from_response(request, response) -> "MissingElementError":
-        return MissingElementError(
-            response.job_manager_response_header.job_error_details.message
-        )
+    def build_from_response(request: RequestType, response: ResponseType) -> "MissingElementError":
+        return MissingElementError(response.job_manager_response_header.job_error_details.message)
 
     def __init__(self, message: str):
         super().__init__(4001, message)
@@ -74,10 +89,8 @@ class MissingDigitalInputError(ConfigQueryError):
     """"""
 
     @staticmethod
-    def _build_from_response(request, response) -> "MissingDigitalInputError":
-        return MissingDigitalInputError(
-            response.job_manager_response_header.job_error_details.message
-        )
+    def _build_from_response(request: RequestType, response: ResponseType) -> "MissingDigitalInputError":
+        return MissingDigitalInputError(response.job_manager_response_header.job_error_details.message)
 
     def __init__(self, message: str):
         super().__init__(4002, message)
@@ -89,8 +102,10 @@ class _InvalidConfigChangeError(QmApiError):
 
 class ElementWithSingleInputError(_InvalidConfigChangeError):
     @staticmethod
-    def _build_from_response(request, response) -> "ElementWithSingleInputError":
-        return ElementWithSingleInputError(request.qe_name)
+    def build_from_response(request: RequestType, response: ResponseType) -> "ElementWithSingleInputError":
+        return ElementWithSingleInputError(
+            cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).qe_name
+        )
 
     def __init__(self, element_name: str):
         super().__init__(3000)
@@ -101,15 +116,15 @@ class InvalidElementCorrectionError(_InvalidConfigChangeError):
     """If the correction values are invalid"""
 
     @staticmethod
-    def _build_from_response(request, response) -> "InvalidElementCorrectionError":
+    def build_from_response(request: RequestType, response: ResponseType) -> "InvalidElementCorrectionError":
         return InvalidElementCorrectionError(
             response.job_manager_response_header.job_error_details.message,
-            request.qe_name,
+            cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).qe_name,
             (
-                request.correction.v00,
-                request.correction.v01,
-                request.correction.v10,
-                request.correction.v11,
+                cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).correction.v00,
+                cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).correction.v01,
+                cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).correction.v10,
+                cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).correction.v11,
             ),
         )
 
@@ -126,10 +141,10 @@ class InvalidElementCorrectionError(_InvalidConfigChangeError):
 
 class ElementWithoutIntermediateFrequencyError(_InvalidConfigChangeError):
     @staticmethod
-    def _build_from_response(
-        request, response
-    ) -> "ElementWithoutIntermediateFrequencyError":
-        return ElementWithoutIntermediateFrequencyError(request.qe_name)
+    def build_from_response(request: RequestType, response: ResponseType) -> "ElementWithoutIntermediateFrequencyError":
+        return ElementWithoutIntermediateFrequencyError(
+            cast(Union[SetElementCorrectionRequest, GetElementCorrectionRequest], request).qe_name
+        )
 
     def __init__(self, element_name: str):
         super().__init__(3002)
@@ -138,10 +153,8 @@ class ElementWithoutIntermediateFrequencyError(_InvalidConfigChangeError):
 
 class InvalidDigitalInputThresholdError(_InvalidConfigChangeError):
     @staticmethod
-    def _build_from_response(request, response) -> "InvalidDigitalInputThresholdError":
-        return InvalidDigitalInputThresholdError(
-            response.job_manager_response_header.job_error_details.message
-        )
+    def build_from_response(request: RequestType, response: ResponseType) -> "InvalidDigitalInputThresholdError":
+        return InvalidDigitalInputThresholdError(response.job_manager_response_header.job_error_details.message)
 
     def __init__(self, message: str):
         super().__init__(3003)
@@ -150,10 +163,8 @@ class InvalidDigitalInputThresholdError(_InvalidConfigChangeError):
 
 class InvalidDigitalInputDeadtimeError(_InvalidConfigChangeError):
     @staticmethod
-    def _build_from_response(request, response) -> "InvalidDigitalInputDeadtimeError":
-        return InvalidDigitalInputDeadtimeError(
-            response.job_manager_response_header.job_error_details.message
-        )
+    def build_from_response(request: RequestType, response: ResponseType) -> "InvalidDigitalInputDeadtimeError":
+        return InvalidDigitalInputDeadtimeError(response.job_manager_response_header.job_error_details.message)
 
     def __init__(self, message: str):
         super().__init__(3004)
@@ -162,17 +173,19 @@ class InvalidDigitalInputDeadtimeError(_InvalidConfigChangeError):
 
 class InvalidDigitalInputPolarityError(_InvalidConfigChangeError):
     @staticmethod
-    def _build_from_response(request, response) -> "InvalidDigitalInputPolarityError":
-        return InvalidDigitalInputPolarityError(
-            response.job_manager_response_header.job_error_details.message
-        )
+    def build_from_response(request: RequestType, response: ResponseType) -> "InvalidDigitalInputPolarityError":
+        return InvalidDigitalInputPolarityError(response.job_manager_response_header.job_error_details.message)
 
     def __init__(self, message: str):
         super().__init__(3005)
         self.message = message
 
 
-def _handle_job_manager_error(request, response, valid_errors):
+def _handle_job_manager_error(
+    request: RequestType,
+    response: ResponseType,
+    valid_errors: Tuple[Type[QmQuaException], ...],
+) -> None:
     api_response: JobManagerResponseHeader = response.job_manager_response_header
     if not api_response.success:
         error_type = api_response.job_manager_error_type
@@ -187,19 +200,13 @@ def _handle_job_manager_error(request, response, valid_errors):
             raise InvalidOperationOnRealJobError()
         elif error_type == JobManagerErrorTypes.JobOperationSpecificError:
             exception_to_raise = _get_handle_job_operation_error(request, response)
-            if (
-                exception_to_raise is not None
-                and type(exception_to_raise) in valid_errors
-            ):
+            if exception_to_raise is not None and type(exception_to_raise) in valid_errors:
                 raise exception_to_raise
             else:
                 raise UnspecifiedError("Unspecified operation specific error")
         elif error_type == JobManagerErrorTypes.ConfigQueryError:
             exception_to_raise = _get_handle_config_query_error(request, response)
-            if (
-                exception_to_raise is not None
-                and type(exception_to_raise) in valid_errors
-            ):
+            if exception_to_raise is not None and type(exception_to_raise) in valid_errors:
                 raise exception_to_raise
             else:
                 raise UnspecifiedError("Unspecified operation specific error")
@@ -209,58 +216,25 @@ def _handle_job_manager_error(request, response, valid_errors):
             raise UnspecifiedError("Unspecified operation error")
 
 
-def _get_handle_config_query_error(request, response):
-    error_type = (
-        response.job_manager_response_header.job_error_details.config_query_error_type
-    )
-    exception_to_raise = None
-    if error_type == ConfigQueryErrorTypes.MissingElementError:
-        exception_to_raise = MissingElementError._build_from_response(request, response)
-    elif error_type == ConfigQueryErrorTypes.MissingDigitalInputError:
-        exception_to_raise = MissingDigitalInputError._build_from_response(
-            request, response
-        )
-    else:
-        exception_to_raise = UnspecifiedError("Unspecified config query error")
+def _get_handle_config_query_error(request: RequestType, response: ResponseType) -> QmApiError:
+    error_type = response.job_manager_response_header.job_error_details.config_query_error_type
+    errors: Dict[int, Type[QmApiError]] = {
+        ConfigQueryErrorTypes.MissingElementError: MissingElementError,
+        ConfigQueryErrorTypes.MissingDigitalInputError: MissingDigitalInputError,
+    }
 
-    return exception_to_raise
+    return errors.get(error_type, UnspecifiedError).build_from_response(request, response)
 
 
-def _get_handle_job_operation_error(request, response):
-    error_type = (
-        response.job_manager_response_header.job_error_details.job_operation_specific_error_type
-    )
+def _get_handle_job_operation_error(request: RequestType, response: ResponseType) -> QmApiError:
+    error_type = response.job_manager_response_header.job_error_details.job_operation_specific_error_type
+    errors: Dict[int, Type[QmApiError]] = {
+        JobOperationSpecificErrorTypes.SingleInputElementError: ElementWithSingleInputError,
+        JobOperationSpecificErrorTypes.InvalidCorrectionMatrixError: InvalidElementCorrectionError,
+        JobOperationSpecificErrorTypes.ElementWithoutIntermediateFrequencyError: ElementWithoutIntermediateFrequencyError,
+        JobOperationSpecificErrorTypes.InvalidDigitalInputThresholdError: InvalidDigitalInputThresholdError,
+        JobOperationSpecificErrorTypes.InvalidDigitalInputDeadtimeError: InvalidDigitalInputDeadtimeError,
+        JobOperationSpecificErrorTypes.InvalidDigitalInputPolarityError: InvalidDigitalInputPolarityError,
+    }
 
-    if error_type == JobOperationSpecificErrorTypes.SingleInputElementError:
-        exception_to_raise = ElementWithSingleInputError._build_from_response(
-            request, response
-        )
-    elif error_type == JobOperationSpecificErrorTypes.InvalidCorrectionMatrixError:
-        exception_to_raise = InvalidElementCorrectionError._build_from_response(
-            request, response
-        )
-    elif (
-        error_type
-        == JobOperationSpecificErrorTypes.ElementWithoutIntermediateFrequencyError
-    ):
-        exception_to_raise = (
-            ElementWithoutIntermediateFrequencyError._build_from_response(
-                request, response
-            )
-        )
-    elif error_type == JobOperationSpecificErrorTypes.InvalidDigitalInputThresholdError:
-        exception_to_raise = InvalidDigitalInputThresholdError._build_from_response(
-            request, response
-        )
-    elif error_type == JobOperationSpecificErrorTypes.InvalidDigitalInputDeadtimeError:
-        exception_to_raise = InvalidDigitalInputDeadtimeError._build_from_response(
-            request, response
-        )
-    elif error_type == JobOperationSpecificErrorTypes.InvalidDigitalInputPolarityError:
-        exception_to_raise = InvalidDigitalInputPolarityError._build_from_response(
-            request, response
-        )
-    else:
-        exception_to_raise = UnspecifiedError("Unspecified operation specific error")
-
-    return exception_to_raise
+    return errors.get(error_type, UnspecifiedError).build_from_response(request, response)

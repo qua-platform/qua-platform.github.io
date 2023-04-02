@@ -1,10 +1,10 @@
 import logging
 
 from qm.jobs.qm_job import QmJob
-from qm.exceptions import JobCancelledError, ErrorJobStateError, UnknownJobStateError
-from qm.grpc.frontend import JobExecutionStatus
 from qm.jobs.base_job import QmBaseJob
 from qm.utils import run_until_with_timeout
+from qm.grpc.frontend import JobExecutionStatus
+from qm.exceptions import JobCancelledError, ErrorJobStateError, UnknownJobStateError
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +29,7 @@ class QmPendingJob(QmBaseJob):
         if status.pending:
             return status.pending.position_in_queue
 
-        logger.warning(
-            f"Job {self.id} is not pending, therefor it does not have a position in queue"
-        )
+        logger.warning(f"Job {self.id} is not pending, therefor it does not have a position in queue")
         return INVALID_QUEUE_POSITION
 
     def wait_for_execution(self, timeout: float = float("infinity")) -> QmJob:
@@ -49,9 +47,7 @@ class QmPendingJob(QmBaseJob):
         """
 
         def on_iteration() -> bool:
-            status: JobExecutionStatus = self._job_manager.get_job_execution_status(
-                self._id, self._machine_id
-            )
+            status: JobExecutionStatus = self._job_manager.get_job_execution_status(self._id, self._machine_id)
             if status.running or status.completed:
                 return True
 
@@ -61,10 +57,7 @@ class QmPendingJob(QmBaseJob):
             if status.error:
                 raise ErrorJobStateError(
                     f"job {self._id} encountered an error",
-                    error_list=[
-                        value.string_value
-                        for value in status.error.error_messages.values
-                    ],
+                    error_list=[value.string_value for value in status.error.error_messages.values],
                 )
 
             elif status.canceled:
@@ -86,7 +79,7 @@ class QmPendingJob(QmBaseJob):
             on_iteration_callback=on_iteration,
             on_complete_callback=on_complete,
             timeout=timeout,
-            loop_interval=0.2,
+            loop_interval=0.01,
             timeout_message=f"job {self._id} was not started in time. "
             f"Check the QMApp for errors and try reloading the version. "
             f"Please also inform QM about this issue. ",

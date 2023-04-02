@@ -4,10 +4,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from qm.api.async_thread import AsyncThread
 from qm.api.job_manager_api import JobManagerApi
 from qm.api.models.jobs import PendingJobData
-from qm.api.models.info import QuaMachineInfo, ImplementationInfo
 from qm.api.models.server_details import ServerDetails, ConnectionDetails
 from qm.grpc.frontend import HaltRequest, ResumeRequest, ResumeResponse, PausedStatusResponse, PausedStatusRequest, \
     IsJobRunningResponse, IsJobRunningRequest, IsJobAcquiringDataResponseAcquiringStatus, IsJobAcquiringDataResponse, \
@@ -28,8 +26,6 @@ def api():
     api._frontend_stub = AsyncMock()
 
     yield api
-
-    AsyncThread().stop()
 
 
 @pytest.fixture

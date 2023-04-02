@@ -133,28 +133,28 @@ config = {
     "digital_waveforms": {"ON": {"samples": [(1, 0)]}},
     "integration_weights": {
         "long_integW1": {
-            "cosine": [1.0] * int(long_redout_len / 4),
-            "sine": [0.0] * int(long_redout_len / 4),
+            "cosine": [1.0] * (long_redout_len // 4),
+            "sine": [0.0] * (long_redout_len // 4),
         },
         "long_integW2": {
-            "cosine": [0.0] * int(long_redout_len / 4),
-            "sine": [1.0] * int(long_redout_len / 4),
+            "cosine": [0.0] * (long_redout_len // 4),
+            "sine": [1.0] * (long_redout_len // 4),
         },
         "integW1": {
-            "cosine": [1.0] * int(readout_len / 4),
-            "sine": [0.0] * int(readout_len / 4),
+            "cosine": [1.0] * (readout_len // 4),
+            "sine": [0.0] * (readout_len // 4),
         },
         "integW2": {
-            "cosine": [0.0] * int(readout_len / 4),
-            "sine": [1.0] * int(readout_len / 4),
+            "cosine": [0.0] * (readout_len // 4),
+            "sine": [1.0] * (readout_len // 4),
         },
         "optW1": {
-            "cosine": [1.0] * int(readout_len / 4),
-            "sine": [0.0] * int(readout_len / 4),
+            "cosine": [1.0] * (readout_len // 4),
+            "sine": [0.0] * (readout_len // 4),
         },
         "optW2": {
-            "cosine": [0.0] * int(readout_len / 4),
-            "sine": [1.0] * int(readout_len / 4),
+            "cosine": [0.0] * (readout_len // 4),
+            "sine": [1.0] * (readout_len // 4),
         },
     },
     "mixers": {

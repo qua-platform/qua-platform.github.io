@@ -35,3 +35,21 @@ def host_port(server_host, server_port, server_credentials):
 @pytest.fixture(scope="function")
 def server_credentials(use_ssl):
     return create_credentials() if use_ssl else None
+
+
+@pytest.fixture
+def qua_bare_config():
+    return {
+        'version': 1,
+        'controllers': {
+            'con1': {
+                'type': 'opx1',
+                'analog_outputs': {i: {'offset': 0.0} for i in range(1, 11)},
+                'analog_inputs': {i: {'offset': 0.0} for i in range(1, 3)},
+                'digital_outputs': {i: {} for i in range(1, 11)},
+                "connectivity": "oct1",
+            },
+        },
+        'octaves': {"oct1": {"loopbacks": []}},
+        'elements': {},
+    }

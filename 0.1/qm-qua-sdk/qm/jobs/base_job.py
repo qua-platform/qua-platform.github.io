@@ -1,15 +1,22 @@
 import datetime
-from typing import Optional
+from typing import List, Optional
+from typing_extensions import Protocol
 
 import betterproto
 
+from qm.type_hinting import Value
+from qm.persistence import BaseStore
+from qm.exceptions import QmQuaException
+from qm.utils import deprecate_to_property
 from qm.api.frontend_api import FrontendApi
+from qm.grpc.frontend import JobExecutionStatus
 from qm.api.job_manager_api import JobManagerApi
 from qm.api.models.capabilities import ServerCapabilities
-from qm.exceptions import QmQuaException
-from qm.grpc.frontend import JobExecutionStatus
-from qm.persistence import BaseStore
-from qm.utils import deprecate_to_property
+
+
+class JobStateProtocol(Protocol):
+    added_by: Optional[str]
+    time_added: Optional[datetime.datetime]
 
 
 class QmBaseJob:
@@ -33,24 +40,21 @@ class QmBaseJob:
         self._time_added: Optional[datetime.datetime] = None
         self._initialize_from_job_status()
 
-    def _initialize_from_job_status(self):
-        status: JobExecutionStatus = self._job_manager.get_job_execution_status(
-            self._id, self._machine_id
-        )
+    def _initialize_from_job_status(self) -> None:
+        status: JobExecutionStatus = self._job_manager.get_job_execution_status(self._id, self._machine_id)
         name, one_of = betterproto.which_one_of(status, "status")
 
-        if name in ("pending", "running", "completed", "loading"):
-            self._added_user_id = one_of.added_by
-            self._time_added = one_of.time_added
+        if name in ("pending", "running", "completed", "loading") and one_of is not None:
+            job_state: JobStateProtocol = one_of
+            self._added_user_id = job_state.added_by
+            self._time_added = job_state.time_added
 
     @property
     def status(self) -> str:
         """Returns the status of the job, one of the following strings:
         "unknown", "pending", "running", "completed", "canceled", "loading", "error"
         """
-        status: JobExecutionStatus = self._job_manager.get_job_execution_status(
-            self._id, self._machine_id
-        )
+        status: JobExecutionStatus = self._job_manager.get_job_execution_status(self._id, self._machine_id)
         name, _ = betterproto.which_one_of(status, "status")
         return name
 
@@ -62,9 +66,10 @@ class QmBaseJob:
         class_name = self.__class__.__name__
         return deprecate_to_property(
             self._id,
+            f"{class_name}.id()",
             "1.1.0",
             "1.2.0",
-            f"'{class_name}.id()' is deprecated, use '{class_name}.id' instead",
+            f"id moved to be property, use '{class_name}.id' instead",
         )
 
     @property
@@ -78,8 +83,8 @@ class QmBaseJob:
     def insert_input_stream(
         self,
         name: str,
-        data,
-    ):
+        data: List[Value],
+    ) -> None:
         """Insert data to the input stream declared in the QUA program.
         The data is then ready to be read by the program using the advance
         input stream QUA statement.
@@ -96,9 +101,7 @@ class QmBaseJob:
                 the size of the input stream.
         """
         if not self._capabilities.supports_input_stream:
-            raise QmQuaException(
-                "`insert_input_stream()` is not supported by the QOP version."
-            )
+            raise QmQuaException("`insert_input_stream()` is not supported by the QOP version.")
 
         if not isinstance(data, list):
             data = [data]

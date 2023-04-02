@@ -1,9 +1,12 @@
-import re
-from typing import List, Dict
+from typing import Any, List, Tuple
+
+from qm.StreamMetadata import StreamMetadataError
 
 
 class QmQuaException(Exception):
-    pass
+    def __init__(self, message: str, *args: Any):
+        self.message = message
+        super().__init__(message, *args)
 
 
 class QmmException(QmQuaException):
@@ -11,7 +14,9 @@ class QmmException(QmQuaException):
 
 
 class OpenQmException(QmQuaException):
-    pass
+    def __init__(self, message: str, *args: Any, errors: List[Tuple[str, str, str]]):
+        super().__init__(message, *args)
+        self.errors = errors
 
 
 class FailedToExecuteJobException(QmQuaException):
@@ -31,11 +36,11 @@ class JobCancelledError(QmQuaException):
 
 
 class ErrorJobStateError(QmQuaException):
-    def __init__(self, *args, error_list: List[str]):
+    def __init__(self, *args: Any, error_list: List[str]):
         super().__init__(*args)
         self._error_list = error_list if error_list else []
 
-    def __str__(self):
+    def __str__(self) -> str:
         errors_string = "\n".join(error for error in self._error_list)
         return f"{super().__str__()}\n{errors_string}"
 
@@ -45,7 +50,10 @@ class UnknownJobStateError(QmQuaException):
 
 
 class InvalidStreamMetadataError(QmQuaException):
-    pass
+    def __init__(self, stream_metadata_errors: List[StreamMetadataError], *args: Any):
+        stream_errors_message = "\n".join(f"{e.error} at: {e.location}" for e in stream_metadata_errors)
+        message = f"Error creating stream metadata:\n{stream_errors_message}"
+        super().__init__(message, *args)
 
 
 class ConfigValidationException(QmQuaException):
@@ -89,22 +97,7 @@ class QMRequestError(QmQuaException):
 
 
 class QMConnectionError(QmQuaException):
-    def __init__(self, *args, headers: Dict[str, str] = None, http_status: str = None):
-        super().__init__(*args)
-        self.headers = headers
-        self.http_status = http_status
-
-
-class QMRedirectionError(QmQuaException):
-    def __init__(self, *args, location: str):
-        super().__init__(*args)
-        self.host = None
-        self.port = None
-        self.location = location
-
-        match = re.match("(?P<host>[^:]*):(?P<port>[0-9]*)(/(?P<url>.*))?", location)
-        if match:
-            host, port, _, __ = match.groups()
+    pass
 
 
 class QMTimeoutError(QmQuaException):
@@ -119,7 +112,7 @@ class QmServerDetectionError(QmQuaException):
     pass
 
 
-class QmValueError(QmQuaException):
+class QmValueError(QmQuaException, ValueError):
     pass
 
 
@@ -128,4 +121,8 @@ class QmInvalidSchemaError(QmQuaException):
 
 
 class QmInvalidResult(QmQuaException):
+    pass
+
+
+class QmNoResultsError(QmQuaException):
     pass

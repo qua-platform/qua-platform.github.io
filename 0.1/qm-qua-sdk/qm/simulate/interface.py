@@ -1,14 +1,18 @@
 import abc
+import typing_extensions
 from dataclasses import dataclass
-from typing import Union, TypeVar, Generic, NewType, List
+from typing import List, Union, Optional
 
-from qm.grpc.frontend import (
-    SimulationRequest,
-    ExecutionRequestSimulateSimulationInterfaceNone,
-)
+from qm.grpc.frontend import SimulationRequest, ExecutionRequestSimulateSimulationInterfaceNone
 
 
-class SimulationConfig(object):
+class SimulatorInterface(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def update_simulate_request(self, request: SimulationRequest) -> SimulationRequest:
+        pass
+
+
+class SimulationConfig:
     """Creates a configuration object to pass to
     [qm.QuantumMachinesManager.QuantumMachinesManager.simulate][]
 
@@ -37,12 +41,12 @@ class SimulationConfig(object):
 
     def __init__(
         self,
-        duration=0,
-        include_analog_waveforms=False,
-        include_digital_waveforms=False,
-        simulation_interface=None,
-        controller_connections: List["ControllerConnection"] = None,
-        extraProcessingTimeoutInMs=-1,
+        duration: int = 0,
+        include_analog_waveforms: bool = False,
+        include_digital_waveforms: bool = False,
+        simulation_interface: Optional[SimulatorInterface] = None,
+        controller_connections: Optional[List["ControllerConnection"]] = None,
+        extraProcessingTimeoutInMs: int = -1,
     ):
         if controller_connections is None:
             controller_connections = []
@@ -54,20 +58,12 @@ class SimulationConfig(object):
         self.controller_connections = controller_connections
         self.extraProcessingTimeoutInMs = extraProcessingTimeoutInMs
 
-    def update_simulate_request(self, request: SimulationRequest):
+    def update_simulate_request(self, request: SimulationRequest) -> SimulationRequest:
         if self.simulation_interface is None:
-            request.simulate.simulation_interface.none = (
-                ExecutionRequestSimulateSimulationInterfaceNone()
-            )
+            request.simulate.simulation_interface.none = ExecutionRequestSimulateSimulationInterfaceNone()
         else:
             request = self.simulation_interface.update_simulate_request(request)
         return request
-
-
-class SimulatorInterface(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def update_simulate_request(self, request: SimulationRequest) -> SimulationRequest:
-        pass
 
 
 @dataclass
@@ -92,13 +88,9 @@ class InterOpxChannel:
     channel_number: int
 
 
-InterOpxPairing = NewType("InterOpxPairing", Union[InterOpxAddress, InterOpxChannel])
-T = TypeVar("T", InterOpxPairing, InterOpxPairing)
+InterOpxPairing = Union[InterOpxAddress, InterOpxChannel]
 
 
-class ControllerConnection(Generic[T]):
-    """"""
-
-    def __init__(self, source: T, target: T):
-        self.source = source
-        self.target = target
+class ControllerConnection(typing_extensions.Protocol):
+    source: InterOpxPairing
+    target: InterOpxPairing

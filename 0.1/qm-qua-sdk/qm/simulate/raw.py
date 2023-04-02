@@ -1,5 +1,11 @@
-from qm.grpc.frontend import SimulationRequest
+from typing import List, Tuple
+
 from qm.simulate.interface import SimulatorInterface
+from qm.grpc.frontend import (
+    SimulationRequest,
+    ExecutionRequestSimulateSimulationInterfaceRawInterface,
+    ExecutionRequestSimulateSimulationInterfaceRawInterfaceConnections,
+)
 
 
 class RawInterface(SimulatorInterface):
@@ -23,40 +29,38 @@ class RawInterface(SimulatorInterface):
         ```
     """
 
-    def __init__(self, connections, noisePower=0.0):
+    def __init__(self, connections: List[Tuple[str, int, List[float]]], noisePower: float = 0.0):
+        self._validate_inputs(connections, noisePower)
 
-        if (
-            type(noisePower) is not float and type(noisePower) is not int
-        ) or noisePower < 0:
+        self.noisePower = float(noisePower)
+        self.connections = connections.copy()
+
+    @staticmethod
+    def _validate_inputs(connections: List[Tuple[str, int, List[float]]], noise_power: float) -> None:
+        if not isinstance(noise_power, (int, float)) or noise_power < 0:
             raise Exception("noisePower must be a positive number")
-
-        self.noisePower = noisePower
-
         if type(connections) is not list:
             raise Exception("connections argument must be of type list")
-
-        self.connections = list()
         for connection in connections:
-            if type(connection) is not tuple:
-                raise Exception("each connection must be of type tuple")
-            if len(connection) == 3:
-                if (
-                    type(connection[0]) is not str
-                    or type(connection[1]) is not int
-                    or type(connection[2]) is not list
-                ):
-                    raise Exception(
-                        "connection should be (fromController, fromPort, toSamples)"
-                    )
-                self.connections.append(connection)
-            else:
-                raise Exception("connection should be tuple of length 3 or 4")
+            RawInterface._validate_connection(connection)
 
-    def update_simulate_request(self, request: SimulationRequest):
-        request.simulate.simulationInterface.raw.SetInParent()
-        request.simulate.simulationInterface.raw.noisePower = self.noisePower
+    @staticmethod
+    def _validate_connection(connection: Tuple[str, int, List[float]]) -> None:
+        if not isinstance(connection, tuple):
+            raise Exception("each connection must be of type tuple")
+        if len(connection) != 3:
+            raise Exception("connection should be tuple of length 3")
+        if not all([isinstance(connection[0], str), isinstance(connection[1], int), isinstance(connection[2], list)]):
+            raise Exception("connection should be (from_controller, from_port, to_samples)")
+
+    def update_simulate_request(self, request: SimulationRequest) -> SimulationRequest:
+        request.simulate.simulation_interface.raw = ExecutionRequestSimulateSimulationInterfaceRawInterface(
+            noise_power=self.noisePower
+        )
         for connection in self.connections:
-            con = request.simulate.simulationInterface.raw.connections.add()
-            con.fromController = connection[0]
-            con.fromPort = connection[1]
-            con.toSamples.extend(connection[2])
+            request.simulate.simulation_interface.raw.connections.append(
+                ExecutionRequestSimulateSimulationInterfaceRawInterfaceConnections(
+                    from_controller=connection[0], from_port=connection[1], to_samples=connection[2]
+                )
+            )
+        return request

@@ -1,49 +1,37 @@
-import grpc
+import ssl
+from typing import Optional
+from dataclasses import field, dataclass
 
-# taken from https://github.com/grpc/grpc/tree/master/examples/python/auth
-
-_SIGNATURE_HEADER_KEY = "x-signature"
-
-
-class AuthGateway(grpc.AuthMetadataPlugin):
-    def __call__(self, context, callback):
-        """Implements authentication by passing metadata to a callback.
-        Implementations of this method must not block.
-        Args:
-          context: An AuthMetadataContext providing information on the RPC that
-            the plugin is being called to authenticate.
-          callback: An AuthMetadataPluginCallback to be invoked either
-            synchronously or asynchronously.
-        """
-        # Example AuthMetadataContext object:
-        # AuthMetadataContext(
-        #     service_url=u'https://localhost:50051/helloworld.Greeter',
-        #     method_name=u'SayHello')
-        signature = context.method_name[::-1]
-        callback(((_SIGNATURE_HEADER_KEY, signature),), None)
+from qm.type_hinting.general import PathLike
 
 
-def create_credentials():
+@dataclass(frozen=True)
+class CredentialOverrides:
+    certificate_path: PathLike = field(default="")
+    verify_mode: ssl.VerifyMode = field(default=ssl.CERT_REQUIRED)
+    check_hostname: bool = field(default=True)
+
+
+def create_credentials(credentials_override: Optional[CredentialOverrides] = None) -> ssl.SSLContext:
     import certifi
 
-    # Call credential object will be invoked for every single RPC
-    call_credentials = grpc.metadata_call_credentials(
-        AuthGateway(), name="auth gateway"
+    context = ssl.create_default_context(
+        purpose=ssl.Purpose.SERVER_AUTH,
+        cafile=certifi.where(),
     )
-    # Channel credential will be valid for the entire channel
-    ROOT_CERTIFICATE = _load_credential_from_file(certifi.where())
-    channel_credential = grpc.ssl_channel_credentials(ROOT_CERTIFICATE)
-    # Combining channel credentials and call credentials together
-    composite_credentials = grpc.composite_channel_credentials(
-        channel_credential,
-        call_credentials,
-    )
-    return composite_credentials
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    context.set_ciphers("ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20")
+    context.set_alpn_protocols(["h2"])
+    if ssl.HAS_NPN:
+        context.set_npn_protocols(["h2"])
+
+    if credentials_override:
+        if credentials_override.certificate_path:
+            context.load_verify_locations(credentials_override.certificate_path)
+        context.verify_mode = credentials_override.verify_mode
+        context.check_hostname = credentials_override.check_hostname
+
+    return context
 
 
-def _load_credential_from_file(filepath):
-    with open(filepath, "rb") as f:
-        return f.read()
-
-
-__all__ = ["create_credentials"]
+__all__ = ["create_credentials", "CredentialOverrides"]

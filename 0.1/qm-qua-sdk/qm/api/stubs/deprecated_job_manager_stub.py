@@ -2,11 +2,7 @@ from typing import Optional
 
 import betterproto
 
-from qm.grpc.job_manager import (
-    GetElementCorrectionResponse,
-    SetElementCorrectionResponse,
-    InsertInputStreamResponse,
-)
+from qm.grpc.job_manager import InsertInputStreamResponse, GetElementCorrectionResponse, SetElementCorrectionResponse
 
 
 class DeprecatedJobManagerServiceStub(betterproto.ServiceStub):

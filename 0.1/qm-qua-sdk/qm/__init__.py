@@ -1,34 +1,25 @@
 import logging
 
-from qm.version import __version__  # noqa
-
-from qm.QuantumMachinesManager import QuantumMachinesManager  # noqa
-from qm.QuantumMachine import QuantumMachine  # noqa
-
-from qm.jobs.job_queue import QmQueue  # noqa
-from qm.jobs.pending_job import QmPendingJob  # noqa
 from qm.jobs.qm_job import QmJob  # noqa
-
-from qm.results import (  # noqa
-    StreamingResultFetcher,
-    SingleStreamingResultFetcher,
-    MultipleStreamingResultFetcher,
-)
-
-from qm.program import Program, _ResultAnalysis, _Program  # noqa
-
-from qm.api.models.compiler import CompilerOptionArguments  # noqa
-from qm.serialization.generate_qua_script import generate_qua_script  # noqa
+from qm.type_hinting import DictQuaConfig
+from qm.version import __version__  # noqa
 from qm.logging_utils import config_loggers
+from qm.jobs.job_queue import QmQueue  # noqa
 from qm.user_config import UserConfig  # noqa
-
+from qm.QuantumMachine import QuantumMachine  # noqa
+from qm.jobs.pending_job import QmPendingJob  # noqa
+from qm.program import Program, _Program, _ResultAnalysis  # noqa
+from qm.api.models.compiler import CompilerOptionArguments  # noqa
+from qm.QuantumMachinesManager import QuantumMachinesManager  # noqa
+from qm.serialization.generate_qua_script import generate_qua_script  # noqa
+from qm.results import StreamingResultFetcher, SingleStreamingResultFetcher, MultipleStreamingResultFetcher  # noqa
 from qm.simulate import (  # noqa
-    SimulationConfig,
     InterOpxAddress,
     InterOpxChannel,
-    ControllerConnection,
     InterOpxPairing,
+    SimulationConfig,
     LoopbackInterface,
+    ControllerConnection,
 )
 
 __all__ = [
@@ -52,6 +43,7 @@ __all__ = [
     "ControllerConnection",
     "InterOpxPairing",
     "LoopbackInterface",
+    "DictQuaConfig",
 ]
 
 config = UserConfig.create_from_file()

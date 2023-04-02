@@ -8,7 +8,7 @@ from qm.exceptions import QmQuaException
 from qm.grpc.qua_config import QuaConfig
 from .sample_programs import all_programs
 from qm.serialization.generate_qua_script import _StripLocationVisitor, generate_qua_script, _switched_strings
-from qm.qua import program, declare, play, switch_, case_, default_, if_, else_, elif_
+from qm.qua import switch_, case_, default_, if_, else_, elif_
 from qm.qua import program, declare, play
 from .sample_programs.control_structs import for_each_with_ts
 from .sample_programs.simple import play_with_timestamp, just_play, program_with_fast_frame_rotation
@@ -120,24 +120,3 @@ def test_else_placement():
                 play('third_pulse', 'element')
             with else_():
                 play('third_pulse', 'element')
-
-
-# else if
-
-# elif if
-
-# default else
-
-# else default
-
-# elif default
-
-# default if
-
-# default elif
-
-# default
-
-# else
-
-# elif

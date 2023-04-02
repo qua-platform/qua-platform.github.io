@@ -31,6 +31,6 @@ def test_detecting_streaming_job_support_without_qua_impl(capabilities, supports
 )
 def test_new_grpc_structure(capabilities, stub_type):
     create_capabilities_container(QuaMachineInfo(capabilities, ImplementationInfo("", "", "")))
-    details = ConnectionDetails(credentials="", user_token="", host="", port=1)
+    details = ConnectionDetails(ssl_context="", user_token="", host="", port=1)
     job_manager_api = JobManagerApi(details)
     assert isinstance(job_manager_api._job_manager_stub, stub_type)

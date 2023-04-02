@@ -1,15 +1,15 @@
-from qm.octave.enums import (
-    OctaveOutput,
+from octave_sdk import (
+    IFMode,
     ClockType,
+    OctaveOutput,
+    RFOutputMode,
     ClockFrequency,
     OctaveLOSource,
-    IFMode,
     RFInputLOSource,
     RFInputRFSource,
-    RFOutputMode,
 )
+
 from qm.octave.octave_config import QmOctaveConfig
-from qm.octave.octave_manager import OctaveManager
 from qm.octave.calibration_db import octave_output_mixer_name
 
 __all__ = [
@@ -22,6 +22,5 @@ __all__ = [
     "RFInputRFSource",
     "RFOutputMode",
     "octave_output_mixer_name",
-    "OctaveManager",
     "QmOctaveConfig",
 ]

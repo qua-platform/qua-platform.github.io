@@ -1,9 +1,11 @@
+from typing import List, Tuple
+
+from qm.simulate.interface import SimulatorInterface
 from qm.grpc.frontend import (
     SimulationRequest,
     ExecutionRequestSimulateSimulationInterfaceLoopback,
     ExecutionRequestSimulateSimulationInterfaceLoopbackConnections,
 )
-from qm.simulate.interface import SimulatorInterface
 
 
 class LoopbackInterface(SimulatorInterface):
@@ -14,15 +16,10 @@ class LoopbackInterface(SimulatorInterface):
 
     Args:
         connections (list):
-            List of tuples with loopback connections. Each tuple can be
+            List of tuples with loopback connections. Each tuple should represent physical connection between ports:
 
-                1. Physical connection between ports:
+                    ``(from_controller: str, from_port: int, to_controller: str, to_port: int)``
 
-                    ``(fromController: str, fromPort: int, toController: str, toPort: int)``
-
-                2. Virtual connection between elements:
-
-                    ``(fromQE: str, toQE: str, toQEInput: int)``
         latency (int): The latency between the OPX outputs and its
             input.
         noisePower (float): How much noise to add to the input.
@@ -36,55 +33,43 @@ class LoopbackInterface(SimulatorInterface):
         ```
     """
 
-    def __init__(self, connections, latency=24, noisePower=0.0):
-        if type(latency) is not int or latency < 0:
-            raise Exception("latency must be a positive integer")
+    def __init__(self, connections: List[Tuple[str, int, str, int]], latency: int = 24, noisePower: float = 0.0):
+        self._validate_inputs(connections, latency, noisePower)
 
         self.latency = latency
+        self.noisePower = float(noisePower)
+        self.connections = connections.copy()
 
-        if (
-            type(noisePower) is not float and type(noisePower) is not int
-        ) or noisePower < 0:
+    @staticmethod
+    def _validate_inputs(connections: List[Tuple[str, int, str, int]], latency: int, noise_power: float) -> None:
+        if (not isinstance(latency, int)) or latency < 0:
+            raise Exception("latency must be a positive integer")
+        if (not isinstance(noise_power, (int, float))) or noise_power < 0:
             raise Exception("noisePower must be a positive number")
-
-        self.noisePower = noisePower
-
-        if type(connections) is not list:
+        if not isinstance(connections, list):
             raise Exception("connections argument must be of type list")
-
-        self.connections = list()
         for connection in connections:
-            if type(connection) is not tuple:
-                raise Exception("each connection must be of type tuple")
-            if len(connection) == 4:
-                if (
-                    type(connection[0]) is not str
-                    or type(connection[1]) is not int
-                    or type(connection[2]) is not str
-                    or type(connection[3]) is not int
-                ):
-                    raise Exception(
-                        "connection should be (fromController, fromPort, toController, toPort)"
-                    )
-                self.connections.append(connection)
-            elif len(connection) == 3:
-                if (
-                    type(connection[0]) is not str
-                    or type(connection[1]) is not str
-                    or type(connection[2]) is not int
-                ):
-                    raise Exception("connection should be (fromQE, toQE, toQEInput)")
-                self.connections.append(
-                    (connection[0], -1, connection[1], connection[2])
-                )
-            else:
-                raise Exception("connection should be tuple of length 3 or 4")
+            LoopbackInterface._validate_connection(connection)
+
+    @staticmethod
+    def _validate_connection(connection: Tuple[str, int, str, int]) -> None:
+        if not isinstance(connection, tuple):
+            raise Exception("each connection must be a tuple")
+        if len(connection) != 4:
+            raise Exception("connection should be tuple of length 4.")
+        if not all(
+            [
+                isinstance(connection[0], str),
+                isinstance(connection[1], int),
+                isinstance(connection[2], str),
+                isinstance(connection[3], int),
+            ]
+        ):
+            raise Exception("connection should be (from_controller, from_port, to_controller, to_port)")
 
     def update_simulate_request(self, request: SimulationRequest) -> SimulationRequest:
-        request.simulate.simulation_interface.loopback = (
-            ExecutionRequestSimulateSimulationInterfaceLoopback(
-                latency=self.latency, noise_power=self.noisePower
-            )
+        request.simulate.simulation_interface.loopback = ExecutionRequestSimulateSimulationInterfaceLoopback(
+            latency=self.latency, noise_power=self.noisePower
         )
         for connection in self.connections:
             con = ExecutionRequestSimulateSimulationInterfaceLoopbackConnections(

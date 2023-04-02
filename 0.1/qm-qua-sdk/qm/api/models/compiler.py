@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import List, Optional
+from dataclasses import field, dataclass
 
 from qm.grpc.qua import QuaProgramCompilerOptions
 

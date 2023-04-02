@@ -98,31 +98,27 @@ def test_we_have_all_elements(host_port):
                                         simulation_interface=LoopbackInterface(
                                             ([('con1', 1, 'con1', 1)]))))
     waveform_report = job.get_simulated_waveform_report()
-    ref_dict = {'analog_waveforms':
-        [{'waveform_name': 'gauss_wf', 'ends_at': 144.0, 'timestamp': 44, 'length': 25,
-         'iq_info': {'isPartOfIq': True, 'isI': True, 'iqGroupId': 0.0, 'isQ': False},
-         'quantum_elements': ['analog_1'], 'output_ports': [0.0],
-         'pulser': {'femId': 0.0, 'controllerName': 'con1', 'pulserIndex': 0.0},
-         'current_g_matrix_elements': [1.0, 0.0],
-         'current_dc_offset_by_port': {'0': 0.0},
+    ref_dict = {'analog_waveforms': [
+        {'waveform_name': 'gauss_wf', 'pulse_name': 'OriginPulseName=gaussian', 'length': 100, 'timestamp': 216,
+         'iq_info': {'isPartOfIq': True, 'iqGroupId': 0.0, 'isI': True, 'isQ': False}, 'element': 'analog_1',
+         'output_ports': [1], 'controller': 'con1', 'pulser': {'controllerName': 'con1', 'pulserIndex': 0.0},
+         'current_amp_elements': [1.0, 0.0], 'current_dc_offset_by_port': {'1': 0.0},
          'current_intermediate_frequency': 10000000.0, 'current_frame': [1.0, 0.0],
-         'current_correction_elements': [1.0, 0.0]},
-        {'waveform_name': 'gauss_wf', 'ends_at': 144.0, 'timestamp': 44, 'length': 25,
-         'iq_info': {'isI': False, 'isQ': True, 'isPartOfIq': True, 'iqGroupId': 0.0},
-         'quantum_elements': ['analog_1'], 'output_ports': [1.0],
-         'pulser': {'pulserIndex': 1.0, 'femId': 0.0, 'controllerName': 'con1'},
-         'current_g_matrix_elements': [1.0, 0.0],
-         'current_dc_offset_by_port': {'1': 0.0},
+         'current_correction_elements': [1.0, 0.0], 'chirp_info': None, 'current_phase': 0.0},
+        {'waveform_name': 'gauss_wf', 'pulse_name': 'OriginPulseName=gaussian', 'length': 100, 'timestamp': 216,
+         'iq_info': {'isPartOfIq': True, 'iqGroupId': 0.0, 'isI': False, 'isQ': True}, 'element': 'analog_1',
+         'output_ports': [2], 'controller': 'con1', 'pulser': {'controllerName': 'con1', 'pulserIndex': 1.0},
+         'current_amp_elements': [1.0, 0.0], 'current_dc_offset_by_port': {'2': 0.0},
          'current_intermediate_frequency': 10000000.0, 'current_frame': [0.0, 1.0],
-         'current_correction_elements': [0.0, 1.0]}], 'digital_waveforms': [
-        {'waveform_name': 'ON', 'ends_at': 144.0, 'timestamp': 44, 'length': 25,
-         'iq_info': {'isQ': False, 'isI': True, 'iqGroupId': 0.0, 'isPartOfIq': True},
-         'quantum_elements': ['analog_1'], 'output_ports': [0.0],
-         'pulser': {'femId': 0.0, 'controllerName': 'con1', 'pulserIndex': 0.0}},
-        {'waveform_name': 'ON', 'ends_at': 144.0, 'timestamp': 44, 'length': 25,
-         'iq_info': {'isPartOfIq': True, 'isI': False, 'isQ': True, 'iqGroupId': 0.0},
-         'quantum_elements': ['analog_1'], 'output_ports': [1.0],
-         'pulser': {'pulserIndex': 1.0, 'femId': 0.0, 'controllerName': 'con1'}}]}
+         'current_correction_elements': [0.0, 1.0], 'chirp_info': None, 'current_phase': 0.0}], 'digital_waveforms': [
+        {'waveform_name': 'ON', 'pulse_name': 'OriginPulseName=gaussian', 'length': 100, 'timestamp': 204,
+         'iq_info': {'isPartOfIq': True, 'iqGroupId': 0.0, 'isI': True, 'isQ': False}, 'element': 'analog_1',
+         'output_ports': [1], 'controller': 'con1', 'pulser': {'controllerName': 'con1', 'pulserIndex': 0.0}},
+        {'waveform_name': 'ON', 'pulse_name': 'OriginPulseName=gaussian', 'length': 100, 'timestamp': 204,
+         'iq_info': {'isPartOfIq': True, 'iqGroupId': 0.0, 'isI': False, 'isQ': True}, 'element': 'analog_1',
+         'output_ports': [1], 'controller': 'con1', 'pulser': {'controllerName': 'con1', 'pulserIndex': 1.0}}],
+                'adc_acquisitions': []}
+
     
     if waveform_report is not None:
         assert waveform_report.to_dict() == ref_dict

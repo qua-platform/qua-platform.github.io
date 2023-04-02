@@ -1,15 +1,16 @@
 import logging
 from typing import List, Optional
 
-from qm.jobs.pending_job import QmPendingJob
+from qm.persistence import BaseStore
+from qm.program.program import Program
+from qm.grpc.qua_config import QuaConfig
 from qm.api.frontend_api import FrontendApi
+from qm.jobs.pending_job import QmPendingJob
 from qm.api.job_manager_api import JobManagerApi
 from qm.api.models.capabilities import ServerCapabilities
 from qm.api.models.compiler import CompilerOptionArguments
-from qm.api.models.jobs import InsertDirection, PendingJobData
-from qm.grpc.qua_config import QuaConfig
-from qm.persistence import BaseStore
-from qm.program.program import Program
+from qm.api.models.jobs import PendingJobData, InsertDirection
+from qm.type_hinting.exceution_overrides import ExecutionOverridesType
 from qm.program._execution_overrides_schema import ExecutionOverridesSchema
 
 logger = logging.getLogger(__name__)
@@ -36,11 +37,9 @@ class QmQueue:
         self._store = store
 
     def _get_pending_jobs(
-        self, job_id: str = None, position: int = None, user_id: str = None
+        self, job_id: Optional[str] = None, position: Optional[int] = None, user_id: Optional[str] = None
     ) -> List[QmPendingJob]:
-        jobs: List[PendingJobData] = self._job_manager.get_pending_jobs(
-            self.machine_id, job_id, position, user_id
-        )
+        jobs: List[PendingJobData] = self._job_manager.get_pending_jobs(self.machine_id, job_id, position, user_id)
         jobs.sort(key=lambda it: it.job_id)
         result = [
             QmPendingJob(
@@ -78,7 +77,7 @@ class QmQueue:
         job = self._insert(program, InsertDirection.end, compiler_options)
         return job
 
-    def add_compiled(self, program_id: str, overrides=None) -> QmPendingJob:
+    def add_compiled(self, program_id: str, overrides: Optional[ExecutionOverridesType] = None) -> QmPendingJob:
         """Adds a compiled QUA program to the end of the queue, optionally
         overriding the values of analog waveforms defined in the program.
         Programs in the queue will play as soon as possible.
@@ -103,13 +102,12 @@ class QmQueue:
             job = pending_job.wait_for_execution()
             ```
         """
-        if not overrides:
-            overrides = {}
+        execution_overrides = overrides or {}
 
         job_id = self._frontend.add_compiled_to_queue(
             machine_id=self.machine_id,
             program_id=program_id,
-            execution_overrides=ExecutionOverridesSchema().load(overrides),
+            execution_overrides=ExecutionOverridesSchema().load(execution_overrides),
         )
         return QmPendingJob(
             job_id=job_id,
@@ -137,7 +135,7 @@ class QmQueue:
     def _insert(
         self,
         program: Program,
-        insert_direction: InsertDirection.start,
+        insert_direction: InsertDirection,
         compiler_options: Optional[CompilerOptionArguments],
     ) -> QmPendingJob:
         """Inner function to insert a program to the queue by a given insert direction (start, end)"""
@@ -160,7 +158,7 @@ class QmQueue:
         )
 
     @property
-    def count(self):
+    def count(self) -> int:
         """Get the number of jobs currently on the queue
 
         Returns:
@@ -173,7 +171,7 @@ class QmQueue:
         """
         return len(self._get_pending_jobs())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.count
 
     @property
@@ -185,7 +183,7 @@ class QmQueue:
         """
         return self._get_pending_jobs()
 
-    def get(self, job_id) -> QmPendingJob:
+    def get(self, job_id: str) -> QmPendingJob:
         """Get a pending job object by job_id
 
         Args:
@@ -274,7 +272,7 @@ class QmQueue:
             user_id=None,
         )
 
-    def remove_by_user_id(self, user_id: str):
+    def remove_by_user_id(self, user_id: str) -> int:
         return self._job_manager.remove_job(
             quantum_machine_id=self.machine_id,
             job_id=None,
@@ -282,7 +280,7 @@ class QmQueue:
             user_id=user_id,
         )
 
-    def __getitem__(self, position) -> QmPendingJob:
+    def __getitem__(self, position: int) -> QmPendingJob:
         return self.get_at(position)
 
     def clear(self) -> int:

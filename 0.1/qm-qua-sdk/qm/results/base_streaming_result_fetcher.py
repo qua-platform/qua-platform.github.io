@@ -2,40 +2,52 @@ import abc
 import json
 import logging
 import warnings
+from io import BytesIO
 from dataclasses import dataclass
-from io import BufferedWriter, BytesIO
-from typing import List, Optional, Union, Tuple, Dict
+from typing_extensions import Protocol
+from typing import Any, Dict, List, Tuple, Union, BinaryIO, Optional, cast
 
 import numpy
+import numpy.typing
 from numpy.lib import format as _format
 
-from qm.StreamMetadata import StreamMetadataError, StreamMetadata
+from qm.persistence import BaseStore
+from qm.utils import deprecation_message
+from qm.utils.async_utils import run_async
+from qm.type_hinting.general import PathLike
+from qm.exceptions import InvalidStreamMetadataError
 from qm.api.job_result_api import JobResultServiceApi
 from qm.api.models.capabilities import ServerCapabilities
-from qm.exceptions import InvalidStreamMetadataError
-from qm.grpc.results_analyser import GetJobNamedResultResponse
-from qm.persistence import BaseStore
-from qm.utils import run_until_with_timeout
+from qm.utils.general_utils import run_until_with_timeout
+from qm.StreamMetadata import StreamMetadata, StreamMetadataError
 
 logger = logging.getLogger(__name__)
 
+DtypeType = List[List[str]]
 
-def _parse_dtype(simple_dtype: str) -> dict:
-    def hinted_tuple_hook(obj):
+
+class JobStreamingStateProtocol(Protocol):
+    done: bool
+    closed: bool
+    has_dataloss: bool
+
+
+def _parse_dtype(simple_dtype: str) -> DtypeType:
+    def hinted_tuple_hook(obj: Any) -> Any:
         if "__tuple__" in obj:
             return tuple(obj["items"])
         else:
             return obj
 
     dtype = json.loads(simple_dtype, object_hook=hinted_tuple_hook)
-    return dtype
+    return cast(DtypeType, dtype)
 
 
 @dataclass
 class JobResultItemSchema:
     name: str
-    dtype: dict
-    shape: Tuple[int]
+    dtype: DtypeType
+    shape: Tuple[int, ...]
     is_single: bool
     expected_count: int
 
@@ -51,8 +63,8 @@ class NamedJobResultHeader:
     is_single: bool
     output_name: str
     job_id: str
-    d_type: dict
-    shape: Tuple[int]
+    d_type: DtypeType
+    shape: Tuple[int, ...]
     has_dataloss: bool
 
 
@@ -72,7 +84,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         service: JobResultServiceApi,
         store: BaseStore,
         stream_metadata_errors: List[StreamMetadataError],
-        stream_metadata: StreamMetadata,
+        stream_metadata: Optional[StreamMetadata],
         capabilities: ServerCapabilities,
     ) -> None:
         self._job_id = job_id
@@ -87,7 +99,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         self._validate_schema()
 
     @abc.abstractmethod
-    def _validate_schema(self):
+    def _validate_schema(self) -> None:
         pass
 
     @property
@@ -105,11 +117,11 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         return self._schema.expected_count
 
     @property
-    def numpy_dtype(self):
+    def numpy_dtype(self) -> DtypeType:
         return self._schema.dtype
 
     @property
-    def stream_metadata(self) -> StreamMetadata:
+    def stream_metadata(self) -> Optional[StreamMetadata]:
         """Provides the StreamMetadata of this stream.
 
         Metadata currently includes the values and shapes of the automatically identified loops
@@ -118,14 +130,14 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         """
         if len(self._stream_metadata_errors) > 0:
             logger.error("Error creating stream metadata:")
-            for x in self._stream_metadata_errors:
-                logger.error(f"{x.error} in {x.location}")
+            for e in self._stream_metadata_errors:
+                logger.error(f"{e.error} at: {e.location}")
             raise InvalidStreamMetadataError(self._stream_metadata_errors)
         return self._stream_metadata
 
     def save_to_store(
         self,
-        writer: Optional[Union[BufferedWriter, BytesIO, str]] = None,
+        writer: Optional[Union[BinaryIO, str]] = None,
         flat_struct: bool = False,
     ) -> int:
         """Saving to persistent store the NPY data of this result handle
@@ -139,20 +151,33 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         Returns:
             The number of items saved
         """
-        own_writer = False
-        if writer is None:
-            own_writer = True
-            writer = self._store.job_named_result(
-                self._job_id, self._schema.name
-            ).for_writing()
+        warnings.warn(
+            deprecation_message(
+                method="StreamingResultFetcher.save_to_store",
+                deprecated_in="1.1.1",
+                removed_in="1.2.0",
+                details="function no longer supported, will be removed.",
+            ),
+            DeprecationWarning,
+        )
+        writer_opened = False
+        if writer is None or isinstance(writer, str):
+            writer_opened = True
+            writer = self._open_bytes_writer(writer)
         try:
             header = self._get_named_header(flat_struct=flat_struct)
             return self._save_to_file(header, writer)
         finally:
-            if own_writer:
+            if writer_opened:
                 writer.close()
 
-    def wait_for_values(self, count: int = 1, timeout: Optional[float] = None):
+    def _open_bytes_writer(self, path: Optional[PathLike]) -> BinaryIO:
+        if path is not None:
+            return open(path, "wb+")
+        else:
+            return self._store.job_named_result(self._job_id, self._schema.name).for_writing()
+
+    def wait_for_values(self, count: int = 1, timeout: float = float("infinity")) -> None:
         """Wait until we know at least `count` values were processed for this named result
 
         Args:
@@ -164,7 +189,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         """
         run_until_with_timeout(
             lambda: self.count_so_far() >= count,
-            timeout=timeout if timeout else float("infinity"),
+            timeout=timeout,
             timeout_message=f"result {self.name} was not done in time",
         )
 
@@ -225,43 +250,30 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
 
     def _write_header(
         self,
-        writer: Union[BufferedWriter, BytesIO, str],
-        shape: Tuple[int],
+        writer: BinaryIO,
+        shape: Tuple[int, ...],
         d_type: object,
-    ):
+    ) -> None:
         _format.write_array_header_2_0(
             writer, {"descr": d_type, "fortran_order": False, "shape": shape}
-        )
+        )  # type: ignore[no-untyped-call]
 
-    def _save_to_file(
-        self, header: NamedJobResultHeader, writer: Union[BufferedWriter, BytesIO, str]
-    ) -> int:
+    async def _add_results_to_writer(self, data_writer: BinaryIO, start: int, stop: int) -> None:
+        async for result in self._service.get_job_named_result(self._job_id, self._schema.name, start, stop - start):
+            self._count_data_written += result.count_of_items
+            data_writer.write(result.data)
+
+    def _save_to_file(self, header: NamedJobResultHeader, writer: BinaryIO) -> int:
         self._count_data_written = 0
-        owning_writer = False
 
-        if type(writer) is str:
-            writer = open(writer, "wb+")
-            owning_writer = True
+        final_shape = self._get_final_shape(header.count_so_far, header.shape)
+        self._write_header(writer, final_shape, header.d_type)
 
-        try:
-            final_shape = self._get_final_shape(header.count_so_far, header.shape)
-            self._write_header(writer, final_shape, header.d_type)
-
-            def callback(result: GetJobNamedResultResponse) -> bool:
-                self._count_data_written += result.count_of_items
-                writer.write(result.data)
-                return True
-
-            self._service.get_job_named_result(
-                self._job_id, self.name, 0, header.count_so_far, callback=callback
-            )
-
-        finally:
-            if owning_writer:
-                writer.close()
+        run_async(self._add_results_to_writer(writer, 0, header.count_so_far))
         return self._count_data_written
 
     def get_job_state(self) -> JobStreamingState:
+        response: JobStreamingStateProtocol
         if self._capabilities.has_job_streaming_state:
             response = self._service.get_job_state(self._job_id)
         else:
@@ -273,9 +285,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
             has_dataloss=response.has_dataloss,
         )
 
-    def _get_named_header(
-        self, check_for_errors: bool = False, flat_struct: bool = False
-    ) -> NamedJobResultHeader:
+    def _get_named_header(self, check_for_errors: bool = False, flat_struct: bool = False) -> NamedJobResultHeader:
         response = self._service.get_named_header(self._job_id, self.name, flat_struct)
         dtype = _parse_dtype(response.simple_d_type)
 
@@ -295,7 +305,9 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
             has_dataloss=response.has_dataloss,
         )
 
-    def fetch_all(self, *, check_for_errors: bool = False, flat_struct: bool = False):
+    def fetch_all(
+        self, *, check_for_errors: bool = False, flat_struct: bool = False
+    ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
         """Fetch a result from the current result stream saved in server memory.
         The result stream is populated by the save() and save_all() statements.
         Note that if save_all() statements are used, calling this function twice
@@ -308,7 +320,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         Returns:
             all result of current result stream
         """
-        return self.fetch(
+        return self.strict_fetch(
             slice(0, self.count_so_far()),
             check_for_errors=check_for_errors,
             flat_struct=flat_struct,
@@ -320,7 +332,16 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         *,
         check_for_errors: bool = False,
         flat_struct: bool = False,
-    ) -> numpy.array:
+    ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
+        return self.strict_fetch(item, check_for_errors=check_for_errors, flat_struct=flat_struct)
+
+    def strict_fetch(
+        self,
+        item: Union[int, slice],
+        *,
+        check_for_errors: bool = False,
+        flat_struct: bool = False,
+    ) -> numpy.typing.NDArray[numpy.generic]:
         """Fetch a result from the current result stream saved in server memory.
         The result stream is populated by the save() and save_all() statements.
         Note that if save_all() statements are used, calling this function twice
@@ -356,9 +377,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         if step != 1 and step is not None:
             raise Exception("fetch supports step=1 or None in slices")
 
-        header = self._get_named_header(
-            check_for_errors=check_for_errors, flat_struct=flat_struct
-        )
+        header = self._get_named_header(check_for_errors=check_for_errors, flat_struct=flat_struct)
 
         if stop is None:
             stop = header.count_so_far
@@ -368,25 +387,16 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         writer = self._fetch_all_job_results(header, start, stop)
 
         if header.has_dataloss:
-            logger.warning(
-                f"Possible data loss detected in data for job: {self._job_id}"
-            )
+            logger.warning(f"Possible data loss detected in data for job: {self._job_id}")
 
-        return numpy.load(writer)
+        return cast(numpy.typing.NDArray[numpy.generic], numpy.load(writer))  # type: ignore[no-untyped-call]
 
-    def _fetch_all_job_results(self, header, start, stop):
+    def _fetch_all_job_results(self, header: NamedJobResultHeader, start: int, stop: int) -> BinaryIO:
         self._count_data_written = 0
         writer = BytesIO()
         data_writer = BytesIO()
 
-        def callback(result: GetJobNamedResultResponse) -> bool:
-            self._count_data_written += result.count_of_items
-            data_writer.write(result.data)
-            return True
-
-        self._service.get_job_named_result(
-            self._job_id, self._schema.name, start, stop - start, callback=callback
-        )
+        run_async(self._add_results_to_writer(data_writer, start, stop))
 
         final_shape = self._get_final_shape(self._count_data_written, header.shape)
 
@@ -400,7 +410,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         return writer
 
     @staticmethod
-    def _get_final_shape(count, shape):
+    def _get_final_shape(count: int, shape: Tuple[int, ...]) -> Tuple[int, ...]:
         if count == 1:
             final_shape = shape
         else:

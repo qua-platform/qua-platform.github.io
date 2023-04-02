@@ -1,13 +1,13 @@
+import warnings
 from enum import Enum
 from typing import Tuple
 
-from deprecation import deprecated
-
-from qm.results.streaming_result_fetcher import StreamingResultFetcher
 from qm._report import ExecutionReport
-from qm.api.job_result_api import JobResultServiceApi
-from qm.grpc.general_messages import Matrix
 from qm.jobs.base_job import QmBaseJob
+from qm.utils import deprecation_message
+from qm.grpc.general_messages import Matrix
+from qm.api.job_result_api import JobResultServiceApi
+from qm.results.streaming_result_fetcher import StreamingResultFetcher
 
 
 class AcquiringStatus(Enum):
@@ -17,14 +17,22 @@ class AcquiringStatus(Enum):
 
 
 class RunningQmJob(QmBaseJob):
-    @deprecated("1.1.0", "1.2.0", details="QMJob no longer has 'manager' property")
     @property
-    def manager(self):
+    def manager(self) -> None:
         """The QM object where this job lives
 
         Returns:
 
         """
+        warnings.warn(
+            deprecation_message(
+                method="RunningQmJob.manager",
+                deprecated_in="1.1.0",
+                removed_in="1.2.0",
+                details="QMJob no longer has 'manager' property",
+            ),
+            DeprecationWarning,
+        )
         return None
 
     @property
@@ -109,15 +117,11 @@ class RunningQmJob(QmBaseJob):
         Returns:
             The correction matrix, after rounding to the OPX resolution.
         """
-        correction_matrix = Matrix(
-            v00=correction[0], v01=correction[1], v10=correction[2], v11=correction[3]
-        )
+        correction_matrix = Matrix(v00=correction[0], v01=correction[1], v10=correction[2], v11=correction[3])
 
-        return self._job_manager.set_element_correction(
-            self._id, element, correction_matrix
-        )
+        return self._job_manager.set_element_correction(self._id, element, correction_matrix)
 
-    def get_element_correction(self, element) -> Tuple[float, float, float, float]:
+    def get_element_correction(self, element: str) -> Tuple[float, float, float, float]:
         """Gets the correction matrix for correcting gain and phase imbalances
         of an IQ mixer associated with a element.
 

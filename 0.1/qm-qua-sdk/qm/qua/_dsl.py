@@ -1,58 +1,51 @@
-import dataclasses
 import logging
+import dataclasses
 import math as _math
-from collections.abc import Iterable
+from enum import Enum
+from enum import Enum as _Enum
 from dataclasses import dataclass
-from enum import Enum as _Enum, Enum
-from typing import Optional, Union, List, Tuple, Type, Set, Dict
+from collections.abc import Iterable
+from typing import Set, Dict, List, Type, Tuple, Union, Optional
 
 import betterproto
 import numpy as np
 from deprecation import deprecated
 
-import qm.grpc.qua as _qua
-import qm.program.expressions as _expressions
 from qm import Program
-from qm.serialization.expression_serializing_visitor import ExpressionSerializingVisitor
+import qm.grpc.qua as _qua
 from qm._loc import _get_loc
 from qm.exceptions import QmQuaException
-from qm.program.StatementsCollection import (
-    StatementsCollection as _StatementsCollection,
-)
-from qm.program._ResultAnalysis import _ResultAnalysis, _RESULT_SYMBOL
-from qm.qua import AnalogMeasureProcess
-from qm.qua import DigitalMeasureProcess
+from qm.utils import is_iter as _is_iter
+import qm.program.expressions as _expressions
+from qm.qua import AnalogMeasureProcess, DigitalMeasureProcess
+from qm.program._ResultAnalysis import _RESULT_SYMBOL, _ResultAnalysis
+from qm.serialization.expression_serializing_visitor import ExpressionSerializingVisitor
+from qm.program.StatementsCollection import StatementsCollection as _StatementsCollection
+from qm.utils import collection_has_type_int, collection_has_type_bool, collection_has_type_float
 from qm.qua._type_hinting import (
+    ChirpType,
+    OneOrMore,
+    AllPyTypes,
+    StreamType,
+    AllQuaTypes,
+    PyFloatType,
+    PyNumberType,
+    AmpValuesType,
     PlayPulseType,
     QuaNumberType,
-    QuaExpressionType,
-    ChirpType,
-    MeasurePulseType,
-    StreamType,
-    MeasureProcessType,
-    OneOrMore,
+    MessageVarType,
     QuaVariableType,
-    AllQuaTypes,
+    MeasurePulseType,
+    TimeDivisionType,
     TypeOrExpression,
-    AllPyTypes,
     ForEachValuesType,
-    PyNumberType,
+    PyNumberArrayType,
+    QuaExpressionType,
+    MeasureProcessType,
     MessageExpressionType,
+    AnalogProcessTargetType,
     VariableDeclarationType,
     MessageVariableOrExpression,
-    AmpValuesType,
-    MessageVarType,
-    AnalogProcessTargetType,
-    TimeDivisionType,
-    PyNumberArrayType,
-    PyFloatType,
-)
-from qm.utils import (
-    fix_object_data_type as _fix_object_data_type,
-    collection_has_type_bool,
-    collection_has_type_int,
-    collection_has_type_float,
-    is_iter as _is_iter,
 )
 
 _TIMESTAMPS_LEGACY_SUFFIX = "_timestamps"
@@ -759,9 +752,7 @@ def fast_frame_rotation(cosine, sine, *elements: str):
     """
     _get_root_program_scope().program.set_metadata(uses_fast_frame_rotation=True)
     body = _get_scope_as_blocks_body()
-    body.fast_frame_rotation(
-        _unwrap_exp(exp(cosine)), _unwrap_exp(exp(sine)), *elements
-    )
+    body.fast_frame_rotation(_unwrap_exp(exp(cosine)), _unwrap_exp(exp(sine)), *elements)
 
 
 def assign(var, _exp):
@@ -907,9 +898,7 @@ def default_() -> "_BaseScope":
         raise QmQuaException("must specify at least one case before 'default'.")
 
     if betterproto.serialized_on_wire(switch.if_statement.if_.else_):
-        raise QmQuaException(
-            "only a single 'default' statement can follow a 'switch' statement"
-        )
+        raise QmQuaException("only a single 'default' statement can follow a 'switch' statement")
 
     else_statement = _qua.QuaProgramStatementsCollection(statements=[])
     switch.if_statement.if_.else_ = else_statement
@@ -975,10 +964,7 @@ def elif_(expression: QuaExpressionType) -> "_BodyScope":
     """
     body = _get_scope_as_blocks_body()
     last_statement = body.get_last_statement()
-    if (
-        last_statement is None
-        or betterproto.serialized_on_wire(last_statement.if_) is False
-    ):
+    if last_statement is None or betterproto.serialized_on_wire(last_statement.if_) is False:
         raise QmQuaException(
             "'elif' statement must directly follow 'if' statement - Please make sure it is aligned with the corresponding if statement."
         )
@@ -1017,28 +1003,21 @@ def else_() -> "_BodyScope":
     body = _get_scope_as_blocks_body()
     last_statement = body.get_last_statement()
 
-    if (
-        last_statement is None
-        or betterproto.serialized_on_wire(last_statement.if_) is False
-    ):
+    if last_statement is None or betterproto.serialized_on_wire(last_statement.if_) is False:
         raise QmQuaException(
             "'else' statement must directly follow 'if' statement - "
             "Please make sure it is aligned with the corresponding if statement."
         )
 
     if betterproto.serialized_on_wire(last_statement.if_.else_):
-        raise QmQuaException(
-            "only a single 'else' statement can follow an 'if' statement"
-        )
+        raise QmQuaException("only a single 'else' statement can follow an 'if' statement")
 
     else_statement = _qua.QuaProgramStatementsCollection(statements=[])
     last_statement.if_.else_ = else_statement
     return _BodyScope(_StatementsCollection(else_statement))
 
 
-def for_each_(
-    var: OneOrMore[QuaVariableType], values: ForEachValuesType
-) -> "_BodyScope":
+def for_each_(var: OneOrMore[QuaVariableType], values: ForEachValuesType) -> "_BodyScope":
     """Flow control: Iterate over array elements in QUA.
 
     It is possible to either loop over one variable, or over a tuple of variables,
@@ -1080,11 +1059,7 @@ def for_each_(
             raise QmQuaException(f"for_each_ var {i} must be a variable")
 
     # normalize the values argument
-    if (
-        isinstance(values, _Expression)
-        or not _is_iter(values)
-        or not _is_iter(values[0])
-    ):
+    if isinstance(values, _Expression) or not _is_iter(values) or not _is_iter(values[0]):
         values = (values,)
 
     if _is_iter(values) and len(values) < 1:
@@ -1101,9 +1076,7 @@ def for_each_(
 
             if has_bool:
                 if has_int or has_float:
-                    raise QmQuaException(
-                        "values can not contain both bool and number values"
-                    )
+                    raise QmQuaException("values can not contain both bool and number values")
                 # Only booleans
                 arrays.append(declare(bool, value=value))
             else:
@@ -1120,9 +1093,7 @@ def for_each_(
     arrays = [a.unwrap() for a in arrays]
 
     if len(var) != len(arrays):
-        raise QmQuaException(
-            "number of variables does not match number of array values"
-        )
+        raise QmQuaException("number of variables does not match number of array values")
 
     iterators = [(var[i], ar) for (i, ar) in enumerate(arrays)]
 
@@ -1363,9 +1334,7 @@ def _declare(
         else:
             scope.var_index += 1
             var = f"v{scope.var_index}"
-        result = _qua.QuaProgramAnyScalarExpression(
-            variable=_qua.QuaProgramVarRefExpression(name=var)
-        )
+        result = _qua.QuaProgramAnyScalarExpression(variable=_qua.QuaProgramVarRefExpression(name=var))
 
     prog = scope.program
     if t == int:
@@ -1430,9 +1399,7 @@ def declare(
     return _declare(t, is_input_stream=False, value=value, size=size)
 
 
-def declare_input_stream(
-    t: VariableDeclarationType, name: str, **kwargs
-) -> QuaVariableType:
+def declare_input_stream(t: VariableDeclarationType, name: str, **kwargs) -> QuaVariableType:
     """Declare a QUA variable or a QUA vector to be used as an input stream from the job to the QUA program.
 
     Declaration is performed by declaring a python variable with the return value of this function.
@@ -1515,20 +1482,23 @@ def declare_stream(**kwargs) -> "_ResultSource":
     )
 
 
-def _to_expression(
-    other: AllQuaTypes, index_exp: Optional[QuaNumberType] = None
-) -> MessageVariableOrExpression:
+def _fix_object_data_type(obj):
+    if isinstance(obj, (np.floating, np.integer, np.bool_)):
+        obj_item = obj.item()
+        if isinstance(obj_item, np.longdouble):
+            return float(obj_item)
+        else:
+            return obj_item
+    else:
+        return obj
+
+
+def _to_expression(other: AllQuaTypes, index_exp: Optional[QuaNumberType] = None) -> MessageVariableOrExpression:
     other = _fix_object_data_type(other)
-    if (
-        index_exp is not None
-        and type(index_exp) is not _qua.QuaProgramAnyScalarExpression
-    ):
+    if index_exp is not None and type(index_exp) is not _qua.QuaProgramAnyScalarExpression:
         index_exp = _to_expression(index_exp, None)
 
-    if (
-        index_exp is not None
-        and type(other) is not _qua.QuaProgramArrayVarRefExpression
-    ):
+    if index_exp is not None and type(other) is not _qua.QuaProgramArrayVarRefExpression:
         raise QmQuaException(f"{other} is not an array")
 
     if isinstance(other, _Expression):
@@ -1685,9 +1655,7 @@ class _Expression:
 
 
 class _Variable(_Expression):
-    def __init__(
-        self, expression: MessageVariableOrExpression, t: VariableDeclarationType
-    ):
+    def __init__(self, expression: MessageVariableOrExpression, t: VariableDeclarationType):
         super().__init__(expression)
         self._type = t
 
@@ -1787,25 +1755,20 @@ def amp(
         v4: The forth element in the amplitude matrix which multiples
             the `pulse` associated with the `operation`.
     """
-    variables: List[MessageExpressionType] = [
-        _unwrap_exp(exp(v)) if v is not None else None for v in [v1, v2, v3, v4]
-    ]
+    variables: List[MessageExpressionType] = [_unwrap_exp(exp(v)) if v is not None else None for v in [v1, v2, v3, v4]]
     return _PulseAmp(*variables)
 
 
 def _assert_scalar_expression(value: _Expression):
     if not isinstance(_unwrap_exp(value), _qua.QuaProgramAnyScalarExpression):
-        raise QmQuaException(
-            f"invalid expression: '{value}' is not a scalar expression"
-        )
+        raise QmQuaException(f"invalid expression: '{value}' is not a scalar expression")
 
 
 def _assert_not_lib_expression(value: _Expression):
     expression = _unwrap_exp(value)
     if (
         isinstance(expression, _qua.QuaProgramAnyScalarExpression)
-        and betterproto.which_one_of(expression, "expression_oneof")[0]
-        == "lib_function"
+        and betterproto.which_one_of(expression, "expression_oneof")[0] == "lib_function"
     ):
         raise QmQuaException(
             f"library expression {str(value)} is not a valid save source."
@@ -1908,9 +1871,7 @@ class _ProgramScope(_BodyScope):
         result_object = self.declare_save(tag, add_legacy_timestamp=True)
         return result_object
 
-    def declare_save(
-        self, tag: str, add_legacy_timestamp: bool = False
-    ) -> "_ResultSource":
+    def declare_save(self, tag: str, add_legacy_timestamp: bool = False) -> "_ResultSource":
         result_object = self._declared_streams.get(tag, None)
         if result_object is None:
             result_object = declare_stream()
@@ -1927,18 +1888,14 @@ class _ForScope(_BodyScope):
         self._for_statement = for_statement
 
     def body(self):
-        raise QmQuaException(
-            "for must be used with for_init, for_update, for_body and for_cond"
-        )
+        raise QmQuaException("for must be used with for_init, for_update, for_body and for_cond")
 
     def for_statement(self) -> _qua.QuaProgramForStatement:
         return self._for_statement
 
 
 class _SwitchScope(_BaseScope):
-    def __init__(
-        self, expression: _Expression, container: _StatementsCollection, unsafe: bool
-    ):
+    def __init__(self, expression: _Expression, container: _StatementsCollection, unsafe: bool):
         super().__init__()
         self.expression = expression
         self.if_statement: Optional[_qua.QuaProgramAnyStatement] = None
@@ -2117,47 +2074,31 @@ def _unwrap_analog_process(
 
     if type(analog_process) == AnalogMeasureProcess.BareIntegration:
         result.bare_integration = _qua.QuaProgramAnalogMeasureProcessBareIntegration(
-            integration=_qua.QuaProgramIntegrationWeightReference(
-                name=analog_process.iw
-            ),
+            integration=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw),
             element_output=analog_process.element_output,
             target=_unwrap_outer_target(analog_process.target),
         )
     elif type(analog_process) == AnalogMeasureProcess.DualBareIntegration:
-        result.dual_bare_integration = (
-            _qua.QuaProgramAnalogMeasureProcessDualBareIntegration(
-                integration1=_qua.QuaProgramIntegrationWeightReference(
-                    name=analog_process.iw1
-                ),
-                integration2=_qua.QuaProgramIntegrationWeightReference(
-                    name=analog_process.iw2
-                ),
-                element_output1=analog_process.element_output1,
-                element_output2=analog_process.element_output2,
-                target=_unwrap_outer_target(analog_process.target),
-            )
+        result.dual_bare_integration = _qua.QuaProgramAnalogMeasureProcessDualBareIntegration(
+            integration1=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw1),
+            integration2=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw2),
+            element_output1=analog_process.element_output1,
+            element_output2=analog_process.element_output2,
+            target=_unwrap_outer_target(analog_process.target),
         )
     elif type(analog_process) == AnalogMeasureProcess.DemodIntegration:
         result.demod_integration = _qua.QuaProgramAnalogMeasureProcessDemodIntegration(
-            integration=_qua.QuaProgramIntegrationWeightReference(
-                name=analog_process.iw
-            ),
+            integration=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw),
             element_output=analog_process.element_output,
             target=_unwrap_outer_target(analog_process.target),
         )
     elif type(analog_process) == AnalogMeasureProcess.DualDemodIntegration:
-        result.dual_demod_integration = (
-            _qua.QuaProgramAnalogMeasureProcessDualDemodIntegration(
-                integration1=_qua.QuaProgramIntegrationWeightReference(
-                    name=analog_process.iw1
-                ),
-                integration2=_qua.QuaProgramIntegrationWeightReference(
-                    name=analog_process.iw2
-                ),
-                element_output1=analog_process.element_output1,
-                element_output2=analog_process.element_output2,
-                target=_unwrap_outer_target(analog_process.target),
-            )
+        result.dual_demod_integration = _qua.QuaProgramAnalogMeasureProcessDualDemodIntegration(
+            integration1=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw1),
+            integration2=_qua.QuaProgramIntegrationWeightReference(name=analog_process.iw2),
+            element_output1=analog_process.element_output1,
+            element_output2=analog_process.element_output2,
+            target=_unwrap_outer_target(analog_process.target),
         )
     elif type(analog_process) == AnalogMeasureProcess.RawTimeTagging:
         result.raw_time_tagging = _qua.QuaProgramAnalogMeasureProcessRawTimeTagging(
@@ -2166,22 +2107,16 @@ def _unwrap_analog_process(
             target=_unwrap_exp(analog_process.target),
         )
         if analog_process.targetLen is not None:
-            result.raw_time_tagging.target_len = _unwrap_exp(
-                analog_process.targetLen
-            ).variable
+            result.raw_time_tagging.target_len = _unwrap_exp(analog_process.targetLen).variable
 
     elif type(analog_process) == AnalogMeasureProcess.HighResTimeTagging:
-        result.high_res_time_tagging = (
-            _qua.QuaProgramAnalogMeasureProcessHighResTimeTagging(
-                max_time=int(analog_process.max_time),
-                element_output=analog_process.element_output,
-                target=_unwrap_exp(analog_process.target),
-            )
+        result.high_res_time_tagging = _qua.QuaProgramAnalogMeasureProcessHighResTimeTagging(
+            max_time=int(analog_process.max_time),
+            element_output=analog_process.element_output,
+            target=_unwrap_exp(analog_process.target),
         )
         if analog_process.targetLen is not None:
-            result.high_res_time_tagging.target_len = _unwrap_exp(
-                analog_process.targetLen
-            ).variable
+            result.high_res_time_tagging.target_len = _unwrap_exp(analog_process.targetLen).variable
 
     return result
 
@@ -2198,9 +2133,7 @@ def _unwrap_digital_process(
             target=_unwrap_exp(digital_process.target),
         )
         if digital_process.targetLen is not None:
-            result.raw_time_tagging.target_len = _unwrap_exp(
-                digital_process.targetLen
-            ).variable
+            result.raw_time_tagging.target_len = _unwrap_exp(digital_process.targetLen).variable
 
     elif type(digital_process) == DigitalMeasureProcess.Counting:
         result.counting = _qua.QuaProgramDigitalMeasureProcessCounting(
@@ -2234,9 +2167,7 @@ def _unwrap_time_division(
     result = _qua.QuaProgramAnalogProcessTargetTimeDivision()
 
     if type(time_division) == AnalogMeasureProcess.SlicedAnalogTimeDivision:
-        result.sliced = _qua.QuaProgramAnalogTimeDivisionSliced(
-            samples_per_chunk=time_division.samples_per_chunk
-        )
+        result.sliced = _qua.QuaProgramAnalogTimeDivisionSliced(samples_per_chunk=time_division.samples_per_chunk)
     elif type(time_division) == AnalogMeasureProcess.AccumulatedAnalogTimeDivision:
         result.accumulated = _qua.QuaProgramAnalogTimeDivisionAccumulated(
             samples_per_chunk=time_division.samples_per_chunk
@@ -2254,30 +2185,20 @@ class AccumulationMethod:
         self.loc = ""
         self.return_func: Type[AnalogMeasureProcess] = None
 
-    def _full_target(
-        self, target: QuaVariableType
-    ) -> AnalogMeasureProcess.ScalarProcessTarget:
+    def _full_target(self, target: QuaVariableType) -> AnalogMeasureProcess.ScalarProcessTarget:
         return AnalogMeasureProcess.ScalarProcessTarget(self.loc, target)
 
     def _sliced_target(
         self, target: QuaVariableType, samples_per_chunk: int
     ) -> AnalogMeasureProcess.VectorProcessTarget:
-        analog_time_division = AnalogMeasureProcess.SlicedAnalogTimeDivision(
-            self.loc, samples_per_chunk
-        )
-        return AnalogMeasureProcess.VectorProcessTarget(
-            self.loc, target, analog_time_division
-        )
+        analog_time_division = AnalogMeasureProcess.SlicedAnalogTimeDivision(self.loc, samples_per_chunk)
+        return AnalogMeasureProcess.VectorProcessTarget(self.loc, target, analog_time_division)
 
     def _accumulated_target(
         self, target: QuaVariableType, samples_per_chunk: int
     ) -> AnalogMeasureProcess.VectorProcessTarget:
-        analog_time_division = AnalogMeasureProcess.AccumulatedAnalogTimeDivision(
-            self.loc, samples_per_chunk
-        )
-        return AnalogMeasureProcess.VectorProcessTarget(
-            self.loc, target, analog_time_division
-        )
+        analog_time_division = AnalogMeasureProcess.AccumulatedAnalogTimeDivision(self.loc, samples_per_chunk)
+        return AnalogMeasureProcess.VectorProcessTarget(self.loc, target, analog_time_division)
 
     def _moving_window_target(
         self, target: QuaVariableType, samples_per_chunk: int, chunks_per_window: int
@@ -2285,9 +2206,7 @@ class AccumulationMethod:
         analog_time_division = AnalogMeasureProcess.MovingWindowAnalogTimeDivision(
             self.loc, samples_per_chunk, chunks_per_window
         )
-        return AnalogMeasureProcess.VectorProcessTarget(
-            self.loc, target, analog_time_division
-        )
+        return AnalogMeasureProcess.VectorProcessTarget(self.loc, target, analog_time_division)
 
 
 class RealAccumulationMethod(AccumulationMethod):
@@ -2335,9 +2254,7 @@ class RealAccumulationMethod(AccumulationMethod):
             element_output: (optional) the output of an element from
                 which to get ADC results
         """
-        return self.return_func(
-            self.loc, element_output, iw, self._sliced_target(target, samples_per_chunk)
-        )
+        return self.return_func(self.loc, element_output, iw, self._sliced_target(target, samples_per_chunk))
 
     def accumulated(
         self,
@@ -2555,9 +2472,7 @@ class TimeTagging:
             element_output (str): the output of an element from which to
                 get the pulses
         """
-        return AnalogMeasureProcess.RawTimeTagging(
-            self.loc, element_output, target, targetLen, max_time
-        )
+        return AnalogMeasureProcess.RawTimeTagging(self.loc, element_output, target, targetLen, max_time)
 
     def digital(
         self,
@@ -2581,9 +2496,7 @@ class TimeTagging:
             element_output (str): the output of an element from which to
                 get the pulses
         """
-        return DigitalMeasureProcess.RawTimeTagging(
-            self.loc, element_output, target, targetLen, max_time
-        )
+        return DigitalMeasureProcess.RawTimeTagging(self.loc, element_output, target, targetLen, max_time)
 
     def high_res(
         self,
@@ -2606,9 +2519,7 @@ class TimeTagging:
             element_output (str): the output of an element from which to
                 get the pulses
         """
-        return AnalogMeasureProcess.HighResTimeTagging(
-            self.loc, element_output, target, targetLen, max_time
-        )
+        return AnalogMeasureProcess.HighResTimeTagging(self.loc, element_output, target, targetLen, max_time)
 
 
 class Counting:
@@ -2639,9 +2550,7 @@ class Counting:
             element_outputs (str): the outputs of an element from which
                 to get ADC results
         """
-        return DigitalMeasureProcess.Counting(
-            self.loc, element_outputs, target, max_time
-        )
+        return DigitalMeasureProcess.Counting(self.loc, element_outputs, target, max_time)
 
 
 demod = _Demod()
@@ -2764,9 +2673,7 @@ class _Functions:
         return ["tmult"]
 
     @staticmethod
-    def convolution(
-        constant_vector: PyNumberArrayType, mode: Optional[str] = None
-    ) -> CommandsType:
+    def convolution(constant_vector: PyNumberArrayType, mode: Optional[str] = None) -> CommandsType:
         """Computes discrete, linear convolution of one-dimensional constant vector and
         one-dimensional vector item of the input stream.
 
@@ -2939,9 +2846,7 @@ class _ResultStream:
         int_args = [str(int(arg)) for arg in args]
         return _ResultStream(self, ["buffer"] + int_args)
 
-    def buffer_and_skip(
-        self, length: PyNumberType, skip: PyNumberType
-    ) -> "_ResultStream":
+    def buffer_and_skip(self, length: PyNumberType, skip: PyNumberType) -> "_ResultStream":
         """Gather items into vectors - creates an array of input stream items and outputs
         the array as one item.
         Skips the number of given elements. Note that length and skip start from the
@@ -3021,9 +2926,7 @@ class _ResultStream:
         """
         converted_bins = []
         for sub_list in list(bins):
-            converted_bins = converted_bins + [
-                ["@array"] + [str(item) for item in list(sub_list)]
-            ]
+            converted_bins = converted_bins + [["@array"] + [str(item) for item in list(sub_list)]]
         return _ResultStream(self, ["histogram", ["@array"] + converted_bins])
 
     def zip(self, other: "_ResultStream") -> "_ResultStream":
@@ -3085,9 +2988,7 @@ class _ResultStream:
         """
         return self.map(FUNCTIONS.tuple_multiply())
 
-    def convolution(
-        self, constant_vector: PyNumberArrayType, mode: Optional[str] = None
-    ) -> "_ResultStream":
+    def convolution(self, constant_vector: PyNumberArrayType, mode: Optional[str] = None) -> "_ResultStream":
         """Computes discrete, linear convolution of one-dimensional constant vector and one-dimensional vector
         item of the input stream.
 
@@ -3136,9 +3037,7 @@ class _ResultStream:
         """
         return self.map(FUNCTIONS.boolean_to_int())
 
-    def _array_to_proto(
-        self, array: List[Union[str, CommandsType, "_ResultStream", "_ResultSource"]]
-    ) -> CommandsType:
+    def _array_to_proto(self, array: List[Union[str, CommandsType, "_ResultStream", "_ResultSource"]]) -> CommandsType:
         res = []
         for x in array:
             if isinstance(x, str):
@@ -3155,9 +3054,7 @@ class _ResultStream:
         res = self._array_to_proto(self._operator_array)
         return res
 
-    def add(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def add(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         """Allows addition between streams. The addition is done element-wise.
         Can also be performed on buffers and other operators, but they must have the
         same dimensions.
@@ -3184,9 +3081,7 @@ class _ResultStream:
         """
         return self.__add__(other)
 
-    def subtract(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def subtract(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         """Allows subtraction between streams. The subtraction is done element-wise.
         Can also be performed on buffers and other operators, but they must have the
         same dimensions.
@@ -3213,9 +3108,7 @@ class _ResultStream:
         """
         return self.__sub__(other)
 
-    def multiply(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def multiply(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         """Allows multiplication between streams. The multiplication is done element-wise.
         Can also be performed on buffers and other operators, but they must have the
         same dimensions.
@@ -3242,9 +3135,7 @@ class _ResultStream:
         """
         return self.__mul__(other)
 
-    def divide(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def divide(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         """Allows division between streams. The division is done element-wise.
         Can also be performed on buffers and other operators, but they must have the
         same dimensions.
@@ -3271,55 +3162,33 @@ class _ResultStream:
         """
         return self.__truediv__(other)
 
-    def __add__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def __add__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         if isinstance(other, _ResultStream):
             return _ResultStream(["+", self, other], None)
-        elif isinstance(
-            other, (int, float, np.integer, np.floating)
-        ) and not isinstance(other, (bool, np.bool_)):
+        elif isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["+", self, str(other)], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["+", self, ["@array"] + [str(item) for item in list(other)]], None
-            )
+            return _ResultStream(["+", self, ["@array"] + [str(item) for item in list(other)]], None)
 
     def __radd__(self, other: OneOrMore[PyNumberType]) -> "_ResultStream":
-        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(
-            other, (bool, np.bool_)
-        ):
+        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["+", str(other), self], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["+", ["@array"] + [str(item) for item in list(other)], self], None
-            )
+            return _ResultStream(["+", ["@array"] + [str(item) for item in list(other)], self], None)
 
-    def __sub__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def __sub__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         if isinstance(other, _ResultStream):
             return _ResultStream(["-", self, other], None)
-        elif isinstance(
-            other, (int, float, np.integer, np.floating)
-        ) and not isinstance(other, (bool, np.bool_)):
+        elif isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["-", self, str(other)], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["-", self, ["@array"] + [str(item) for item in list(other)]], None
-            )
+            return _ResultStream(["-", self, ["@array"] + [str(item) for item in list(other)]], None)
 
-    def __rsub__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
-        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(
-            other, (bool, np.bool_)
-        ):
+    def __rsub__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
+        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["-", str(other), self], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["-", ["@array"] + [str(item) for item in list(other)], self], None
-            )
+            return _ResultStream(["-", ["@array"] + [str(item) for item in list(other)], self], None)
 
     def __gt__(self, _):
         raise QmQuaException("Can't use > operator on results")
@@ -3336,60 +3205,36 @@ class _ResultStream:
     def __eq__(self, _):
         raise QmQuaException("Can't use == operator on results")
 
-    def __mul__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def __mul__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         if isinstance(other, _ResultStream):
             return _ResultStream(["*", self, other], None)
-        elif isinstance(
-            other, (int, float, np.integer, np.floating)
-        ) and not isinstance(other, (bool, np.bool_)):
+        elif isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["*", self, str(other)], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["*", self, ["@array"] + [str(item) for item in list(other)]], None
-            )
+            return _ResultStream(["*", self, ["@array"] + [str(item) for item in list(other)]], None)
 
-    def __rmul__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
-        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(
-            other, (bool, np.bool_)
-        ):
+    def __rmul__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
+        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["*", str(other), self], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["*", ["@array"] + [str(item) for item in list(other)], self], None
-            )
+            return _ResultStream(["*", ["@array"] + [str(item) for item in list(other)], self], None)
 
     def __div__(self, _):
         raise QmQuaException("Can't use / operator on results")
 
-    def __truediv__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
+    def __truediv__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
         if isinstance(other, _ResultStream):
             return _ResultStream(["/", self, other], None)
-        elif isinstance(
-            other, (int, float, np.integer, np.floating)
-        ) and not isinstance(other, (bool, np.bool_)):
+        elif isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["/", self, str(other)], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["/", self, ["@array"] + [str(item) for item in list(other)]], None
-            )
+            return _ResultStream(["/", self, ["@array"] + [str(item) for item in list(other)]], None)
 
-    def __rtruediv__(
-        self, other: Union["_ResultStream", OneOrMore[PyNumberType]]
-    ) -> "_ResultStream":
-        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(
-            other, (bool, np.bool_)
-        ):
+    def __rtruediv__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]) -> "_ResultStream":
+        if isinstance(other, (int, float, np.integer, np.floating)) and not isinstance(other, (bool, np.bool_)):
             return _ResultStream(["/", str(other), self], None)
         elif hasattr(other, "__len__"):
-            return _ResultStream(
-                ["/", ["@array"] + [str(item) for item in list(other)], self], None
-            )
+            return _ResultStream(["/", ["@array"] + [str(item) for item in list(other)], self], None)
 
     def __lshift__(self, other: Union["_ResultStream", OneOrMore[PyNumberType]]):
         save(other, self)
@@ -3440,21 +3285,9 @@ class _ResultSource(_ResultStream):
             str(self._configuration.timestamp_mode.value),
             self._configuration.var_name,
         ]
-        inputs = (
-            ["@macro_input", str(self._configuration.input), result]
-            if self._configuration.input != -1
-            else result
-        )
-        auto_reshape = (
-            ["@macro_auto_reshape", inputs]
-            if self._configuration.auto_reshape
-            else inputs
-        )
-        return (
-            ["@macro_adc_trace", auto_reshape]
-            if self._configuration.is_adc_trace
-            else auto_reshape
-        )
+        inputs = ["@macro_input", str(self._configuration.input), result] if self._configuration.input != -1 else result
+        auto_reshape = ["@macro_auto_reshape", inputs] if self._configuration.auto_reshape else inputs
+        return ["@macro_adc_trace", auto_reshape] if self._configuration.is_adc_trace else auto_reshape
 
     def get_var_name(self) -> str:
         return self._configuration.var_name
@@ -3504,9 +3337,7 @@ class _ResultSource(_ResultStream):
                 stream.auto_reshape().save_all("reshaped")
             ```
         """
-        return _ResultSource(
-            dataclasses.replace(self._configuration, auto_reshape=True)
-        )
+        return _ResultSource(dataclasses.replace(self._configuration, auto_reshape=True))
 
 
 def bins(start: PyNumberType, end: PyNumberType, number_of_bins: PyFloatType):

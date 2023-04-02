@@ -1,7 +1,10 @@
-from qm.grpc.qua_config import QuaConfig, QuaConfigPulseDecOperation
+from typing import cast
+
+from qm.type_hinting.config_types import DictQuaConfig
+from qm.grpc.qua_config import QuaConfig, QuaConfigQuaConfigV1, QuaConfigPulseDecOperation
 
 
-def convert_msg_to_config(config: QuaConfig):
+def convert_msg_to_config(config: QuaConfig) -> DictQuaConfig:
     msg_dict = config.to_dict()
 
     if "v1Beta" in msg_dict:
@@ -77,9 +80,7 @@ def _convert_integration_weights(integration_weights):
     ret = {}
     for name, data in integration_weights.items():
         ret[name] = {
-            "cosine": [
-                (s.get("value", 0.0), s.get("length", 0)) for s in data["cosine"]
-            ],
+            "cosine": [(s.get("value", 0.0), s.get("length", 0)) for s in data["cosine"]],
             "sine": [(s.get("value", 0.0), s.get("length", 0)) for s in data["sine"]],
         }
     return ret
@@ -176,7 +177,7 @@ def _convert_pulses(pulses):
     return ret
 
 
-def _convert_v1_beta(config):
+def _convert_v1_beta(config: QuaConfigQuaConfigV1) -> DictQuaConfig:
     results = {
         "version": 1,
         "controllers": _convert_controllers(config.get("controllers")),
@@ -184,15 +185,11 @@ def _convert_v1_beta(config):
         "elements": _convert_elements(config.get("elements")),
         "pulses": _convert_pulses(config.get("pulses")),
         "waveforms": _convert_wave_forms(config.get("waveforms")),
-        "digital_waveforms": _convert_digital_wave_forms(
-            config.get("digitalWaveforms")
-        ),
-        "integration_weights": _convert_integration_weights(
-            config.get("integrationWeights")
-        ),
+        "digital_waveforms": _convert_digital_wave_forms(config.get("digitalWaveforms")),
+        "integration_weights": _convert_integration_weights(config.get("integrationWeights")),
         "mixers": _convert_mixers(config.get("mixers")),
     }
-    return results
+    return cast(DictQuaConfig, results)
 
 
 def _convert_controllers(controllers):
@@ -203,22 +200,14 @@ def _convert_controllers(controllers):
     for name, data in controllers.items():
         ret[name] = {"type": data["type"]}
         if "analogOutputs" in data:
-            ret[name]["analog_outputs"] = _convert_controller_analog_outputs(
-                data["analogOutputs"]
-            )
+            ret[name]["analog_outputs"] = _convert_controller_analog_outputs(data["analogOutputs"])
         if "analogInputs" in data:
-            ret[name]["analog_inputs"] = _convert_controller_analog_inputs(
-                data["analogInputs"]
-            )
+            ret[name]["analog_inputs"] = _convert_controller_analog_inputs(data["analogInputs"])
         if "digitalOutputs" in data:
-            ret[name]["digital_outputs"] = _convert_controller_digital_outputs(
-                data["digitalOutputs"]
-            )
+            ret[name]["digital_outputs"] = _convert_controller_digital_outputs(data["digitalOutputs"])
 
         if "digitalInputs" in data:
-            ret[name]["digital_inputs"] = _convert_controller_digital_inputs(
-                data["digitalInputs"]
-            )
+            ret[name]["digital_inputs"] = _convert_controller_digital_inputs(data["digitalInputs"])
 
     return ret
 
@@ -308,9 +297,7 @@ def _convert_elements(elements):
         }
 
         if "outputs" in data:
-            element_config_data["outputs"] = _convert_element_output(
-                data.get("outputs")
-            )
+            element_config_data["outputs"] = _convert_element_output(data.get("outputs"))
 
         if "timeOfFlight" in data:
             element_config_data["time_of_flight"] = int(data["timeOfFlight"])
@@ -319,27 +306,19 @@ def _convert_elements(elements):
             element_config_data["smearing"] = int(data["smearing"])
 
         if "intermediateFrequencyOscillatorDouble" in data:
-            element_config_data["intermediate_frequency"] = float(
-                data["intermediateFrequencyOscillatorDouble"]
-            )
+            element_config_data["intermediate_frequency"] = float(data["intermediateFrequencyOscillatorDouble"])
         elif "intermediateFrequencyOscillator" in data:
-            element_config_data["intermediate_frequency"] = float(
-                data["intermediateFrequencyOscillator"]
-            )
+            element_config_data["intermediate_frequency"] = float(data["intermediateFrequencyOscillator"])
         elif "namedOscillator" in data:
             element_config_data["oscillator"] = str(data["namedOscillator"])
         elif "intermediateFrequencyDouble" in data:
             freq = float(data["intermediateFrequencyDouble"])
-            if "intermediateFrequencyNegative" in data and bool(
-                data["intermediateFrequencyNegative"]
-            ):
+            if "intermediateFrequencyNegative" in data and bool(data["intermediateFrequencyNegative"]):
                 freq = -freq
             element_config_data["intermediate_frequency"] = freq
         elif "intermediateFrequency" in data:
             freq = int(data["intermediateFrequency"])
-            if "intermediateFrequencyNegative" in data and bool(
-                data["intermediateFrequencyNegative"]
-            ):
+            if "intermediateFrequencyNegative" in data and bool(data["intermediateFrequencyNegative"]):
                 freq = -freq
             element_config_data["intermediate_frequency"] = freq
         if "operations" in data:
@@ -349,24 +328,18 @@ def _convert_elements(elements):
             element_config_data["measurement_qe"] = data["measurementQe"]
 
         if "singleInput" in data:
-            element_config_data["singleInput"] = _convert_single_inputs(
-                data["singleInput"]
-            )
+            element_config_data["singleInput"] = _convert_single_inputs(data["singleInput"])
         elif "mixInputs" in data:
             element_config_data["mixInputs"] = _convert_mix_inputs(data["mixInputs"])
         elif "singleInputCollection" in data:
-            element_config_data[
-                "singleInputCollection"
-            ] = _convert_single_input_collection(data["singleInputCollection"])
-        elif "multipleInputs" in data:
-            element_config_data["multipleInputs"] = _convert_multiple_inputs(
-                data["multipleInputs"]
+            element_config_data["singleInputCollection"] = _convert_single_input_collection(
+                data["singleInputCollection"]
             )
+        elif "multipleInputs" in data:
+            element_config_data["multipleInputs"] = _convert_multiple_inputs(data["multipleInputs"])
 
         if "holdOffset" in data:
-            element_config_data["hold_offset"] = _convert_hold_offset(
-                data["holdOffset"]
-            )
+            element_config_data["hold_offset"] = _convert_hold_offset(data["holdOffset"])
         if "sticky" in data:
             element_config_data["sticky"] = _convert_sticky(data["sticky"])
         if "thread" in data:

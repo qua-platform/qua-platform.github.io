@@ -1,19 +1,18 @@
-from io import BufferedWriter, BytesIO
-from typing import List, Union, Optional
+from typing import TYPE_CHECKING, List, Union, BinaryIO, Optional, cast
 
 import numpy
 
-from qm.StreamMetadata import StreamMetadataError, StreamMetadata
+from qm.persistence import BaseStore
 from qm.api.job_result_api import JobResultServiceApi
 from qm.api.models.capabilities import ServerCapabilities
-from qm.exceptions import QmInvalidSchemaError
-from qm.persistence import BaseStore
-from qm.results.base_streaming_result_fetcher import (
-    BaseStreamingResultFetcher,
-    JobResultItemSchema,
-)
+from qm.exceptions import QmNoResultsError, QmInvalidSchemaError
+from qm.StreamMetadata import StreamMetadata, StreamMetadataError
+from qm.results.base_streaming_result_fetcher import JobResultItemSchema, BaseStreamingResultFetcher
 
 TIMESTAMPS_LEGACY_EXT = "_timestamps"
+
+if TYPE_CHECKING:
+    from qm import StreamingResultFetcher
 
 
 class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
@@ -21,13 +20,13 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
 
     def __init__(
         self,
-        job_results,
+        job_results: "StreamingResultFetcher",
         job_id: str,
         schema: JobResultItemSchema,
         service: JobResultServiceApi,
         store: BaseStore,
         stream_metadata_errors: List[StreamMetadataError],
-        stream_metadata: StreamMetadata,
+        stream_metadata: Optional[StreamMetadata],
         capabilities: ServerCapabilities,
     ) -> None:
         self.job_results = job_results
@@ -41,7 +40,7 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
             capabilities=capabilities,
         )
 
-    def _validate_schema(self):
+    def _validate_schema(self) -> None:
         if self._schema.is_single:
             raise QmInvalidSchemaError("expecting a multi-result schema")
 
@@ -51,7 +50,7 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
         *,
         check_for_errors: bool = False,
         flat_struct: bool = False,
-    ) -> numpy.array:
+    ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
         """Fetch a result from the current result stream saved in server memory.
         The result stream is populated by the save() and save_all() statements.
         Note that if save_all() statements are used, calling this function twice
@@ -74,20 +73,16 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
             ```
         """
         if flat_struct:
-            return super().fetch(
-                item, check_for_errors=check_for_errors, flat_struct=flat_struct
-            )
+            return self.strict_fetch(item, check_for_errors=check_for_errors, flat_struct=flat_struct)
         else:
             # legacy support - reconstruct the old structure
             name = self._schema.name
             timestamps_name = name + TIMESTAMPS_LEGACY_EXT
             timestamps_result_handle = self.job_results.get(timestamps_name)
             if timestamps_result_handle is None:
-                return super().fetch(item, check_for_errors=check_for_errors)
+                return self.strict_fetch(item, check_for_errors=check_for_errors)
             else:
-                values_result = super().fetch(
-                    item, check_for_errors=check_for_errors, flat_struct=True
-                )
+                values_result = self.strict_fetch(item, check_for_errors=check_for_errors, flat_struct=True)
 
                 fetched_length = len(values_result)
                 if isinstance(item, slice):
@@ -99,18 +94,19 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
                     item, flat_struct=True, check_for_errors=check_for_errors
                 )
 
+                if timestamps_result is None:
+                    raise QmNoResultsError("Failed to fetch timestamp results, please wait until results are ready")
+
                 dtype = [
                     ("value", values_result.dtype),
                     ("timestamp", timestamps_result.dtype),
                 ]  # timestamps_result.dtype.descr
-                combined = numpy.rec.fromarrays(
-                    [values_result, timestamps_result], dtype=dtype
-                )
-                return combined.view(numpy.ndarray).astype(dtype)
+                combined = numpy.rec.fromarrays([values_result, timestamps_result], dtype=dtype)  # type: ignore[no-untyped-call]
+                return cast(numpy.typing.NDArray[numpy.generic], combined.view(numpy.ndarray).astype(dtype))
 
     def save_to_store(
         self,
-        writer: Optional[Union[BufferedWriter, BytesIO, str]] = None,
+        writer: Optional[Union[BinaryIO, str]] = None,
         flat_struct: bool = False,
     ) -> int:
         """Saving to persistent store the NPY data of this result handle
@@ -133,28 +129,19 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
                 return super().save_to_store(writer, flat_struct)
             else:
                 final_result = self.fetch_all(flat_struct=flat_struct)
-                own_writer = False
-                if writer is None:
-                    own_writer = True
-                    writer = self._store.job_named_result(
-                        self._job_id, self._schema.name
-                    ).for_writing()
+                if final_result is None:
+                    raise QmNoResultsError("Failed to fetch results, please wait until results are ready")
+
+                writer_opened = False
+                if writer is None or isinstance(writer, str):
+                    writer_opened = True
+                    writer = self._open_bytes_writer(writer)
+
                 try:
-                    owning_writer = False
-                    if type(writer) is str:
-                        writer = open(writer, "wb+")
-                        owning_writer = True
+                    self._write_header(writer, (len(final_result),), final_result.dtype.descr)
+                    writer.write(final_result.tobytes())
 
-                    try:
-                        self._write_header(
-                            writer, (len(final_result),), final_result.dtype.descr
-                        )
-                        writer.write(final_result.tobytes())
-
-                    finally:
-                        if owning_writer:
-                            writer.close()
-                    return len(final_result)
                 finally:
-                    if own_writer:
+                    if writer_opened:
                         writer.close()
+                return len(final_result)
