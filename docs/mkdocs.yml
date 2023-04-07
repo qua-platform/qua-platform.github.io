@@ -3,7 +3,7 @@ site_name: Documentation
 site_url: https://docs.quantum-machines.co
 site_author: Q.M Technologies Ltd.
 site_description: >-
-  Quantum machines documentation pages for OPX, OPX+, Octave,
+  Quantum Machines documentation pages for OPX, OPX+, Octave,
   and more. Bootstrap your work with Use cases and Solutions, 
   and get engaged with community.
 
@@ -26,11 +26,15 @@ theme:
   palette:
     - scheme: entropy-bright
       toggle:
-        icon: material/eye 
+        icon: material/brightness-7
+        name: Switch to high contrast mode
+    - scheme: entropy-high-contrast
+      toggle:
+        icon: material/brightness-6
         name: Switch to dark mode
     - scheme: entropy-dark 
       toggle:
-        icon: material/eye-outline
+        icon: material/brightness-5
         name: Switch to light mode
   features:
     - search
