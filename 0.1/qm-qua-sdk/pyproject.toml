@@ -31,20 +31,21 @@ deprecation = "^2.1.0"
 dependency_injector = "^4.41.0"
 qm-octave = "^1.1.0"
 
-grpclib = { version = "^0.4.3rc3", python = "^3.10", allow-prereleases = true}
+grpclib = { version = "^0.4.3rc3", python = "^3.10", allow-prereleases = true }
 plotly = "^5.13.0"
+httpx = { version = "^0.23.3", extras = ["http2"] }
 
 [tool.poetry.dev-dependencies]
 grpcio = "1.39.0"
 grpcio-tools = "1.39.0"
 betterproto = { extras = ["compiler"], version = "2.0.0b5" }
 coverage = "^7.0.1"
-pytest-asyncio="^0.20.3"
-pytest-benchmark = { extras = ["aspect"], version = "^4.0.0"}
+pytest-asyncio = "^0.20.3"
+pytest-benchmark = { extras = ["aspect"], version = "^4.0.0" }
 
 black = "^22.6.0"
 flake8 = "^3.9.2"
-importlib-metadata = { version = "^4.0.0", python = "~3.7"}
+importlib-metadata = { version = "^4.0.0", python = "~3.7" }
 pytest = "^7.0.0"
 flake8-bugbear = "^21.11.29"
 poethepoet = "^0.16.0"
@@ -55,10 +56,10 @@ sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-redoc = "^1.6.0"
 apispec = "^5.1.1"
 sphinx-toolbox = "^2.15.2"
-poetry-dynamic-versioning = {extras = ["plugin"], version = "^0.21.2"}
+poetry-dynamic-versioning = { extras = ["plugin"], version = "^0.21.2" }
 
 mypy = "^1.1.1"
-isort="*"
+isort = "*"
 
 [tool.poetry.extras]
 simulation = ["certifi"]

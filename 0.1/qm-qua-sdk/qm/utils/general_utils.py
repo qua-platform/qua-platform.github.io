@@ -1,4 +1,5 @@
 import time
+import logging
 from typing import Any, Dict, Generic, TypeVar, Callable
 
 T = TypeVar("T")
@@ -54,3 +55,7 @@ class Singleton(type, Generic[_T]):
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+def is_debug() -> bool:
+    return logging.getLogger("qm").level <= logging.DEBUG

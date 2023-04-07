@@ -13,8 +13,9 @@ from octave_sdk import (  # type: ignore[import]
 )
 
 from qm.api.frontend_api import FrontendApi
-from qm.grpc.qua_config import QuaConfigElementDec
+from qm.grpc.octave_models import OctaveLoSourceInput
 from qm.elements.native_elements import MixInputsElement
+from qm.grpc.qua_config import QuaConfigElementDec, QuaConfigOutputSwitchState
 
 
 class NoOctaveSdkException(Exception):
@@ -48,13 +49,32 @@ class ElementWithOctave(MixInputsElement):
         This function is intended to be used from outside, using the batch mode,
         to run it in parallel on all the quantum-elements, on all the octaves
         """
-        if self._config.mix_inputs.octave_params.lo_source:
-            self.set_lo_source(OctaveLOSource[self._config.mix_inputs.octave_params.lo_source.name])
+        octave_params = self._config.mix_inputs.octave_params
+        if octave_params.lo_source:
+            self.set_lo_source(OctaveLOSource[octave_params.lo_source.name])
         else:
             self.set_lo_source(OctaveLOSource.Internal)
 
         if self.lo_source == OctaveLOSource.Internal and self.lo_source in self._client._port_mapping:
             self.set_lo_frequency(self.lo_frequency, set_source=False)
+
+        if octave_params.output_switch_state != QuaConfigOutputSwitchState.unset:
+            output_mode = {
+                QuaConfigOutputSwitchState.always_on: RFOutputMode.on,
+                QuaConfigOutputSwitchState.always_off: RFOutputMode.off,
+                QuaConfigOutputSwitchState.triggered: RFOutputMode.trig_normal,
+                QuaConfigOutputSwitchState.triggered_reversed: RFOutputMode.trig_inverse,
+            }[octave_params.output_switch_state]
+            self.set_rf_output_mode(output_mode)
+
+        if octave_params.output_gain is not None:
+            self.set_rf_output_gain(octave_params.output_gain)
+
+        if octave_params.downconversion_lo_source not in {OctaveLoSourceInput.Off, 0}:
+            self._set_downconversion_lo(
+                lo_source=RFInputLOSource[octave_params.downconversion_lo_source.name],
+                lo_frequency=octave_params.downconversion_lo_frequency or None,
+            )
 
     def set_downconversion_port(self, downconversion_client: Octave, octave_rf_input_port_number: int) -> None:
         self._downconversion_client = downconversion_client
@@ -62,8 +82,8 @@ class ElementWithOctave(MixInputsElement):
 
     @property
     def _octave_if_input_port_number(self) -> int:
-        if betterproto.serialized_on_wire(self._config.up_converted):
-            enum_number = self._config.up_converted.rf_output_port.port_name.value + 1
+        if betterproto.serialized_on_wire(self._config.mix_inputs.octave_params):
+            enum_number = self._config.mix_inputs.octave_params.rf_output_port.port_name.value + 1
             # The enums are 0-based and the ports are 1-based
         else:
             enum_number = self._octave_if_input_port_number_backup

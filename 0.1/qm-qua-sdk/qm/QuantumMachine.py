@@ -16,6 +16,7 @@ from qm.api.frontend_api import FrontendApi
 from qm.jobs.pending_job import QmPendingJob
 from qm.jobs.simulated_job import SimulatedJob
 from qm.api.simulation_api import SimulationApi
+from qm.grpc.frontend import JobExecutionStatus
 from qm.jobs.running_qm_job import RunningQmJob
 from qm.api.job_manager_api import JobManagerApi
 from qm.octave.octave_manager import OctaveManager
@@ -30,7 +31,13 @@ from qm.elements.element_with_octave import ElementWithOctave
 from qm.type_hinting.config_types import DictQuaConfig, PortReferenceType, DigitalInputPortConfigType
 from qm.type_hinting.general import Value, Number, PathLike, NumpySupportedFloat, NumpySupportedValue
 from qm.elements.native_elements import MixInputsElement, SingleInputElement, static_set_mixer_correction
-from qm.exceptions import QmValueError, JobCancelledError, InvalidConfigError, UnsupportedCapabilityError
+from qm.exceptions import (
+    QmValueError,
+    JobCancelledError,
+    ErrorJobStateError,
+    InvalidConfigError,
+    UnsupportedCapabilityError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -813,6 +820,31 @@ class QuantumMachine:
             # In case that the job has finished between the GetRunningJon and the
             # wait for execution
             return None
+
+    def get_job(self, job_id: str) -> Union[QmJob, QmPendingJob]:
+        status: JobExecutionStatus = self._job_manager.get_job_execution_status(self._id, self._id)
+        if status.running or status.completed:
+            return QmJob(
+                job_id=job_id,
+                machine_id=self._id,
+                frontend_api=self._frontend,
+                capabilities=self._capabilities,
+                store=self._store,
+            )
+
+        if status.pending or status.loading:
+            return QmPendingJob(
+                job_id=job_id,
+                machine_id=self._id,
+                frontend_api=self._frontend,
+                capabilities=self._capabilities,
+                store=self._store,
+            )
+
+        raise ErrorJobStateError(
+            f"job {self._id} encountered an error",
+            error_list=[value.string_value for value in status.error.error_messages.values],
+        )
 
     def set_digital_input_threshold(self, port: PortReferenceType, threshold: float) -> None:
         controller_name, port_number = port

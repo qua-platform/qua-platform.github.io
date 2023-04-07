@@ -58,22 +58,17 @@ def static_set_mixer_correction(
     float_values = [float(x) for x in values]
     correction_matrix = Matrix(*float_values)
 
+    mixer_lo_frequency_double = 0.0
+    mixer_intermediate_frequency_double = 0.0
     if capabilities.supports_double_frequency:
-        mixer_lo_frequency = 0
-        mixer_intermediate_frequency = 0
         mixer_lo_frequency_double = float(lo_frequency)
         mixer_intermediate_frequency_double = abs(float(intermediate_frequency))
-    else:
-        mixer_lo_frequency_double = 0.0
-        mixer_intermediate_frequency_double = 0.0
-        mixer_lo_frequency = int(lo_frequency)
-        mixer_intermediate_frequency = abs(int(intermediate_frequency))
 
     mixer_info = MixerInfo(
         mixer=mixer,
         frequency_negative=intermediate_frequency < 0,
-        lo_frequency=mixer_lo_frequency,
-        intermediate_frequency=mixer_intermediate_frequency,
+        lo_frequency=int(lo_frequency),
+        intermediate_frequency=abs(int(intermediate_frequency)),
         lo_frequency_double=mixer_lo_frequency_double,
         intermediate_frequency_double=mixer_intermediate_frequency_double,
     )
@@ -128,12 +123,10 @@ class MixInputsElement(BasicElement):
     ) -> None:
         freq = float(value)
         logger.debug(f"Setting element '{self._name}' intermediate frequency to '{freq}'.")
+        self._config.mix_inputs.lo_frequency = int(freq)
+        self._config.mix_inputs.lo_frequency_double = 0.0
         if capabilities.supports_double_frequency:
             self._config.mix_inputs.lo_frequency_double = float(freq)
-            self._config.mix_inputs.lo_frequency = 0
-        else:
-            self._config.mix_inputs.lo_frequency = int(freq)
-            self._config.mix_inputs.lo_frequency_double = 0.0
 
     @property
     def mixer(self) -> str:

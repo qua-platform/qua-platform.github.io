@@ -40,6 +40,7 @@ class QuantumMachinesManager:
         host: Optional[str] = None,
         port: Optional[int] = None,
         *,
+        cluster_name: Optional[str] = None,
         timeout: Optional[float] = None,
         log_level: int = logging.INFO,
         connection_headers: Optional[Dict[str, str]] = None,
@@ -68,6 +69,7 @@ class QuantumMachinesManager:
             raise QmmException(message)
 
         self._credentials = credentials
+        self._cluster_name = cluster_name
         self._store = store if store else SimpleFileStore(file_store_root)
 
         self._octave_config = octave
@@ -96,6 +98,7 @@ class QuantumMachinesManager:
         connection_headers: Optional[Dict[str, str]],
     ) -> ServerDetails:
         server_details = detect_server(
+            cluster_name=self._cluster_name,
             user_token=self._user_config.user_token,
             ssl_context=self._credentials,
             host=self._host,
@@ -116,6 +119,10 @@ class QuantumMachinesManager:
     def octave_manager(self) -> OctaveManager:
         warnings.warn("Do not use OctaveManager, it will be removed in the next version", DeprecationWarning)
         return self._octave_manager
+
+    @property
+    def cluster_name(self) -> str:
+        return self._cluster_name or "any"
 
     def perform_healthcheck(self, strict: bool = True) -> None:
         """Perform a health check against the QM server.
