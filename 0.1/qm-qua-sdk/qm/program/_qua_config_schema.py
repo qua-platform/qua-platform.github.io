@@ -669,16 +669,14 @@ class MixerSchema(Schema):
         item = qua_config.QuaConfigCorrectionEntry(correction=qua_config.QuaConfigMatrix(*data["correction"]))
 
         if "lo_frequency" in data:
+            item.lo_frequency = int(data["lo_frequency"])  # backwards compatibility
             if capabilities.supports_double_frequency:
                 item.lo_frequency_double = float(data["lo_frequency"])
-            else:
-                item.lo_frequency = int(data["lo_frequency"])  # backwards compatibility
 
         if "intermediate_frequency" in data:
+            item.frequency = abs(int(data["intermediate_frequency"]))  # backwards compatibility
             if capabilities.supports_double_frequency:
                 item.frequency_double = abs(float(data["intermediate_frequency"]))
-            else:
-                item.frequency = abs(int(data["intermediate_frequency"]))  # backwards compatibility
 
             item.frequency_negative = data["intermediate_frequency"] < 0
 
@@ -838,17 +836,15 @@ class MixInputSchema(Schema):
         **kwargs,
     ):
         lo_frequency = data.get("lo_frequency", 0)
-        if capabilities.supports_double_frequency:
-            frequency = {"lo_frequency_double": float(lo_frequency)}
-        else:
-            frequency = {"lo_frequency": int(lo_frequency)}
 
         item = qua_config.QuaConfigMixInputs(
             i=qua_config.QuaConfigDacPortReference(controller=data["I"][0], number=data["I"][1]),
             q=qua_config.QuaConfigDacPortReference(controller=data["Q"][0], number=data["Q"][1]),
             mixer=data.get("mixer", ""),
-            **frequency,
+            lo_frequency=int(lo_frequency),
         )
+        if capabilities.supports_double_frequency:
+            item.lo_frequency_double = float(lo_frequency)
         if "octave_params" in data:
             item.octave_params = data["octave_params"]
         return item
@@ -917,16 +913,15 @@ class OscillatorSchema(Schema):
     ):
         osc = qua_config.QuaConfigOscillator()
         if "intermediate_frequency" in data and data["intermediate_frequency"] is not None:
+            osc.intermediate_frequency = int(data["intermediate_frequency"])
             if capabilities.supports_double_frequency:
-                osc.intermediate_frequency_double = data["intermediate_frequency"]
-            else:
-                osc.intermediate_frequency = int(data["intermediate_frequency"])
+                osc.intermediate_frequency_double = float(data["intermediate_frequency"])
+
         if "mixer" in data and data["mixer"] is not None:
             osc.mixer.mixer = data["mixer"]
+            osc.mixer.lo_frequency = int(data.get("lo_frequency", 0))
             if capabilities.supports_double_frequency:
-                osc.mixer.lo_frequency_double = data.get("lo_frequency", 0.0)
-            else:
-                osc.mixer.lo_frequency = int(data.get("lo_frequency", 0))
+                osc.mixer.lo_frequency_double = float(data.get("lo_frequency", 0.0))
 
         return osc
 
@@ -1000,12 +995,11 @@ class ElementSchema(Schema):
     ):
         el = qua_config.QuaConfigElementDec()
         if "intermediate_frequency" in data and data["intermediate_frequency"] is not None:
+            el.intermediate_frequency = abs(int(data["intermediate_frequency"]))
+            el.intermediate_frequency_oscillator = int(data["intermediate_frequency"])
             if capabilities.supports_double_frequency:
-                el.intermediate_frequency_double = abs(data["intermediate_frequency"])
-                el.intermediate_frequency_oscillator_double = data["intermediate_frequency"]
-            else:
-                el.intermediate_frequency = abs(int(data["intermediate_frequency"]))
-                el.intermediate_frequency_oscillator = int(data["intermediate_frequency"])
+                el.intermediate_frequency_double = float(abs(data["intermediate_frequency"]))
+                el.intermediate_frequency_oscillator_double = float(data["intermediate_frequency"])
 
             el.intermediate_frequency_negative = data["intermediate_frequency"] < 0
         elif "oscillator" in data and data["oscillator"] is not None:

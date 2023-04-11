@@ -1299,26 +1299,24 @@
 <ul>
 <li><strong>Note, this version (and all future versions) does not support QOP 2.0.0 or 2.0.1</strong></li>
 </ul>
-<p><strong>Deprecation</strong></p>
-<ul>
-<li>The <code>hold_offset</code> entry in the config is deprecated and is replaced by a new <code>sticky</code> entry with an improved API</li>
-<li>Moved <code>_Program</code> path to <code>qm.program.program.Program</code>. Old path will be removed in 1.2.0</li>
-<li>Moved <code>QmJob</code> path to <code>qm.jobs.qm_job.QmJob</code>. Old path will be removed in 1.2.0</li>
-<li>Moved <code>QmPendingJob</code> path to <code>qm.jobs.pending_job.QmPendingJob</code>. Old path will be removed in 1.2.0</li>
-<li>Moved <code>QmQueue</code> path to <code>qm.jobs.job_queue.QmQueue</code>. Old path will be removed in 1.2.0</li>
-<li>Renamed <code>JobResults</code> into <code>StreamingResultFetcher</code>. Old name will be removed in 1.2.0</li>
-<li>Moved <code>StreamingResultFetcher</code> path to <code>qm.results.StreamingResultFetcher</code>. </li>
-<li><code>QmJob.id()</code> is deprecated, use <code>QmJob.id</code> instead, will be removed in 1.2.0</li>
-<li><code>QmJob</code> no longer has <code>manager</code> property </li>
-<li><code>QmPendingJob.id()</code> is deprecated, use <code>QmPendingJob.id</code> instead, will be removed in 1.2.0</li>
-<li><code>QuantumMachine</code> no longer has <code>manager</code> property</li>
-<li><code>QuantumMachine.peek</code> is removed (was never implemented)</li>
-<li><code>QuantumMachine.poke</code> is removed (was never implemented)</li>
-<li><code>IsInt()</code> function for qua variables is deprecated, use <code>is_int()</code> instead, will be removed in 1.2.0</li>
-<li><code>IsFixed()</code> function for qua variables is deprecated, use <code>is_fixed()</code> instead, will be removed in 1.2.0 </li>
-<li><code>IsBool()</code> function for qua variables is deprecated, use <code>is_bool()</code> instead, will be removed in 1.2.0 </li>
-<li><code>set_clock</code> method of the octave changed API, old API will be removed in 1.2.0.</li>
-</ul>
+<p><strong>Deprecation</strong>
+- The <code>hold_offset</code> entry in the config is deprecated and is replaced by a new <code>sticky</code> entry with an improved API
+- Moved <code>_Program</code> path to <code>qm.program.program.Program</code>. Old path will be removed in 1.2.0
+- Moved <code>QmJob</code> path to <code>qm.jobs.qm_job.QmJob</code>. Old path will be removed in 1.2.0
+- Moved <code>QmPendingJob</code> path to <code>qm.jobs.pending_job.QmPendingJob</code>. Old path will be removed in 1.2.0
+- Moved <code>QmQueue</code> path to <code>qm.jobs.job_queue.QmQueue</code>. Old path will be removed in 1.2.0
+- Renamed <code>JobResults</code> into <code>StreamingResultFetcher</code>. Old name will be removed in 1.2.0
+- Moved <code>StreamingResultFetcher</code> path to <code>qm.results.StreamingResultFetcher</code>. 
+- <code>QmJob.id()</code> is deprecated, use <code>QmJob.id</code> instead, will be removed in 1.2.0
+- <code>QmJob</code> no longer has <code>manager</code> property 
+- <code>QmPendingJob.id()</code> is deprecated, use <code>QmPendingJob.id</code> instead, will be removed in 1.2.0
+- <code>QuantumMachine</code> no longer has <code>manager</code> property
+- <code>QuantumMachine.peek</code> is removed (was never implemented)
+- <code>QuantumMachine.poke</code> is removed (was never implemented)
+- <code>IsInt()</code> function for qua variables is deprecated, use <code>is_int()</code> instead, will be removed in 1.2.0
+- <code>IsFixed()</code> function for qua variables is deprecated, use <code>is_fixed()</code> instead, will be removed in 1.2.0 
+- <code>IsBool()</code> function for qua variables is deprecated, use <code>is_bool()</code> instead, will be removed in 1.2.0 
+- <code>set_clock</code> method of the octave changed API, old API will be removed in 1.2.0.</p>
 <p><strong>Added</strong></p>
 <ul>
 <li>Added autocorrection for config dict in IDEs, when creating a config, add the following: <code>config: DictQuaConfig = {...}</code>.</li>
@@ -1536,7 +1534,7 @@
 <span class="md-icon" title="Last update">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"></path></svg>
 </span>
-<span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-04-03T13:19:40+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-04-03</span>
+<span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-03-27T11:55:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-03-27</span>
 </span>
 <span class="md-source-file__fact">
 <span class="md-icon" title="Created">

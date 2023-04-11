@@ -216,12 +216,10 @@ def mixer_ref_to_pb(
     lo_frequency: int,
     capabilities: ServerCapabilities = Provide[CapabilitiesContainer.capabilities],
 ) -> qua_config.QuaConfigMixerRef:
+    item = qua_config.QuaConfigMixerRef(mixer=name, lo_frequency=int(lo_frequency))
     if capabilities.supports_double_frequency:
-        frequency = {"lo_frequency": int(lo_frequency)}
-    else:
-        frequency = {"lo_frequency_double": float(lo_frequency)}
-
-    return qua_config.QuaConfigMixerRef(mixer=name, **frequency)
+        item.lo_frequency_double = float(lo_frequency)
+    return item
 
 
 @inject
@@ -230,17 +228,16 @@ def oscillator_to_pb(
 ) -> qua_config.QuaConfigOscillator:
     oscillator = qua_config.QuaConfigOscillator()
     if "intermediate_frequency" in data:
+        oscillator.intermediate_frequency = int(data["intermediate_frequency"])
         if capabilities.supports_double_frequency:
             oscillator.intermediate_frequency_double = float(data["intermediate_frequency"])
-        else:
-            oscillator.intermediate_frequency = int(data["intermediate_frequency"])
 
     if "mixer" in data:
         oscillator.mixer = qua_config.QuaConfigMixerRef(mixer=data["mixer"])
+        oscillator.mixer.lo_frequency = int(data.get("lo_frequency", 0))
         if capabilities.supports_double_frequency:
             oscillator.mixer.lo_frequency_double = float(data.get("lo_frequency", 0.0))
-        else:
-            oscillator.mixer.lo_frequency = int(data.get("lo_frequency", 0))
+
     return oscillator
 
 
@@ -258,12 +255,12 @@ def create_correction_entry(
             v11=mixer_data["correction"][3],
         ),
     )
+    correction.frequency = abs(int(mixer_data["intermediate_frequency"]))
+    correction.lo_frequency = int(mixer_data["lo_frequency"])
     if capabilities.supports_double_frequency:
         correction.frequency_double = abs(float(mixer_data["intermediate_frequency"]))
         correction.lo_frequency_double = float(mixer_data["lo_frequency"])
-    else:
-        correction.frequency = abs(int(mixer_data["intermediate_frequency"]))
-        correction.lo_frequency = int(mixer_data["lo_frequency"])
+
     return correction
 
 
@@ -352,12 +349,11 @@ def element_to_pb(
         element.smearing = int(data["smearing"])
 
     if "intermediate_frequency" in data:
+        element.intermediate_frequency = abs(int(data["intermediate_frequency"]))
+        element.intermediate_frequency_oscillator = int(data["intermediate_frequency"])
         if capabilities.supports_double_frequency:
             element.intermediate_frequency_double = abs(float(data["intermediate_frequency"]))
             element.intermediate_frequency_oscillator_double = float(data["intermediate_frequency"])
-        else:
-            element.intermediate_frequency = abs(int(data["intermediate_frequency"]))
-            element.intermediate_frequency_oscillator = int(data["intermediate_frequency"])
 
         element.intermediate_frequency_negative = data["intermediate_frequency"] < 0
 
@@ -395,10 +391,9 @@ def element_to_pb(
         )
 
         lo_frequency = mix_inputs.get("lo_frequency", 0)
+        element.mix_inputs.lo_frequency = int(lo_frequency)
         if capabilities.supports_double_frequency:
             element.mix_inputs.lo_frequency_double = float(lo_frequency)
-        else:
-            element.mix_inputs.lo_frequency = int(lo_frequency)
 
         if "octave_params" in mix_inputs:
             element.mix_inputs.octave_params = octave_params_to_pb(mix_inputs["octave_params"])
