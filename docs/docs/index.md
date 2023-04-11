@@ -15,7 +15,7 @@ Here's what you will find here:
 
     Get an overview of the core concepts of the QOP as well as a usage example  
 
-    [:octicons-arrow-right-24: QOP Overview](./qm-qua-sdk/docs/Introduction/qop_overview.md)
+    [:octicons-arrow-right-24: QOP Overview](./qm-qua-sdk/docs/Introduction/qop_overview)
 
 -   :material-book-open:{ .lg .middle } __Guides__
 
@@ -23,7 +23,7 @@ Here's what you will find here:
 
     Dive into the details of all the features and capabilities of the QOP!
 
-    [:octicons-arrow-right-24: Features Guide](./qm-qua-sdk/docs/Guides/opx+installation.md)
+    [:octicons-arrow-right-24: Features Guide](./qm-qua-sdk/docs/Guides/features)
 
 -   :fontawesome-solid-gears:{ .lg .middle } __Hardware__
 
@@ -31,13 +31,13 @@ Here's what you will find here:
 
     Find installation guides and specification of our hardware components 
 
-    [:octicons-arrow-right-24: Install](./qm-qua-sdk/docs/Hardware/opx+installation.md)
+    [:octicons-arrow-right-24: Install](./qm-qua-sdk/docs/Hardware/opx+installation)
 
 -   :material-information:{ .lg .middle } __API References__
 
     ---
 
-    Explore our [API](./qm-qua-sdk/docs/Hardware/opx+installation.md)
+    Explore our [API](./qm-qua-sdk/docs/API_references/qua/dsl_main)
 
 [comment]: <> (    [:octicons-arrow-right-24: API]&#40;./qm-qua-sdk/docs/Hardware/opx+installation.md&#41;)
 
