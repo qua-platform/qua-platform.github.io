@@ -63,17 +63,15 @@ poetry run poe generate-grpc
 poetry run python ./docs/build_config_schema.py
 ```
 
-## Historical notes
+## Transfer from .rst
+
+These notes are for docs transfer from `.rst` format to new `.md` format.
 
 Start with 
 ```
 rst2myst convert *.rst 
 docconvert --input rest --output google ./qm-qua-sdk/ --in-place
 ```
-
-
-### Transfer from rst
-
 
 Change:
 
