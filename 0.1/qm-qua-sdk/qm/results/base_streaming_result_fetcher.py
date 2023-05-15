@@ -144,7 +144,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
 
         Args:
             writer: An optional writer to override the store defined in
-                [QuantumMachinesManager][qm.QuantumMachinesManager.QuantumMachinesManager]
+                [QuantumMachinesManager][qm.quantum_machines_manager.QuantumMachinesManager]
             flat_struct: results will have a flat structure - dimensions
                 will be part of the shape and not of the type
 
@@ -320,7 +320,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         Returns:
             all result of current result stream
         """
-        return self.strict_fetch(
+        return self.fetch(
             slice(0, self.count_so_far()),
             check_for_errors=check_for_errors,
             flat_struct=flat_struct,
@@ -389,7 +389,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
         if header.has_dataloss:
             logger.warning(f"Possible data loss detected in data for job: {self._job_id}")
 
-        return cast(numpy.typing.NDArray[numpy.generic], numpy.load(writer))  # type: ignore[no-untyped-call]
+        return cast(numpy.typing.NDArray[numpy.generic], numpy.load(writer))
 
     def _fetch_all_job_results(self, header: NamedJobResultHeader, start: int, stop: int) -> BinaryIO:
         self._count_data_written = 0

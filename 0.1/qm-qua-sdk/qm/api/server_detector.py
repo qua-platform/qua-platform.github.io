@@ -8,7 +8,7 @@ from qm.utils.general_utils import is_debug
 from qm.api.models.info import QuaMachineInfo
 from qm.api.models.debug_data import DebugData
 from qm.api.info_service_api import InfoServiceApi
-from qm.communication.http_redirection import _send_redirection_check
+from qm.communication.http_redirection import send_redirection_check
 from qm.exceptions import QMTimeoutError, QMConnectionError, QmServerDetectionError
 from qm.api.models.server_details import BASE_TIMEOUT, MAX_MESSAGE_SIZE, ServerDetails, ConnectionDetails
 
@@ -69,7 +69,7 @@ def detect_server(
 
 def _try_redirection(connection_details: ConnectionDetails) -> ConnectionDetails:
     host, port = run_async(
-        _send_redirection_check(connection_details.host, connection_details.port, connection_details.headers)
+        send_redirection_check(connection_details.host, connection_details.port, connection_details.headers)
     )
 
     if host != connection_details.host or port != connection_details.port:

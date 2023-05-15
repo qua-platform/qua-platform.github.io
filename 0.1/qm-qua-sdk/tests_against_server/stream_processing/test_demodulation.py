@@ -1,5 +1,5 @@
 from qm.qua import *
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm import SimulationConfig, LoopbackInterface
 import numpy as np
 from .configuration_basic import config

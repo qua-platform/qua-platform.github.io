@@ -1,4 +1,4 @@
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.qua import *
 from qm.qua import Math
 from qm import LoopbackInterface

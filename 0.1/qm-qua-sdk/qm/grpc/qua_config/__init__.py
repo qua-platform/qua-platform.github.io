@@ -12,6 +12,16 @@ from typing import (
 import betterproto
 import betterproto.lib.google.protobuf as betterproto_lib_google_protobuf
 
+from .. import octave_models as _octave_models__
+
+
+class QuaConfigOutputSwitchState(betterproto.Enum):
+    unset = 0
+    always_on = 1
+    always_off = 2
+    triggered = 3
+    triggered_reversed = 4
+
 
 class QuaConfigDigitalInputPortDecPolarity(betterproto.Enum):
     RISING = 0
@@ -67,6 +77,9 @@ class QuaConfigQuaConfigV1(betterproto.Message):
     integration_weights: Dict[
         str, "QuaConfigIntegrationWeightDec"
     ] = betterproto.map_field(8, betterproto.TYPE_STRING, betterproto.TYPE_MESSAGE)
+    octaves: Dict[str, "_octave_models__.OctaveConfig"] = betterproto.map_field(
+        11, betterproto.TYPE_STRING, betterproto.TYPE_MESSAGE
+    )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -127,6 +140,9 @@ class QuaConfigAnalogOutputPortDec(betterproto.Message):
     crosstalk: Dict[int, float] = betterproto.map_field(
         6, betterproto.TYPE_UINT32, betterproto.TYPE_DOUBLE
     )
+    octave_connectivity: "_octave_models__.OctaveIfInputPort" = (
+        betterproto.message_field(10, group="connectivity_oneof")
+    )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -148,12 +164,18 @@ class QuaConfigAnalogInputPortDec(betterproto.Message):
     offset: float = betterproto.double_field(1)
     gain_db: Optional[int] = betterproto.message_field(2, wraps=betterproto.TYPE_INT32)
     shareable: bool = betterproto.bool_field(3)
+    octave_connectivity: "_octave_models__.OctaveIfOutputPort" = (
+        betterproto.message_field(10, group="connectivity")
+    )
 
 
 @dataclass(eq=False, repr=False)
 class QuaConfigDigitalOutputPortDec(betterproto.Message):
     shareable: bool = betterproto.bool_field(1)
     inverted: bool = betterproto.bool_field(2)
+    octave_connectivity: "_octave_models__.OctaveDigitalInputPort" = (
+        betterproto.message_field(10, group="connectivity")
+    )
 
 
 @dataclass(eq=False, repr=False)
@@ -162,6 +184,9 @@ class QuaConfigDigitalInputPortDec(betterproto.Message):
     polarity: "QuaConfigDigitalInputPortDecPolarity" = betterproto.enum_field(2)
     threshold: float = betterproto.double_field(3)
     shareable: bool = betterproto.bool_field(4)
+    octave_connectivity: "_octave_models__.OctaveDigitalOutputPort" = (
+        betterproto.message_field(10, group="connectivity")
+    )
 
 
 @dataclass(eq=False, repr=False)
@@ -207,6 +232,7 @@ class QuaConfigMixInputs(betterproto.Message):
     mixer: str = betterproto.string_field(3)
     lo_frequency: int = betterproto.uint64_field(4)
     lo_frequency_double: float = betterproto.double_field(5)
+    octave_params: "QuaConfigUpConverted" = betterproto.message_field(6)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -214,6 +240,21 @@ class QuaConfigMixInputs(betterproto.Message):
             warnings.warn(
                 "QuaConfigMixInputs.lo_frequency is deprecated", DeprecationWarning
             )
+
+
+@dataclass(eq=False, repr=False)
+class QuaConfigUpConverted(betterproto.Message):
+    rf_output_port: "_octave_models__.OctaveOutputPort" = betterproto.message_field(1)
+    lo_source: "_octave_models__.OctaveLoSourceInput" = betterproto.enum_field(3)
+    output_switch_state: "QuaConfigOutputSwitchState" = betterproto.enum_field(4)
+    output_gain: Optional[int] = betterproto.message_field(
+        5, wraps=betterproto.TYPE_INT32
+    )
+    downconversion_lo_source: "_octave_models__.OctaveLoSourceInput" = (
+        betterproto.enum_field(6)
+    )
+    downconversion_lo_frequency: float = betterproto.double_field(7)
+    rf_input_port: "_octave_models__.OctaveRfInputPort" = betterproto.message_field(8)
 
 
 @dataclass(eq=False, repr=False)

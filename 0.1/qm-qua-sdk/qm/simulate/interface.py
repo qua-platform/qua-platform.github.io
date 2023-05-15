@@ -1,5 +1,4 @@
 import abc
-import typing_extensions
 from dataclasses import dataclass
 from typing import List, Union, Optional
 
@@ -14,7 +13,7 @@ class SimulatorInterface(metaclass=abc.ABCMeta):
 
 class SimulationConfig:
     """Creates a configuration object to pass to
-    [qm.QuantumMachinesManager.QuantumMachinesManager.simulate][]
+    [qm.quantum_machines_manager.QuantumMachinesManager.simulate][]
 
     Args:
         duration (int): The duration to run the simulation for, in clock
@@ -91,6 +90,7 @@ class InterOpxChannel:
 InterOpxPairing = Union[InterOpxAddress, InterOpxChannel]
 
 
-class ControllerConnection(typing_extensions.Protocol):
+@dataclass
+class ControllerConnection:
     source: InterOpxPairing
     target: InterOpxPairing

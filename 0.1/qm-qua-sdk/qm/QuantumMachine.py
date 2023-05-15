@@ -147,9 +147,8 @@ class QuantumMachine:
 
         Example:
             ```python
-            from qm.QuantumMachinesManager import QuantumMachinesManager
             from qm.qua import *
-            from qm.simulate import SimulationConfig
+            from qm.simulate import SimulationConfig, QuantumMachinesManager
 
             qmManager = QuantumMachinesManager()
             qm1 = qmManager.open_qm(config)
@@ -822,7 +821,7 @@ class QuantumMachine:
             return None
 
     def get_job(self, job_id: str) -> Union[QmJob, QmPendingJob]:
-        status: JobExecutionStatus = self._job_manager.get_job_execution_status(self._id, self._id)
+        status: JobExecutionStatus = self._job_manager.get_job_execution_status(job_id, self._id)
         if status.running or status.completed:
             return QmJob(
                 job_id=job_id,

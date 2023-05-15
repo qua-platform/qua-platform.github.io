@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.exceptions import QmServerDetectionError, QMConnectionError
 
 

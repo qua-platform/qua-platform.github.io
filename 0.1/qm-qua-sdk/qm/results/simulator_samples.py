@@ -66,7 +66,7 @@ class SimulatorSamples:
             controller_name, output, number = col.split(":")
             output = cast(Union[Literal["analog"], Literal["digital"]], output)
             controller = controllers.setdefault(controller_name, {"analog": {}, "digital": {}})
-            controller[output][number] = arr[col]
+            controller[output][number] = arr[col]  # type: ignore[call-overload]
         res = {}
         for controller_name, samples in controllers.items():
             res[controller_name] = SimulatorControllerSamples(samples["analog"], samples["digital"])

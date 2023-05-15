@@ -431,7 +431,7 @@ def measure(
             with stream_processing():
                 adc_st.input1().save_all("raw_adc_stream")
 
-        from qm.QuantumMachinesManager import QuantumMachinesManager
+        from qm import QuantumMachinesManager
         qm = QuantumMachinesManager().open_qm(config)
         job = qm.execute(prog)
         # ... we wait for the results to be ready...

@@ -1,7 +1,7 @@
 from qm.qua import *
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.exceptions import FailedToExecuteJobException
-from tests.simulate.opx_config import config
+from tests.simulate.opx_config import create_opx_config
 from qm.simulate.interface import SimulationConfig
 from qm.simulate import loopback
 
@@ -37,7 +37,7 @@ def _run_sim(prog, host_port, vars_to_save):
     qmm = QuantumMachinesManager(**host_port)
     qmm.close_all_quantum_machines()
     job = qmm.simulate(
-        config,
+        create_opx_config(),
         prog,
         SimulationConfig(
             duration=4000, simulation_interface=loopback.LoopbackInterface([])

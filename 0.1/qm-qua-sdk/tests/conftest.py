@@ -3,6 +3,7 @@ from contextlib import contextmanager
 
 import pytest
 
+from qm import DictQuaConfig
 from qm.api.models.capabilities import ServerCapabilities
 from qm.api.models.info import QuaMachineInfo, ImplementationInfo
 from qm.containers.capabilities_container import create_capabilities_container
@@ -30,7 +31,7 @@ def capability_container():
 
 
 @pytest.fixture
-def qua_bare_config():
+def qua_bare_config() -> DictQuaConfig:
     return {
         'version': 1,
         'controllers': {

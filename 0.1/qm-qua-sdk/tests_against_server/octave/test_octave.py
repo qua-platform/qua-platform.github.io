@@ -1,9 +1,9 @@
 import pytest
 
 from tests.conftest import ignore_deprecation_warnings_context
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.octave.octave_config import QmOctaveConfig
-from tests.simulate.opx_config import config
+from tests.simulate.opx_config import create_opx_config
 
 
 @pytest.mark.skip("no simulated server yet")
@@ -35,7 +35,7 @@ def test_octave_with_qmm(host_port, tmpdir):
     qmm.octave_manager.get_clock()
     qmm.octave_manager.restore_default_state()
 
-    qm = qmm.open_qm(config, use_calibration_data=True)  # -> this can update the config inside
+    qm = qmm.open_qm(create_opx_config(), use_calibration_data=True)  # -> this can update the config inside
     qm.octave.set_element_rf_input("qb1", "octave1", 2)
     qm.octave.set_lo_source("qb1")
     qm.octave.set_lo_frequency("qb1",7e9)

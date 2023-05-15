@@ -101,7 +101,7 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
                     ("value", values_result.dtype),
                     ("timestamp", timestamps_result.dtype),
                 ]  # timestamps_result.dtype.descr
-                combined = numpy.rec.fromarrays([values_result, timestamps_result], dtype=dtype)  # type: ignore[no-untyped-call]
+                combined = numpy.rec.fromarrays([values_result, timestamps_result], dtype=dtype)
                 return cast(numpy.typing.NDArray[numpy.generic], combined.view(numpy.ndarray).astype(dtype))
 
     def save_to_store(
@@ -113,7 +113,7 @@ class MultipleStreamingResultFetcher(BaseStreamingResultFetcher):
 
         Args:
             writer: An optional writer to override the store defined in
-                [QuantumMachinesManager][qm.QuantumMachinesManager.QuantumMachinesManager]
+                [QuantumMachinesManager][qm.quantum_machines_manager.QuantumMachinesManager]
 
         Returns:
             The number of items saved

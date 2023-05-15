@@ -125,7 +125,7 @@ class StreamingResultFetcher:
 
         Args:
             writer: An optional writer to be used instead of the pre-
-                populated store passed to [qm.QuantumMachinesManager.QuantumMachinesManager][]
+                populated store passed to [qm.quantum_machines_manager.QuantumMachinesManager][]
             flat_struct: results will have a flat structure - dimensions
                 will be part of the shape and not of the type
 

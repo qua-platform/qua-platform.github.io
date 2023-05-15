@@ -1,4 +1,6 @@
+import sys
 import asyncio
+import selectors
 import threading
 from typing import Any, TypeVar, Coroutine
 
@@ -7,7 +9,11 @@ from qm.utils.general_utils import Singleton
 
 class EventLoopThread(metaclass=Singleton):
     def __init__(self) -> None:
-        self.loop = asyncio.new_event_loop()
+        if sys.platform == "win32":
+            loop = asyncio.SelectorEventLoop(selectors.SelectSelector())
+        else:
+            loop = asyncio.new_event_loop()
+        self.loop = loop
         self._thread = threading.Thread(target=self.loop.run_forever)
         self._thread.daemon = True
         self._thread.start()

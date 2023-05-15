@@ -44,10 +44,6 @@ class DigitalInputPortConfigType(TypedDict, total=False):
     connectivity: Tuple[str, str]
 
 
-class OctaveConfigType(TypedDict, total=False):
-    loopbacks: List[Tuple[Tuple[str, str], str]]
-
-
 class ControllerConfigType(TypedDict, total=False):
     type: str
     analog_outputs: Dict[int, AnalogOutputPortConfigType]
@@ -55,6 +51,10 @@ class ControllerConfigType(TypedDict, total=False):
     digital_outputs: Dict[int, DigitalOutputPortConfigType]
     digital_inputs: Dict[int, DigitalInputPortConfigType]
     connectivity: str
+
+
+class OctaveConfigType(TypedDict, total=False):
+    loopbacks: List[Tuple[Tuple[str, str], str]]
 
 
 class DigitalInputConfigType(TypedDict, total=False):

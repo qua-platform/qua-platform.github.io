@@ -802,7 +802,7 @@ class StickySchema(Schema):
     @post_load(pass_many=False)
     def build(self, data, **kwargs):
         item = qua_config.QuaConfigSticky()
-        item.duration = data.get("duration")
+        item.duration = data.get("duration", 1)
         item.analog = data.get("analog")
         if "digital" in data:
             item.digital = data.get("digital")

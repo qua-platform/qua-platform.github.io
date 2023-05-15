@@ -1,6 +1,5 @@
-from qm.QuantumMachinesManager import QuantumMachinesManager
 from qm.qua import *
-from qm import SimulationConfig
+from qm import SimulationConfig, QuantumMachinesManager
 
 ################
 # configuration:

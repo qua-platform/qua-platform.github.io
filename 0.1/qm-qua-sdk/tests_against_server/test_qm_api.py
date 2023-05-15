@@ -4,7 +4,7 @@ import pytest
 from _pytest.logging import LogCaptureFixture
 
 from qm.qua import *
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 
 config = {
     "version": 1,

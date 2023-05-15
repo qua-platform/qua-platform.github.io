@@ -1,4 +1,4 @@
-from qm.QuantumMachinesManager import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 
 
 def test_open_qmm_without_debug_data_works(host_port, server_credentials):

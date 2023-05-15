@@ -1,6 +1,6 @@
 from qm.qua import *
-from qm.QuantumMachinesManager import QuantumMachinesManager
-from tests.simulate.opx_config import config
+from qm.quantum_machines_manager import QuantumMachinesManager
+from tests.simulate.opx_config import create_opx_config
 from qm.simulate.interface import SimulationConfig
 from qm.simulate import loopback
 
@@ -17,7 +17,7 @@ def test_result_handles_work(host_port):
     qmm = QuantumMachinesManager(**host_port)
     qmm.close_all_quantum_machines()
     job = qmm.simulate(
-        config,
+        create_opx_config(),
         prog1,
         SimulationConfig(
             duration=100, simulation_interface=loopback.LoopbackInterface([])

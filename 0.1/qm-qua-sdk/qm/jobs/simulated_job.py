@@ -209,7 +209,7 @@ class SimulatedJob(RunningQmJob):
             writer.write(d)
 
         writer.seek(0)
-        ret: numpy.typing.NDArray[numpy.generic] = numpy.load(writer)  # type: ignore[no-untyped-call]
+        ret: numpy.typing.NDArray[numpy.generic] = numpy.load(writer)
         return ret
 
     def get_simulated_samples(self, include_analog: bool = True, include_digital: bool = True) -> SimulatorSamples:

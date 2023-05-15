@@ -54,7 +54,7 @@ def octave_connection_to_pb(
             octave_models.OctaveDigitalOutputPortName,
         )
     else:
-        raise Exception("Unknown connection type")
+        raise ConfigValidationException("Unknown connection type")
 
     if device_name is not None:
         if isinstance(port_data, dict) and port_data.get("connectivity") is not None:

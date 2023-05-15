@@ -21,14 +21,14 @@ def _convert_mixers(mixers):
     for name, data in mixers.items():
         temp_list = []
         for correction in data["correction"]:
-            if "frequencyDouble" in correction:
+            if "frequencyDouble" in data:
                 frequency = float(correction["frequencyDouble"])
             elif "frequency" in correction:
                 frequency = float(correction["frequency"])
             else:
                 frequency = 0.0
 
-            if "frequencyNegative" in correction:
+            if "frequencyNegative" in data:
                 if bool(correction["frequencyNegative"]):
                     frequency = -frequency
 
@@ -448,9 +448,11 @@ def _convert_controller_digital_outputs(outputs):
 
     ret = {}
     for name, data in outputs.items():
-        port_info = {"shareable": False}
+        port_info = {"shareable": False, "inverted": False}
         if "shareable" in data:
             port_info["shareable"] = data["shareable"]
+        if "inverted" in data:
+            port_info["inverted"] = data["inverted"]
         ret[int(name)] = port_info
     return ret
 

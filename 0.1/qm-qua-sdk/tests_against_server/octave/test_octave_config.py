@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from qm import QuantumMachinesManager
+from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.elements.element_with_octave import ElementWithOctave
 from qm.elements_db import OctaveConnectionError
 from qm.octave import OctaveOutput, OctaveLOSource
@@ -250,8 +250,10 @@ def test_not_failing_even_if_improper_connection_when_not_relevant_to_experiment
     qua_bare_config_with_specific_octave_connectivity: dict,
     p1_conn: Tuple[str, str], p2_conn: Tuple[str, str], validate_with_protobuf: bool
 ):
-    qua_bare_config_with_specific_octave_connectivity['controllers']['con1']['analog_outputs'][1]["connectivity"] = p1_conn
-    qua_bare_config_with_specific_octave_connectivity['controllers']['con1']['analog_outputs'][2]["connectivity"] = p2_conn
+    qua_bare_config_with_specific_octave_connectivity['controllers']['con1']['analog_outputs'][1][
+        "connectivity"] = p1_conn
+    qua_bare_config_with_specific_octave_connectivity['controllers']['con1']['analog_outputs'][2][
+        "connectivity"] = p2_conn
     qua_bare_config_with_specific_octave_connectivity["elements"]["element_not_connected_to_octave"] = {
         'mixInputs': {
             'I': ('con1', 3),

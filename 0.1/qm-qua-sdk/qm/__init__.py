@@ -10,7 +10,7 @@ from qm.QuantumMachine import QuantumMachine  # noqa
 from qm.jobs.pending_job import QmPendingJob  # noqa
 from qm.program import Program, _Program, _ResultAnalysis  # noqa
 from qm.api.models.compiler import CompilerOptionArguments  # noqa
-from qm.QuantumMachinesManager import QuantumMachinesManager  # noqa
+from qm.quantum_machines_manager import QuantumMachinesManager  # noqa
 from qm.serialization.generate_qua_script import generate_qua_script  # noqa
 from qm.results import StreamingResultFetcher, SingleStreamingResultFetcher, MultipleStreamingResultFetcher  # noqa
 from qm.simulate import (  # noqa

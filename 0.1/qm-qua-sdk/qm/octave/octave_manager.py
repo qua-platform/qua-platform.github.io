@@ -17,7 +17,7 @@ from qm.octave.calibration_db import CalibrationResult, octave_output_mixer_name
 from qm.octave.octave_config import QmOctaveConfig, _convert_octave_port_to_number
 
 if TYPE_CHECKING:
-    from qm.QuantumMachinesManager import QuantumMachinesManager
+    from qm.quantum_machines_manager import QuantumMachinesManager
 
 try:
     from octave_sdk import Octave
