@@ -46,7 +46,33 @@ Person that releases new documentation should
 5. Publish new version `poetry run mike deploy --push --update-aliases 0.1 latest ` 
 6. Commit changes to main repository
 
-## Transfer from rst
+
+## For documentation admin: publishing new version
+
+To publish new version
+
+```
+poetry run mike deploy --push --update-aliases 0.1 latest 
+```
+
+To build config documentation (do once before publishing new version)
+```
+cd docs
+cd qm-qua-sdk
+poetry run poe generate-grpc
+poetry run python ./docs/build_config_schema.py
+```
+
+## Historical notes
+
+Start with 
+```
+rst2myst convert *.rst 
+docconvert --input rest --output google ./qm-qua-sdk/ --in-place
+```
+
+
+### Transfer from rst
 
 
 Change:
@@ -79,30 +105,4 @@ Currently used to provide `requirements` function.
 
 For fine-tining docstring parsing, check [this](https://mkdocstrings.github.io/usage/)
 and [this](https://mkdocstrings.github.io/griffe/docstrings/).
-
-
-
-## For documentation admin: publishing new version
-
-To publish new version
-
-```
-poetry run mike deploy --push --update-aliases 0.1 latest 
-```
-
-To build config documentation (do once before publishing new version)
-```
-cd docs
-cd qm-qua-sdk
-poetry run poe generate-grpc
-poetry run python ./docs/build_config_schema.py
-```
-
-## Historical notes
-
-Start with 
-```
-rst2myst convert *.rst 
-docconvert --input rest --output google ./qm-qua-sdk/ --in-place
-```
 
