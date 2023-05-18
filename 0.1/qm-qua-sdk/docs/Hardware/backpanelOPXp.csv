@@ -2,7 +2,7 @@
 1,LAN,LAN port for network connection to router
 2,Ground symbol,Chassis earth ground
 3,OPC Com.,Inter-OPX optical connectivity (for a multi-OPX system)
-4,reset,Factory reset
+4,Reset,Factory reset (currently disabled)
 5,None,2 USB ports
 6,Clock in,"External clock reference (10,100,1000 MHz)"
 7,100GBE,Not in use
