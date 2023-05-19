@@ -31,6 +31,11 @@ time changes are saved to the disk, rebuild of documentation will be triggered
 during which (8-9s) site won't respond on clicks. After build site will
 automatically reload.
 
+### Troubleshooting
+
+- if you have problem with git credentials (we use token auth) make sure you
+setup credentials following this [guide](https://stackoverflow.com/questions/46878457/adding-git-credentials-on-windows).
+
 ## Typical workflow
 
 1. Get up-to-date with everything `git pull --recurse-submodules`
@@ -62,6 +67,11 @@ cd qm-qua-sdk
 poetry run poe generate-grpc
 poetry run python ./docs/build_config_schema.py
 ```
+
+### Troubleshooting
+
+- If above command breaks due to missing packages go to submodule `/docs/docs/qm-qua-sdk` and do
+`poetry install`.
 
 ## Transfer from .rst
 
