@@ -27,6 +27,7 @@ mkdocs-git-committers-plugin-2 = "^1.1.1"
 mkdocs-table-reader-plugin = "^1.2"
 matplotlib = "^3.6.3"
 poethepoet = "^0.18.1"
+urllib3 = "^1.26.15"
 
 [tool.poetry.dev-dependencies]
 
