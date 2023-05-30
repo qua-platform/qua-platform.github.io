@@ -679,7 +679,7 @@ class TestElementWithSticky:
         "singleInput": {
             "port": ("con1", 1),
         },
-        "sticky": {"analog": True, "duration": 10, "digital": True}
+        "sticky": {"analog": True, "duration": 16, "digital": True}
 
     }
 
@@ -691,7 +691,7 @@ class TestElementWithSticky:
             schema = ElementSchema()
             conf = schema.load(self._single_element)
             sticky = conf.sticky
-            assert sticky.duration == self._single_element["sticky"]["duration"]
+            assert sticky.duration == int(self._single_element["sticky"]["duration"] / 4)
             assert sticky.analog == self._single_element["sticky"]["analog"]
             assert sticky.digital == self._single_element["sticky"]["digital"]
 
@@ -700,11 +700,11 @@ class TestElementWithSticky:
             capability_container.capabilities.override(
                 ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, False, True)
             )
-            self._single_element["sticky"] = {"analog": True, "duration": 10}
+            self._single_element["sticky"] = {"analog": True, "duration": 16}
             schema = ElementSchema()
             conf = schema.load(self._single_element)
             hold_offset = conf.hold_offset
             assert (
-                hold_offset.duration == self._single_element["sticky"]["duration"]
+                hold_offset.duration == int(self._single_element["sticky"]["duration"] / 4)
             )
 

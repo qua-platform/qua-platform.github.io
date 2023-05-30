@@ -179,16 +179,8 @@ class OctaveManager:
         if devices is not None and len(devices) > 0:
             if not OCTAVE_SDK_LOADED:
                 raise OctaveSDKException("Octave sdk is not installed")
-            for device_name, connection_info in devices.items():
-                loop_backs = self._octave_config.get_lo_loopbacks_by_octave(device_name)
-                loop_backs = {input_port: output_port for input_port, output_port in loop_backs.items()}
-                self._octave_clients[device_name] = Octave(
-                    host=connection_info.host,
-                    port=connection_info.port,
-                    port_mapping=loop_backs,
-                    octave_name=device_name,
-                    fan=self._octave_config.fan,
-                )
+            for device_name in devices:
+                self._octave_clients[device_name] = self._octave_config.get_device(device_name)
 
     def set_octave_configuration(self, config: QmOctaveConfig):
         """Args:

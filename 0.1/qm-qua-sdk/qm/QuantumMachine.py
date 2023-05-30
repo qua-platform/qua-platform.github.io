@@ -24,7 +24,7 @@ from qm.simulate.interface import SimulationConfig
 from qm.elements_db import ElementsDB, init_elements
 from qm.utils.types_utils import convert_object_type
 from qm.api.models.capabilities import ServerCapabilities
-from qm.api.models.compiler import CompilerOptionArguments
+from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 from qm.program.ConfigBuilder import convert_msg_to_config
 from qm._QmJobErrors import InvalidDigitalInputPolarityError
 from qm.elements.element_with_octave import ElementWithOctave
@@ -134,6 +134,9 @@ class QuantumMachine:
         program: Program,
         simulate: SimulationConfig,
         compiler_options: Optional[CompilerOptionArguments] = None,
+        *,
+        strict: Optional[bool] = None,
+        flags: Optional[List[str]] = None,
     ) -> SimulatedJob:
         """Simulate the outputs of a deterministic QUA program.
 
@@ -167,8 +170,9 @@ class QuantumMachine:
         Returns:
             a ``QmJob`` object (see QM Job API).
         """
+        standardized_compiler_options = standardize_compiler_params(compiler_options, strict, flags)
         job: SimulatedJob = cast(
-            SimulatedJob, self.execute(program, simulate=simulate, compiler_options=compiler_options)
+            SimulatedJob, self.execute(program, simulate=simulate, compiler_options=standardized_compiler_options)
         )
         return job
 
@@ -181,6 +185,9 @@ class QuantumMachine:
         dry_run: int = False,
         simulate: Optional[SimulationConfig] = None,
         compiler_options: Optional[CompilerOptionArguments] = None,
+        *,
+        strict: Optional[bool] = None,
+        flags: Optional[List[str]] = None,
     ) -> RunningQmJob:
         """Executes a program and returns an job object to keep track of execution and get
         results.
@@ -210,12 +217,11 @@ class QuantumMachine:
         if program.metadata.uses_fast_frame_rotation and not self._capabilities.supports_fast_frame_rotation:
             raise UnsupportedCapabilityError("fast frame rotation is supported from QOP 2.2 or above")
 
-        if compiler_options is None:
-            compiler_options = CompilerOptionArguments()
+        standardized_compiler_options = standardize_compiler_params(compiler_options, strict, flags)
 
         if simulate is not None:
             job_id, simulated_response_part = self._simulation_api.simulate(
-                self.get_config(), program, simulate, compiler_options
+                self.get_config(), program, simulate, standardized_compiler_options
             )
             return SimulatedJob(
                 job_id=job_id,
@@ -230,7 +236,7 @@ class QuantumMachine:
         if current_running_job is not None:
             current_running_job.halt()
 
-        pending_job = self._queue.add(program, compiler_options)
+        pending_job = self._queue.add(program, standardized_compiler_options)
         logger.info("Executing program")
         return pending_job.wait_for_execution(timeout=5)
 

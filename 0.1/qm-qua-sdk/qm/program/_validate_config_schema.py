@@ -66,6 +66,14 @@ def validate_used_inputs(data):
         )
 
 
+def validate_sticky_duration(duration):
+    if (duration % 4) != 0:
+        raise ValidationError(
+            "Sticky's element duration must be a dividable by 4",
+            field_name="duration",
+        )
+
+
 def validate_arbitrary_waveform(is_overridable, has_max_allowed_error, has_sampling_rate):
     if is_overridable and has_max_allowed_error:
         raise ValidationError("Overridable waveforms cannot have property 'max_allowed_error'")

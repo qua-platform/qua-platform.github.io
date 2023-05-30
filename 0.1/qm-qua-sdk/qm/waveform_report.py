@@ -829,7 +829,8 @@ class _WaveformPlotBuilder:
     def _setup_figure(self) -> None:
         self._figure = go.Figure()
         with_samples = self._samples is not None
-        num_rows = max(self._num_rows, 4)
+        minimum_number_of_rows = 4
+        num_rows = max(self._num_rows, minimum_number_of_rows)
         titles = [f"Analog-Out-{a}" for a in self._report.analog_output_ports_in_use()] + [
             f"Digital-Out-{d}" for d in self._report.digital_output_ports_in_use()
         ]
@@ -844,6 +845,10 @@ class _WaveformPlotBuilder:
             ) + [[{"t": 1 / (num_rows * 4)}]] * len(self._report.adcs_ports_in_use())
         else:
             specs = [[{"t": 1 / (num_rows * 4)}]] * num_rows
+
+        if len(specs) < minimum_number_of_rows:
+            specs += [[{}]] * (4 - len(specs))
+
         self._figure.set_subplots(
             rows=num_rows,
             cols=1,

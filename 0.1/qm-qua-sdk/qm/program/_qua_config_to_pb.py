@@ -13,6 +13,7 @@ from qm.program._validate_config_schema import (
     validate_output_tof,
     validate_used_inputs,
     validate_output_smearing,
+    validate_sticky_duration,
     validate_arbitrary_waveform,
     validate_timetagging_parameters,
 )
@@ -414,18 +415,20 @@ def element_to_pb(
         element.no_oscillator = Empty()
 
     if "sticky" in data:
+        if "duration" in data["sticky"]:
+            validate_sticky_duration(data["sticky"]["duration"])
         if capabilities.supports_sticky_elements:
             element.sticky = qua_config.QuaConfigSticky(
                 analog=data["sticky"].get("analog", True),
                 digital=data["sticky"].get("digital", False),
-                duration=data["sticky"].get("duration", 1),
+                duration=int(data["sticky"].get("duration", 4) / 4),
             )
         else:
             if "digital" in data["sticky"] and data["sticky"]["digital"]:
                 raise ConfigValidationException(
                     f"Server does not support digital sticky used in element " f"'{element_name}'"
                 )
-            element.hold_offset = qua_config.QuaConfigHoldOffset(duration=data["sticky"].get("duration", 1))
+            element.hold_offset = qua_config.QuaConfigHoldOffset(duration=int(data["sticky"].get("duration", 4) / 4))
 
     elif "hold_offset" in data:
         if capabilities.supports_sticky_elements:

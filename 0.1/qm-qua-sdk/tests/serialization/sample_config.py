@@ -363,7 +363,16 @@ config = {
             'singleInput': {
                 'port': ('con1', 1)
             },
-            'sticky': {'analog': True, 'duration': 1, 'digital': True},  # Can be any integer > 1
+            'sticky': {'analog': True, 'duration': 16, 'digital': True},  # Can be any integer % 4 == 0
+            'operations': {
+                'DC_offset': 'DC_offset_pulse'
+            }
+        },
+        'sticky_element2': {  # element to apply the DC offset on I
+            'singleInput': {
+                'port': ('con1', 1)
+            },
+            'sticky': {'analog': True, 'digital': True},
             'operations': {
                 'DC_offset': 'DC_offset_pulse'
             }

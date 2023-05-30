@@ -26,7 +26,7 @@ from qm.persistence import BaseStore, SimpleFileStore
 from qm.api.models.server_details import ServerDetails
 from qm.type_hinting.config_types import DictQuaConfig
 from qm.program._qua_config_to_pb import load_config_pb
-from qm.api.models.compiler import CompilerOptionArguments
+from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 from qm.octave.calibration_db import load_from_calibration_db
 from qm.exceptions import QmmException, ConfigValidationException
 from qm.program._qua_config_schema import validate_config_capabilities
@@ -74,9 +74,6 @@ class QuantumMachinesManager:
         self._credentials = credentials
         self._cluster_name = cluster_name
         self._store = store if store else SimpleFileStore(file_store_root)
-
-        self._octave_config = octave
-        self._octave_manager = OctaveManager(octave, self)
 
         self._server_details = self._initialize_connection(
             timeout=timeout,
@@ -250,6 +247,9 @@ class QuantumMachinesManager:
         program: Program,
         simulate: SimulationConfig,
         compiler_options: Optional[CompilerOptionArguments] = None,
+        *,
+        strict: Optional[bool] = None,
+        flags: Optional[List[str]] = None,
     ) -> SimulatedJob:
         """Simulate the outputs of a deterministic QUA program.
 
@@ -272,15 +272,15 @@ class QuantumMachinesManager:
             config: A QM config
             program: A QUA ``program()`` object to execute
             simulate: A ``SimulationConfig`` configuration object
-            kwargs: additional parameters to pass to execute
+            compiler_options: additional parameters to pass to execute
+            strict: a deprecated option for the compiler
+            flags: deprecated way to provide flags to the compiler
 
         Returns:
             a ``QmJob`` object (see QM Job API).
         """
-        if compiler_options is None:
-            compiler_options = CompilerOptionArguments()
-
-        job_id, simulated_response_part = self._simulation_api.simulate(config, program, simulate, compiler_options)
+        standardized_options = standardize_compiler_params(compiler_options, strict, flags)
+        job_id, simulated_response_part = self._simulation_api.simulate(config, program, simulate, standardized_options)
         return SimulatedJob(
             job_id=job_id,
             frontend_api=self._frontend,

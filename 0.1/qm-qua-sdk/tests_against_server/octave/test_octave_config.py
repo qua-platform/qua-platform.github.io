@@ -18,7 +18,7 @@ def qmm_with_octave(host_port, monkeypatch) -> QuantumMachinesManager:
     octave_config = config.QmOctaveConfig()
     octave_config.add_device_info("oct1", "127.0.0.1", 333)
     octave_mock = MagicMock()
-    monkeypatch.setattr(f"qm.octave.octave_manager.Octave", octave_mock)
+    monkeypatch.setattr(f"qm.octave.octave_config.Octave", octave_mock)
     return QuantumMachinesManager(**host_port, octave=octave_config)
 
 
@@ -168,18 +168,16 @@ def test_octave_config_loop_backs(
     qua_single_element_config: dict,
     synth: OctaveOutput, lo_source: OctaveLOSource, validate_with_protobuf: bool, monkeypatch
 ):
-    octave_mock = MagicMock()
-    monkeypatch.setattr(f"qm.elements_db.Octave", octave_mock)
+    config._cached_get_device.cache_clear()
     qua_single_element_config["octaves"] = {"oct1": {"loopbacks": [(("oct1", synth.name), lo_source.name)]}}
 
     qmm_with_octave.open_qm(config=qua_single_element_config, validate_with_protobuf=validate_with_protobuf)
 
-    octave_mock.assert_called_with(
+    config.Octave.assert_called_with(
         host="127.0.0.1",
         port=333,
         port_mapping={lo_source: synth},
         octave_name="oct1",
-        fan=qmm_with_octave._octave_config.fan
     )
 
 

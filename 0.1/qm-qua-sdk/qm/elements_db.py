@@ -22,6 +22,7 @@ from qm.grpc.qua_config import (
     QuaConfigDacPortReference,
     QuaConfigSingleInputCollection,
 )
+from qm.octave.octave_config import get_device
 
 MaybeOctaveInputPort = Optional[OctaveIfInputPort]
 
@@ -126,7 +127,6 @@ class _OctavesContainer:
     def __init__(self, pb_config: QuaConfig, octave_config: Optional[QmOctaveConfig] = None):
         self._pb_config = pb_config
         self._octave_config = octave_config or QmOctaveConfig()
-        self._octave_clients_cache: Dict[str, Octave] = {}
 
     def _get_connections_to_octave(self, element_port: QuaConfigDacPortReference) -> MaybeOctaveInputPort:
         controller, number = element_port.controller, element_port.number
@@ -208,17 +208,8 @@ class _OctavesContainer:
         )
 
     def _get_octave_client(self, device_name: str) -> Octave:
-        if device_name in self._octave_clients_cache:
-            return self._octave_clients_cache[device_name]
-
         device_connection_info = self._octave_config.devices[device_name]
         loopbacks = self._get_loopbacks(device_name)
-        client = Octave(
-            host=device_connection_info.host,
-            port=device_connection_info.port,
-            port_mapping=loopbacks,
-            octave_name=device_name,
-            fan=self._octave_config.fan,
+        return get_device(
+            device_connection_info, loop_backs=loopbacks, octave_name=device_name, fan=self._octave_config.fan
         )
-        self._octave_clients_cache[device_name] = client
-        return client

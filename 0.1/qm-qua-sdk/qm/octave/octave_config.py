@@ -2,10 +2,11 @@ import re
 import logging
 import warnings
 import dataclasses
+from functools import lru_cache
 from typing import Dict, List, Tuple, Union, Generic, TypeVar, Optional
 
 from deprecation import deprecated
-from octave_sdk import OctaveOutput, OctaveLOSource
+from octave_sdk import OctaveOutput, OctaveLOSource, Octave
 
 from qm.octave.calibration_db import CalibrationDB
 
@@ -75,6 +76,28 @@ def _convert_number_to_octave_port(name: str, port: int) -> List:
     return [(name, f"I{port}"), (name, f"Q{port}")]
 
 
+@lru_cache(maxsize=None)
+def _cached_get_device(
+    connection_info: ConnectionInfo, loop_backs: Tuple[Tuple[OctaveLOSource, OctaveOutput], ...], octave_name: str
+) -> Octave:
+    loop_backs = {input_port: output_port for input_port, output_port in loop_backs}
+    return Octave(
+        host=connection_info.host,
+        port=connection_info.port,
+        port_mapping=loop_backs,
+        octave_name=octave_name,
+    )
+
+
+def get_device(
+    connection_info: ConnectionInfo, loop_backs: Dict[OctaveLOSource, OctaveOutput], octave_name: str, fan=None
+) -> Octave:
+    client = _cached_get_device(connection_info, loop_backs=tuple(sorted(loop_backs.items())), octave_name=octave_name)
+    if fan is not None:
+        client._set_fan(fan)
+    return client
+
+
 class QmOctaveConfig:
     def __init__(self, fan=None) -> None:
         self._devices: Dict[str, ConnectionInfo] = {}
@@ -83,6 +106,14 @@ class QmOctaveConfig:
         self._opx_octave_port_mapping: Optional[ConnectionMapping] = None
         self._calibration_db: Optional[CalibrationDB] = None
         self._fan = fan
+
+    def get_device(self, device_name):
+        return get_device(
+            connection_info=self._devices[device_name],
+            loop_backs=self.get_lo_loopbacks_by_octave(device_name),
+            octave_name=device_name,
+            fan=self._fan,
+        )
 
     @property
     def fan(self):
