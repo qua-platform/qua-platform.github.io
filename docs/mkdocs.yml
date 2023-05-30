@@ -44,7 +44,7 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.indexes
-#    - navigation.tabs
+    - navigation.tabs
     - navigation.top
     - content.code.annotate 
     - content.code.copy
@@ -104,67 +104,70 @@ extra:
     default: latest
 
 nav:
-#  - Home: index.md
-#  - "QUA & QOP":
-  - "index.md"
-  - "Introduction":
-    - "Conceptual Overview": "qm-qua-sdk/docs/Introduction/qop_overview.md"
-    - "Configuration": "qm-qua-sdk/docs/Introduction/config.md"
-    - "QUA Overview": "qm-qua-sdk/docs/Introduction/qua_overview.md"
-    - "Example Use Case": "qm-qua-sdk/docs/Introduction/use_case.md"
-  - "Guides":
-#    - qm-qua-sdk/docs/Guides/index.md
-    - "QUA Best Practice Guide": "qm-qua-sdk/docs/Guides/best_practices.md"
-    - "QUA Language Features": "qm-qua-sdk/docs/Guides/features.md"
-    - "Classical Computations in QUA": "qm-qua-sdk/docs/Guides/qua_ref.md"
-    - "Variables in QUA": "qm-qua-sdk/docs/Guides/variables.md"
-    - "Timing in QUA": "qm-qua-sdk/docs/Guides/timing_in_qua.md"
-    - "Phase and Frame in QUA": "qm-qua-sdk/docs/Guides/phase_and_frame.md"
-    - "OPX Simulator": "qm-qua-sdk/docs/Guides/simulator.md"
-    - "Stream Processing": "qm-qua-sdk/docs/Guides/stream_proc.md"
-    - "Demodulation and Measurement": "qm-qua-sdk/docs/Guides/demod.md"
-    - "Output Filters": "qm-qua-sdk/docs/Guides/output_filter.md"
-    - "Job queue and Multiple Users": "qm-qua-sdk/docs/Guides/multi-users.md"
-    - "Analog Input Stage": "qm-qua-sdk/docs/Guides/analog_input_stage.md"
-    - "Messages and Errors": "qm-qua-sdk/docs/Guides/error.md"
-    - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
-    - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
-  - "Hardware":
-#    - qm-qua-sdk/docs/Hardware/index.md
-    - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md" 
-    - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
-    - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
-    - "OPD - Operator Digital": "qm-qua-sdk/docs/Hardware/dib.md"
-  - "API References":
-    - "QUA Language API":
-#      - qm-qua-sdk/docs/API_references/qua/index.md
-      - "QUA API": "qm-qua-sdk/docs/API_references/qua/dsl_main.md"
-      - "Result Stream API": "qm-qua-sdk/docs/API_references/qua/result_stream.md"
-      - "Math Functions API": "qm-qua-sdk/docs/API_references/qua/math.md"
-      - "Casting API": "qm-qua-sdk/docs/API_references/qua/cast.md"
-      - "Utility API": "qm-qua-sdk/docs/API_references/qua/util.md"
-      - "Random Number Generator API": "qm-qua-sdk/docs/API_references/qua/random.md"
-    - "Configuration API": "qm-qua-sdk/docs/API_references/config_spec.md"
-    - "Quantum Machine API": "qm-qua-sdk/docs/API_references/qm_api.md"
-    - "Quantum Machine Manager API": "qm-qua-sdk/docs/API_references/qm_manager_api.md"
-    - "QM Job API": "qm-qua-sdk/docs/API_references/qm_job_api.md"
-    - "QM Job Queue API": "qm-qua-sdk/docs/API_references/queue.md"
-    - "Results API": "qm-qua-sdk/docs/API_references/results_api.md"
-    - "Simulator API": "qm-qua-sdk/docs/API_references/simulator_api.md"
-    - "QM Octave API": "qm-qua-sdk/docs/API_references/qm_octave.md"
-    - "QM Octave Configuration API": "qm-qua-sdk/docs/API_references/octave_config.md"
-  - "Solutions Repositories":
-    - "QUA Libraries": "qm-qua-sdk/docs/Libraries/libs_repository.md"
-    - "QUA Tools" : "qm-qua-sdk/docs/Libraries/tools_repository.md"
-  - "Releases":
-    - "OPX (QOP 1) Releases": "qm-qua-sdk/docs/Releases/qop1_releases.md"
-    - "OPX+ (QOP 2) Releases": "qm-qua-sdk/docs/Releases/qop2_releases.md"
-    - "Python Package (qm-qua) Releases": "qm-qua-sdk/docs/Releases/qm_qua_releases.md"
-  - "Feedback and Support": "qm-qua-sdk/docs/support.md"
-  - "Legal":
-    - "Terms of use": "qm-qua-sdk/docs/legal/terms_of_use.md"
-    - "Website Privacy Policy": "qm-qua-sdk/docs/legal/privacy_policy.md"
-    - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
+  - Home: index.md
+  - "QUA & QOP":
+    - "qua_and_qop.md"
+    - "Introduction":
+      - "Conceptual Overview": "qm-qua-sdk/docs/Introduction/qop_overview.md"
+      - "Configuration": "qm-qua-sdk/docs/Introduction/config.md"
+      - "QUA Overview": "qm-qua-sdk/docs/Introduction/qua_overview.md"
+      - "Example Use Case": "qm-qua-sdk/docs/Introduction/use_case.md"
+    - "Guides":
+  #    - qm-qua-sdk/docs/Guides/index.md
+      - "QUA Best Practice Guide": "qm-qua-sdk/docs/Guides/best_practices.md"
+      - "QUA Language Features": "qm-qua-sdk/docs/Guides/features.md"
+      - "Classical Computations in QUA": "qm-qua-sdk/docs/Guides/qua_ref.md"
+      - "Variables in QUA": "qm-qua-sdk/docs/Guides/variables.md"
+      - "Timing in QUA": "qm-qua-sdk/docs/Guides/timing_in_qua.md"
+      - "Phase and Frame in QUA": "qm-qua-sdk/docs/Guides/phase_and_frame.md"
+      - "OPX Simulator": "qm-qua-sdk/docs/Guides/simulator.md"
+      - "Stream Processing": "qm-qua-sdk/docs/Guides/stream_proc.md"
+      - "Demodulation and Measurement": "qm-qua-sdk/docs/Guides/demod.md"
+      - "Output Filters": "qm-qua-sdk/docs/Guides/output_filter.md"
+      - "Job queue and Multiple Users": "qm-qua-sdk/docs/Guides/multi-users.md"
+      - "Analog Input Stage": "qm-qua-sdk/docs/Guides/analog_input_stage.md"
+      - "Messages and Errors": "qm-qua-sdk/docs/Guides/error.md"
+      - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
+      - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
+    - "Hardware":
+  #    - qm-qua-sdk/docs/Hardware/index.md
+      - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md" 
+      - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
+      - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
+      - "OPD - Operator Digital": "qm-qua-sdk/docs/Hardware/dib.md"
+    - "API References":
+      - "QUA Language API":
+  #      - qm-qua-sdk/docs/API_references/qua/index.md
+        - "QUA API": "qm-qua-sdk/docs/API_references/qua/dsl_main.md"
+        - "Result Stream API": "qm-qua-sdk/docs/API_references/qua/result_stream.md"
+        - "Math Functions API": "qm-qua-sdk/docs/API_references/qua/math.md"
+        - "Casting API": "qm-qua-sdk/docs/API_references/qua/cast.md"
+        - "Utility API": "qm-qua-sdk/docs/API_references/qua/util.md"
+        - "Random Number Generator API": "qm-qua-sdk/docs/API_references/qua/random.md"
+      - "Configuration API": "qm-qua-sdk/docs/API_references/config_spec.md"
+      - "Quantum Machine API": "qm-qua-sdk/docs/API_references/qm_api.md"
+      - "Quantum Machine Manager API": "qm-qua-sdk/docs/API_references/qm_manager_api.md"
+      - "QM Job API": "qm-qua-sdk/docs/API_references/qm_job_api.md"
+      - "QM Job Queue API": "qm-qua-sdk/docs/API_references/queue.md"
+      - "Results API": "qm-qua-sdk/docs/API_references/results_api.md"
+      - "Simulator API": "qm-qua-sdk/docs/API_references/simulator_api.md"
+      - "QM Octave API": "qm-qua-sdk/docs/API_references/qm_octave.md"
+      - "QM Octave Configuration API": "qm-qua-sdk/docs/API_references/octave_config.md"
+    - "Solutions Repositories":
+      - "QUA Libraries": "qm-qua-sdk/docs/Libraries/libs_repository.md"
+      - "QUA Tools" : "qm-qua-sdk/docs/Libraries/tools_repository.md"
+    - "Releases":
+      - "OPX (QOP 1) Releases": "qm-qua-sdk/docs/Releases/qop1_releases.md"
+      - "OPX+ (QOP 2) Releases": "qm-qua-sdk/docs/Releases/qop2_releases.md"
+      - "Python Package (qm-qua) Releases": "qm-qua-sdk/docs/Releases/qm_qua_releases.md"
+    - "Feedback and Support": "qm-qua-sdk/docs/support.md"
+    - "Legal":
+      - "Terms of use": "qm-qua-sdk/docs/legal/terms_of_use.md"
+      - "Website Privacy Policy": "qm-qua-sdk/docs/legal/privacy_policy.md"
+      - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
+  - "QUA academy":
+    - "qua-academy/README.md"
+    - "Level 1": "qua-academy/level1.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
   #   - "Getting started": "quam_sdk/getting_started.md"
@@ -191,30 +194,30 @@ nav:
   #     - "OQC/docs/source/examples/index.md"
   #     - "Basic": "OQC/docs/source/examples/basic.md"
   #     - "With include": "OQC/docs/source/examples/with_include.md"
-  # - "Solutions":
-  #   - "solutions/index.md"
-  #   - "QUA Tools":
-  #     - "Overview": "py-qua-tools/README.md"
-  #     - "Loops": "py-qua-tools/qualang_tools/loops/README.md"
-  #     - "Plot": "py-qua-tools/qualang_tools/plot/README.md"
-  #     - "Results": "py-qua-tools/qualang_tools/results/README.md"
-  #     - "Units": "py-qua-tools/qualang_tools/units/README.md"
-  #     - "Analysis": "py-qua-tools/qualang_tools/analysis/README.md"
-  #     - "Multi-user": "py-qua-tools/qualang_tools/multi_user/README.md" 
-  #     - "Bakery": "py-qua-tools/qualang_tools/bakery/README.md"
-  #     - "Addons": "py-qua-tools/qualang_tools/addons/README.md" 
-  #   - Use cases:
-  #     - "Atom sorting": "qua-libs/Quantum-Control-Applications/AMO/Use Case 1 - Saffman Lab - Atom Sorting/readme.md"
-  #     - "Two qubit gate optimization with cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md"
-  #     - "High resolution time tagging": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Cryogenic nanophotonic cavity/Use case 1 - Faraon Lab - sub-ns timetagging/README.md"
-  #     - "Carr-Purcell-Meiboom-Gill (CPMG) in an NV ensemble with ESR": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Electron Spin Resonance/Use case 1 - Sekhar Lab - CPMG/README.md"
-  #     - "Single NV center in a confocal setup": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/NV center in a confocal setup/README.md"
-  #     - "Fast Two Dimensional Scans Using a Spiral Pattern": "qua-libs/Quantum-Control-Applications/Quantum-Dots/Use Case 1 - Fast 2D Scans/README.md"
-  #     - " Two-qubit SWAP spectroscopy improved with pre-distortion digital filters": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md" 
-  #     - "Qubit Frequency Tracking": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 1 - Schuster Lab - Qubit Frequency Tracking/README.md"
-  #     - "Optimized readout with optimal weights": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 2 - Optimized readout with optimal weights/README.md"
-  #     - "Cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 1 - Paraoanu Lab - Cryoscope/readme.md"
-  #     - "DRAG and AC Stark-shift calibraiton": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 2 - DRAG coefficient calibration/README.md"
+  - "Solutions":
+    - "solutions/index.md"
+    - "QUA Tools":
+      - "Overview": "py-qua-tools/README.md"
+      - "Loops": "py-qua-tools/qualang_tools/loops/README.md"
+      - "Plot": "py-qua-tools/qualang_tools/plot/README.md"
+      - "Results": "py-qua-tools/qualang_tools/results/README.md"
+      - "Units": "py-qua-tools/qualang_tools/units/README.md"
+      - "Analysis": "py-qua-tools/qualang_tools/analysis/README.md"
+      - "Multi-user": "py-qua-tools/qualang_tools/multi_user/README.md" 
+      - "Bakery": "py-qua-tools/qualang_tools/bakery/README.md"
+      - "Addons": "py-qua-tools/qualang_tools/addons/README.md" 
+    - Use cases:
+      - "Atom sorting": "qua-libs/Quantum-Control-Applications/AMO/Use Case 1 - Saffman Lab - Atom Sorting/readme.md"
+      - "Two qubit gate optimization with cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md"
+      - "High resolution time tagging": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Cryogenic nanophotonic cavity/Use case 1 - Faraon Lab - sub-ns timetagging/README.md"
+      - "Carr-Purcell-Meiboom-Gill (CPMG) in an NV ensemble with ESR": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Electron Spin Resonance/Use case 1 - Sekhar Lab - CPMG/README.md"
+      - "Single NV center in a confocal setup": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/NV center in a confocal setup/README.md"
+      - "Fast Two Dimensional Scans Using a Spiral Pattern": "qua-libs/Quantum-Control-Applications/Quantum-Dots/Use Case 1 - Fast 2D Scans/README.md"
+      - " Two-qubit SWAP spectroscopy improved with pre-distortion digital filters": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md" 
+      - "Qubit Frequency Tracking": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 1 - Schuster Lab - Qubit Frequency Tracking/README.md"
+      - "Optimized readout with optimal weights": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 2 - Optimized readout with optimal weights/README.md"
+      - "Cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 1 - Paraoanu Lab - Cryoscope/readme.md"
+      - "DRAG and AC Stark-shift calibraiton": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 2 - DRAG coefficient calibration/README.md"
   # - Learn:
   #   - "learn/index.md"
   #   - "QUA tutorials": 
@@ -314,5 +317,5 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - javascripts/redoc.standalone.js
-  # - javascripts/typewriterjs.js
-  # - javascripts/front_page.js
+  - javascripts/typewriterjs.js
+  - javascripts/front_page.js

@@ -1,3 +1,12 @@
 [submodule "docs/docs/qm-qua-sdk"]
 	path = docs/docs/qm-qua-sdk
 	url = https://github.com/qm-labs/qm-qua-sdk.git
+[submodule "docs/docs/qua-academy"]
+	path = docs/docs/qua-academy
+	url = https://github.com/qua-platform/qua-academy/
+[submodule "docs/docs/py-qua-tools"]
+	path = docs/docs/py-qua-tools
+	url = https://github.com/qua-platform/py-qua-tools
+[submodule "docs/docs/qua-libs"]
+	path = docs/docs/qua-libs
+	url = https://github.com/qua-platform/qua-libs
