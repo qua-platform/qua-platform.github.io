@@ -62,6 +62,18 @@ div.doc-contents:not(.first) {
   border-left: .05rem solid var(--md-typeset-table-color);
 }
 
+.my_image{
+  filter: drop-shadow(0rem 0rem 0.5rem #a1d5dd);
+  border-radius: 0.5rem;
+}
+
+.qua_academy_buttom{
+  width: 40%;
+  margin-bottom: 15px;
+  text-align: center;
+  margin-left: 25%;
+}
+
 /* Mark external links as such. */
 a.autorefs-external::after {
   /* https://primer.style/octicons/arrow-up-right-24 */

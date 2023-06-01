@@ -1,5 +1,4 @@
 site_name: Documentation
-
 site_url: https://docs.quantum-machines.co
 site_author: Q.M Technologies Ltd.
 site_description: >-
@@ -167,7 +166,8 @@ nav:
       - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
   - "QUA academy":
     - "qua-academy/README.md"
-    - "Level 1": "qua-academy/level1.md"
+    - "Meet QM Hardware": "qua-academy/Meet-QM-Hardware.md"
+    - "test": "qua-academy/test.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
   #   - "Getting started": "quam_sdk/getting_started.md"
