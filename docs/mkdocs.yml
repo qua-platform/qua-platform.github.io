@@ -49,6 +49,7 @@ theme:
     - content.code.annotate 
     - content.code.copy
     - content.code.select
+    - content.tooltips
     - minify_html: true
   icon:
     repo: fontawesome/brands/github
