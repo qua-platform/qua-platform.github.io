@@ -166,7 +166,7 @@ nav:
       - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
   - "QUA academy":
     - "qua-academy/README.md"
-    - "Meet QM Hardware": "qua-academy/Meet-QM-Hardware.md"
+    - "Meet QM Hardware": "qua-academy/level1.md"
     - "test": "qua-academy/test.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
