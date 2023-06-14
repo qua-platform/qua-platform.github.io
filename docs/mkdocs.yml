@@ -167,6 +167,7 @@ nav:
   - "QUA academy":
     - "qua-academy/README.md"
     - "Meet QM Hardware": "qua-academy/level1.md"
+    - "Introduction to X": "qua-academy/introduction.md"
     - "test": "qua-academy/test.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
