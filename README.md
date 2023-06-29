@@ -47,7 +47,7 @@ Check [MkDocs Material reference](https://squidfunk.github.io/mkdocs-material/re
 Person that releases new documentation should
 
 1. Get up-to-date with everything `git pull --recurse-submodules`
-4. (if config was changed) Build config documentation (see above)
+4. (if config was changed) Build config documentation (see below)
 5. Publish new version `poetry run mike deploy --push --update-aliases 0.1 latest ` 
 6. Commit changes to main repository
 
