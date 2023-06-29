@@ -11,11 +11,13 @@ from octave_sdk import (
 
 from qm.octave.octave_config import QmOctaveConfig
 from qm.octave.calibration_db import octave_output_mixer_name
+from qm.octave.octave_manager import ClockMode
 
 __all__ = [
     "OctaveOutput",
     "ClockType",
     "ClockFrequency",
+    "ClockMode",
     "OctaveLOSource",
     "IFMode",
     "RFInputLOSource",

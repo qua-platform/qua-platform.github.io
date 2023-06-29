@@ -109,6 +109,9 @@ class SimulatedJob(RunningQmJob):
         pass
 
     def get_simulated_waveform_report(self) -> Optional[WaveformReport]:
+        """
+        Get this Job's Waveform report. If any error occurred, None will be returned.
+        """
         return self._waveform_report
 
     def simulated_analog_waveforms(self) -> Optional[WaveformInPortsType]:

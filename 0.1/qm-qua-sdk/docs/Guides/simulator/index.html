@@ -904,6 +904,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Waveform Report
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Waveform Report">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-the-waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating the Waveform Report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-visualize-the-waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        To visualize the Waveform Report:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1154,6 +1193,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1191,6 +1232,32 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Hardware/Network.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -2347,6 +2414,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Waveform Report
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Waveform Report">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-the-waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generating the Waveform Report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-visualize-the-waveform-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        To visualize the Waveform Report:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2435,126 +2541,118 @@ The helper function generates a controller connection object according to the <a
 </code></pre></div>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
 <p>See the complete <a href="../../API_references/simulator_api">simulator API page</a> in the API reference section for more details.</p>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>The following are 3 example of simulating simple QUA programs. The configuration is not provided. For executable version see the <a href="https://github.com/qua-platform/qua-libs/tree/main/Tutorials/intro-to-simulation">GitHub tutorial</a></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">qm</span> <span class="kn">import</span> <span class="n">QuantumMachinesManager</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">qm</span> <span class="kn">import</span> <span class="n">SimulationConfig</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span> <span class="nn">qm</span> <span class="kn">import</span> <span class="n">LoopbackInterface</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">from</span> <span class="nn">qm.qua</span> <span class="kn">import</span> <span class="o">*</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">()</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c1">##</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># ## Example 1 - No inputs</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog1</span><span class="p">:</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>        <span class="n">a</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>        <span class="n">c</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">):</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>                <span class="n">play</span><span class="p">(</span><span class="s2">&quot;const&quot;</span> <span class="o">*</span> <span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
-<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>        <span class="n">save</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
-<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="c1"># simulate program</span>
-<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="n">job</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog1</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span>
-<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>        <span class="n">duration</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>                    <span class="c1"># duration of simulation in units of 4ns</span>
-<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="p">))</span>
-<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>
-<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="c1"># get DAC and digital samples</span>
-<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get_simulated_samples</span><span class="p">()</span>
-<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>
-<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="c1"># plot all ports:</span>
-<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="n">samples</span><span class="o">.</span><span class="n">con1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>
-<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="c1"># get results</span>
-<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="n">res</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result_handles</span>
-<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="n">c</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()</span>
-<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>
-<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="c1">##</span>
-<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="c1"># ## Example 2 - Loopback inputs</span>
-<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="n">len_a</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.45</span><span class="p">,</span><span class="mf">0.1</span><span class="p">))</span>
-<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="n">len_f</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">50e6</span><span class="p">,</span><span class="mf">60e6</span><span class="p">,</span><span class="mf">1e6</span><span class="p">))</span>
-<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog2</span><span class="p">:</span>
-<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>    <span class="n">I</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
-<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>    <span class="n">Q</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
-<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>    <span class="n">I_stream</span> <span class="o">=</span> <span class="n">declare_stream</span><span class="p">()</span>
-<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a>    <span class="n">Q_stream</span> <span class="o">=</span> <span class="n">declare_stream</span><span class="p">()</span>
-<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a>    <span class="n">adc_stream</span> <span class="o">=</span> <span class="n">declare_stream</span><span class="p">(</span><span class="n">adc_trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>    <span class="n">f</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
-<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a>
-<a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a>    <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">):</span>
-<a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a>        <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">50e6</span><span class="p">,</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="mf">61e6</span><span class="p">,</span> <span class="n">f</span> <span class="o">+</span> <span class="mf">1e6</span><span class="p">):</span>
-<a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a>            <span class="n">update_frequency</span><span class="p">(</span><span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-<a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a>            <span class="n">measure</span><span class="p">(</span><span class="s2">&quot;readout&quot;</span><span class="o">*</span><span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="n">adc_stream</span><span class="p">,</span> <span class="n">demod</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="s1">&#39;cos&#39;</span><span class="p">,</span> <span class="n">I</span><span class="p">),</span> <span class="n">demod</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="s1">&#39;sin&#39;</span><span class="p">,</span> <span class="n">Q</span><span class="p">))</span>
-<a id="__codelineno-5-54" name="__codelineno-5-54" href="#__codelineno-5-54"></a>            <span class="n">save</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">I_stream</span><span class="p">)</span>
-<a id="__codelineno-5-55" name="__codelineno-5-55" href="#__codelineno-5-55"></a>            <span class="n">save</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">Q_stream</span><span class="p">)</span>
-<a id="__codelineno-5-56" name="__codelineno-5-56" href="#__codelineno-5-56"></a>            <span class="n">wait</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<a id="__codelineno-5-57" name="__codelineno-5-57" href="#__codelineno-5-57"></a>
-<a id="__codelineno-5-58" name="__codelineno-5-58" href="#__codelineno-5-58"></a>    <span class="k">with</span> <span class="n">stream_processing</span><span class="p">():</span>
-<a id="__codelineno-5-59" name="__codelineno-5-59" href="#__codelineno-5-59"></a>        <span class="n">I_stream</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">len_f</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">len_a</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span>
-<a id="__codelineno-5-60" name="__codelineno-5-60" href="#__codelineno-5-60"></a>        <span class="n">Q_stream</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">len_f</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">len_a</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span>
-<a id="__codelineno-5-61" name="__codelineno-5-61" href="#__codelineno-5-61"></a>        <span class="n">adc_stream</span><span class="o">.</span><span class="n">input1</span><span class="p">()</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="s1">&#39;adc&#39;</span><span class="p">)</span>
-<a id="__codelineno-5-62" name="__codelineno-5-62" href="#__codelineno-5-62"></a>
-<a id="__codelineno-5-63" name="__codelineno-5-63" href="#__codelineno-5-63"></a><span class="c1"># # simulate program</span>
-<a id="__codelineno-5-64" name="__codelineno-5-64" href="#__codelineno-5-64"></a><span class="n">simulated_job</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog2</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span>
-<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a>    <span class="n">duration</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span>
-<a id="__codelineno-5-66" name="__codelineno-5-66" href="#__codelineno-5-66"></a>    <span class="n">simulation_interface</span><span class="o">=</span><span class="n">LoopbackInterface</span><span class="p">([(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>    <span class="c1"># loopback from output 1 to input 1</span>
-<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a><span class="p">))</span>
-<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a>
-<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a>
-<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a><span class="c1"># get results</span>
-<a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a><span class="n">res</span> <span class="o">=</span> <span class="n">simulated_job</span><span class="o">.</span><span class="n">result_handles</span>
-<a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a><span class="n">adc</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;adc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()[</span><span class="s1">&#39;value&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch first measurement</span>
-<a id="__codelineno-5-73" name="__codelineno-5-73" href="#__codelineno-5-73"></a><span class="n">I</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()</span>
-<a id="__codelineno-5-74" name="__codelineno-5-74" href="#__codelineno-5-74"></a><span class="n">Q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()</span>
-<a id="__codelineno-5-75" name="__codelineno-5-75" href="#__codelineno-5-75"></a>
-<a id="__codelineno-5-76" name="__codelineno-5-76" href="#__codelineno-5-76"></a><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<a id="__codelineno-5-77" name="__codelineno-5-77" href="#__codelineno-5-77"></a><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">adc</span><span class="p">)</span>
-<a id="__codelineno-5-78" name="__codelineno-5-78" href="#__codelineno-5-78"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [ns]&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-79" name="__codelineno-5-79" href="#__codelineno-5-79"></a><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;ADC&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-80" name="__codelineno-5-80" href="#__codelineno-5-80"></a>
-<a id="__codelineno-5-81" name="__codelineno-5-81" href="#__codelineno-5-81"></a><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<a id="__codelineno-5-82" name="__codelineno-5-82" href="#__codelineno-5-82"></a><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
-<a id="__codelineno-5-83" name="__codelineno-5-83" href="#__codelineno-5-83"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-84" name="__codelineno-5-84" href="#__codelineno-5-84"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Q&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-85" name="__codelineno-5-85" href="#__codelineno-5-85"></a>
-<a id="__codelineno-5-86" name="__codelineno-5-86" href="#__codelineno-5-86"></a>
-<a id="__codelineno-5-87" name="__codelineno-5-87" href="#__codelineno-5-87"></a><span class="c1">##</span>
-<a id="__codelineno-5-88" name="__codelineno-5-88" href="#__codelineno-5-88"></a><span class="c1"># ## Example 3:</span>
-<a id="__codelineno-5-89" name="__codelineno-5-89" href="#__codelineno-5-89"></a>
-<a id="__codelineno-5-90" name="__codelineno-5-90" href="#__codelineno-5-90"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog3</span><span class="p">:</span>
-<a id="__codelineno-5-91" name="__codelineno-5-91" href="#__codelineno-5-91"></a>        <span class="n">d</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<a id="__codelineno-5-92" name="__codelineno-5-92" href="#__codelineno-5-92"></a>
-<a id="__codelineno-5-93" name="__codelineno-5-93" href="#__codelineno-5-93"></a>        <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">10</span><span class="p">):</span>
-<a id="__codelineno-5-94" name="__codelineno-5-94" href="#__codelineno-5-94"></a>                <span class="n">play</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-95" name="__codelineno-5-95" href="#__codelineno-5-95"></a>                <span class="n">play</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="s2">&quot;qe2&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<a id="__codelineno-5-96" name="__codelineno-5-96" href="#__codelineno-5-96"></a>                <span class="n">wait</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-<a id="__codelineno-5-97" name="__codelineno-5-97" href="#__codelineno-5-97"></a>
-<a id="__codelineno-5-98" name="__codelineno-5-98" href="#__codelineno-5-98"></a>
-<a id="__codelineno-5-99" name="__codelineno-5-99" href="#__codelineno-5-99"></a><span class="c1"># simulate program</span>
-<a id="__codelineno-5-100" name="__codelineno-5-100" href="#__codelineno-5-100"></a><span class="n">job</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog3</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span>
-<a id="__codelineno-5-101" name="__codelineno-5-101" href="#__codelineno-5-101"></a>        <span class="n">duration</span><span class="o">=</span><span class="mi">1700</span><span class="p">,</span>                  <span class="c1"># duration of simulation in units of 4ns</span>
-<a id="__codelineno-5-102" name="__codelineno-5-102" href="#__codelineno-5-102"></a><span class="p">))</span>
-<a id="__codelineno-5-103" name="__codelineno-5-103" href="#__codelineno-5-103"></a>
-<a id="__codelineno-5-104" name="__codelineno-5-104" href="#__codelineno-5-104"></a>
-<a id="__codelineno-5-105" name="__codelineno-5-105" href="#__codelineno-5-105"></a><span class="c1"># get DAC and digital samples</span>
-<a id="__codelineno-5-106" name="__codelineno-5-106" href="#__codelineno-5-106"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get_simulated_samples</span><span class="p">()</span>
-<a id="__codelineno-5-107" name="__codelineno-5-107" href="#__codelineno-5-107"></a>
-<a id="__codelineno-5-108" name="__codelineno-5-108" href="#__codelineno-5-108"></a><span class="c1"># plot analog ports 1 and 3:</span>
-<a id="__codelineno-5-109" name="__codelineno-5-109" href="#__codelineno-5-109"></a><span class="n">samples</span><span class="o">.</span><span class="n">con1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">analog_ports</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">},</span> <span class="n">digital_ports</span><span class="o">=</span><span class="p">{})</span>
-<a id="__codelineno-5-110" name="__codelineno-5-110" href="#__codelineno-5-110"></a>
-<a id="__codelineno-5-111" name="__codelineno-5-111" href="#__codelineno-5-111"></a><span class="c1"># another way:</span>
-<a id="__codelineno-5-112" name="__codelineno-5-112" href="#__codelineno-5-112"></a><span class="c1"># plt.figure()</span>
-<a id="__codelineno-5-113" name="__codelineno-5-113" href="#__codelineno-5-113"></a><span class="c1"># plt.plot(samples.con1.analog[&quot;1&quot;], &quot;-&quot;)</span>
-<a id="__codelineno-5-114" name="__codelineno-5-114" href="#__codelineno-5-114"></a><span class="c1"># plt.plot(samples.con1.analog[&quot;3&quot;], &quot;--&quot;)</span>
-<a id="__codelineno-5-115" name="__codelineno-5-115" href="#__codelineno-5-115"></a><span class="c1"># plt.legend((&quot;analog 1&quot;, &quot;analog 3&quot;))</span>
-<a id="__codelineno-5-116" name="__codelineno-5-116" href="#__codelineno-5-116"></a><span class="c1"># plt.xlabel(&quot;Time [ns]&quot;)</span>
-<a id="__codelineno-5-117" name="__codelineno-5-117" href="#__codelineno-5-117"></a><span class="c1"># plt.ylabel(&quot;Signal [V]&quot;)</span>
+<h2 id="waveform-report">Waveform Report<a class="headerlink" href="#waveform-report" title="Permanent link">&para;</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.2-blue" /></a></p>
+</div>
+<p>Executing quantum circuits at the pulse level and with real-time processing is a challenging task.
+The Waveform Report is a feature that helps users to design, execute, and test their desired quantum circuits.
+The OPX Simulator, simulating all analog and digital outputs, is the software equivalent of connecting the OPX to an oscilloscope, 
+and is an essential tool for experimentalists as they work on developing pulse sequences. 
+The Waveform Report is a complementary tool providing detailed information and plots of operations, waveforms, and ADC acquisition during the sequence.
+When a waveform report object is created, it holds all the information associated with a specific <code>play()</code>, <code>measure()</code>, and <code>wait()</code> command 
+and can be used to get more clarity of the compiler behavior and circuit validation. Additionally, this information can be readily plotted and sorted by elements 
+to help experimentalists analyze quantum circuits at the pulse level and compare them to their desired gate-level circuit.</p>
+<h4 id="generating-the-waveform-report">Generating the Waveform Report<a class="headerlink" href="#generating-the-waveform-report" title="Permanent link">&para;</a></h4>
+<p>To use the waveform report you first need to generate it from a simulated job:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># simulate a program</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">job</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>                    <span class="c1"># duration of simulation in units of 4ns</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">))</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># get DAC and digital samples (optional).</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">samples</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get_simulated_samples</span><span class="p">()</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># get the waveform report object</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">waveform_report</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">get_simulated_waveform_report</span><span class="p">()</span>
 </code></pre></div>
+<br></p>
+<p>The report object can be cast to a python dictionary containing three keys: </p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">waveform_dict</span> <span class="o">=</span> <span class="n">waveform_report</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">waveform_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> 
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># prints: </span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">dict_keys</span><span class="p">([</span><span class="s1">&#39;analog_waveforms&#39;</span><span class="p">,</span> <span class="s1">&#39;digital_waveforms&#39;</span><span class="p">,</span> <span class="s1">&#39;adc_acquisitions&#39;</span><span class="p">])</span>
+</code></pre></div>
+Each key points to a list specifying the analog waveforms, digital waveforms, and the adc acquisition (respectively).<br></p>
+<p>For clarity, let's inspect the first element in each list (for some generic example):</p>
+<p>Analog Waveform:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">waveform_dict</span><span class="p">[</span><span class="s2">&quot;analog_waveforms&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># prints:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">{</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="s1">&#39;waveform_name&#39;</span><span class="p">:</span> <span class="s1">&#39;const_wf&#39;</span><span class="p">,</span> <span class="c1"># The waveform name that has been played</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="s1">&#39;pulse_name&#39;</span><span class="p">:</span> <span class="s1">&#39;OriginPulseName=const&#39;</span><span class="p">,</span>  <span class="c1"># The associated pulse name</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>  <span class="c1"># The length of the pulse in ns</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="mi">232</span><span class="p">,</span>  <span class="c1"># The starting time of the pulse in ns</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="s1">&#39;iq_info&#39;</span><span class="p">:</span>  <span class="c1"># The IQ information of this element</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="p">{</span><span class="s1">&#39;isPartOfIq&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;iqGroupId&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;isI&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;isQ&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> 
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="s1">&#39;element&#39;</span><span class="p">:</span> <span class="s1">&#39;qe1&#39;</span><span class="p">,</span> <span class="c1"># The element to play to.</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="s1">&#39;output_ports&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># The OPX analog output port </span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span><span class="p">,</span>  <span class="c1"># the controller number</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    <span class="s1">&#39;pulser&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;controllerName&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span><span class="p">,</span> <span class="s1">&#39;pulserIndex&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># The pulser that this waveform has been played from.</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    <span class="s1">&#39;current_amp_elements&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.19999999925494194</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>  <span class="c1"># The Current amplitudes of the I and Q elements</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>    <span class="s1">&#39;current_dc_offset_by_port&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>  <span class="c1"># The current DC offset of the port that this waveform is played from.</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="s1">&#39;current_intermediate_frequency&#39;</span><span class="p">:</span> <span class="mf">10000000.0</span><span class="p">,</span>  <span class="c1"># The current intermediate frequency of the element.</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    <span class="s1">&#39;current_frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>  <span class="c1"># The current frame of the I and Q elements </span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    <span class="s1">&#39;current_correction_elements&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>  <span class="c1"># Current correction elements (the I and Q components)</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="s1">&#39;chirp_info&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># If this pulse is a chirp, further data (such as length, start and end frequencies and rates) are shown.</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="s1">&#39;current_phase&#39;</span><span class="p">:</span> <span class="mf">0.0</span>  <span class="c1"># Current phase.</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a> <span class="p">}</span>
+</code></pre></div></p>
+<p>Similarly, for the digital waveform:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">waveform_dict</span><span class="p">[</span><span class="s2">&quot;digital_waveforms&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># Prints:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">{</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s1">&#39;waveform_name&#39;</span><span class="p">:</span> <span class="s1">&#39;ON&#39;</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="s1">&#39;pulse_name&#39;</span><span class="p">:</span> <span class="s1">&#39;OriginPulseName=const&#39;</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="mi">320</span><span class="p">,</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="s1">&#39;iq_info&#39;</span><span class="p">:</span> 
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>        <span class="p">{</span><span class="s1">&#39;isPartOfIq&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;iqGroupId&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;isI&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;isQ&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="s1">&#39;element&#39;</span><span class="p">:</span> <span class="s1">&#39;qe1&#39;</span><span class="p">,</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="s1">&#39;output_ports&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span><span class="p">,</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>    <span class="s1">&#39;pulser&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;controllerName&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span><span class="p">,</span> <span class="s1">&#39;pulserIndex&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="p">}</span>
+</code></pre></div></p>
+<p>Finally, for the adc acquisition:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">waveform_dict</span><span class="p">[</span><span class="s2">&quot;adc_acquisitions&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="p">{</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="mi">956</span><span class="p">,</span>  <span class="c1"># Start time in ns (including the time of flight)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="mi">1056</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="s1">&#39;process&#39;</span><span class="p">:</span> <span class="s1">&#39;DemodIntegration&#39;</span><span class="p">,</span>  <span class="c1"># The process that is executed.</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="s1">&#39;pulser&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;controllerName&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span><span class="p">,</span> <span class="s1">&#39;pulserIndex&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="s1">&#39;quantum_element&#39;</span><span class="p">:</span> <span class="s1">&#39;qe1&#39;</span><span class="p">,</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="s1">&#39;adc_ports&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># Ths input port</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="s1">&#39;con1&#39;</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="p">}</span>
+</code></pre></div></p>
+<p>!!! note that it can also be printed as a pretty string:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">waveform_report</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</code></pre></div>
+<br></p>
+<h4 id="to-visualize-the-waveform-report">To visualize the Waveform Report:<a class="headerlink" href="#to-visualize-the-waveform-report" title="Permanent link">&para;</a></h4>
+<p>The waveform report visualizer is a powerful tool that helps the user to analyze the compiler behavior and design his quantum circuits.
+It is generated in an *.html file that can be opened in any browser (see the GitHub repo for a concrete example).
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">waveform_report</span><span class="o">.</span><span class="n">create_plot</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+</code></pre></div>
+There are a few things to note when using the visualizer:</p>
+<ul>
+<li>For each output port, the simulated output is shown as a function of time. In the panel below, the corresponding pulses are shown.<br> 
+If <code>samples</code> is not provided, only the lower panel containing the pulse data is shown.</li>
+<li>For each input port, the ADC acquisition timing is indicated alongside the processing type (demodulation, averaging etc.).</li>
+<li>By hovering above the beginning of each pulse segment, the complete characteristic of the played pulse will be shown. </li>
+<li>You can scroll through the X-axis of all the plots together or each panel separately. This is done by selecting the <strong><em>"x-axis scrolling method"</em></strong> at the top-right corner.</li>
+<li>By double-clicking an element in the legend, you can view only its occurrences throughout the sequence. Single-click to disable any element.</li>
+<li>More tools can be found in the top-right corner, including exporting to png, zoom-in and out, resetting the axis to the original view, etc.</li>
+<li>By selecting the 'zoom' option, you can select any kind of rectangle to zoom at. Double-click to reset. </li>
+<li>By selecting the 'pan' you can scroll through the plot (according to the scrolling method)</li>
+</ul>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>See more hands-on examples of the simulator and the waveform report in our <a href="https://github.com/qua-platform/qua-libs/tree/main/Tutorials/intro-to-simulation">GitHub tutorials</a></p>
 
   
     
@@ -2570,7 +2668,7 @@ The helper function generates a controller connection object according to the <a
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-04-17T14:13:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-04-17</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-06-05T17:09:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-06-05</span>
       </span>
     
     

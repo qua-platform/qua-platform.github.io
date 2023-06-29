@@ -55,7 +55,7 @@ class ElementWithOctave(MixInputsElement):
         else:
             self.set_lo_source(OctaveLOSource.Internal)
 
-        if self.lo_source == OctaveLOSource.Internal and self.lo_source in self._client._port_mapping:
+        if self.lo_source == OctaveLOSource.Internal or self.lo_source in self._client._port_mapping:
             self.set_lo_frequency(self.lo_frequency, set_source=False)
 
         if octave_params.output_switch_state != QuaConfigOutputSwitchState.unset:

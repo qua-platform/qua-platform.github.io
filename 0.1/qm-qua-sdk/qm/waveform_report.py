@@ -352,6 +352,11 @@ class WaveformReport:
         return self._get_output_ports_in_use(self.adc_acquisitions, on_controller)  # type: ignore[arg-type]
 
     def to_string(self) -> str:
+        """
+        Dumps the report into a (pretty-print) string.
+
+        return: str
+        """
         waveforms_str = [wf.to_string() for wf in self.waveforms]
         adc_string = [adc.to_string() for adc in self.adc_acquisitions]
         return "\n".join(waveforms_str + adc_string)
@@ -375,6 +380,14 @@ class WaveformReport:
         return by_controller_map
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Dumps the report to a dictionary containing three keys:
+            "analog_waveforms", "digital_waveforms", "acd_acquisitions".
+        Each key holds the list of all the associate data.
+
+        Returns:
+            dict
+        """
         return {
             "analog_waveforms": [awf.to_dict() for awf in self.analog_waveforms],
             "digital_waveforms": [dwf.to_dict() for dwf in self.digital_waveforms],
@@ -417,7 +430,19 @@ class WaveformReport:
         plot: bool = True,
         save_path: Optional[str] = None,
     ) -> None:
+        """Creates a plot describing the pulses from each element to each port.
+        See arguments description for further options.
 
+        Args:
+            samples: The raw samples as generated from the simulator. If not given, the plot will be generated without it.
+            controllers: list of controllers to generate the plot. Each controller output will be saved as a different
+                        file. If not given, take all the controllers who participate in the program.
+            plot: Show the plot at the end of this function call.
+            save_path: Save the plot to the given location. None for not saving.
+
+        Returns:
+            None
+        """
         if save_path is None:
             dirname, filename = "./", f"waveform_report_{self.job_id}"
         else:

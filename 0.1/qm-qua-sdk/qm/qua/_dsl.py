@@ -126,9 +126,9 @@ def play(
             only part of the pulse, truncating the end. If provided,
             will play only up to the given time in units of the clock
             cycle (4ns).
-        condition (A logical expression to evaluate.): Will play analog
-            pulse only if the condition's value is true. Any digital
-            pulses associated with the operation will always play.
+        condition (A logical expression to evaluate.): Will play the operation only if the condition is true.
+        Prior to QOP 2.2, only the analog part was conditioned, i.e., any digital pulses associated
+        with the operation would always play.
         timestamp_stream (Union[str, _ResultSource]): (Supported from
             QOP 2.2) Adding a `timestamp_stream` argument will save the
             time at which the operation occurred to a stream. If the

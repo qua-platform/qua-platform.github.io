@@ -1274,6 +1274,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#inverted-digital-marker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inverted Digital Marker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#threads" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1715,6 +1726,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1752,6 +1765,32 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Hardware/Network.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -3408,6 +3447,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#inverted-digital-marker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inverted Digital Marker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#threads" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3968,11 +4018,25 @@ available commands:</p>
 <a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a>    <span class="n">job</span><span class="o">.</span><span class="n">insert_input_stream</span><span class="p">(</span><span class="s1">&#39;tau_input_stream&#39;</span><span class="p">,</span> <span class="n">calc_tau</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="sticky-element">Sticky Element<a class="headerlink" href="#sticky-element" title="Permanent link">&para;</a></h2>
-<p>A quantum element can be defined as <em>sticky</em> by adding the <code>hold_offset</code> key to its configuration.
-Once defined in this way, the last value played at the end of a pulse will be held until the next pulse begins.
-Then the values of the currently playing pulse will be <strong>added</strong> to the previously held value.
+<p>When an element is defined as <em>sticky</em>, the last analog value played at the end of a pulse will be held until the next pulse begins. 
+This is useful, for example, for semiconductor qubits where one wants to avoid the noise associated with the switching of the bias voltage. </p>
+<p>Starting from <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.3-green" /></a> an element can be defined as <em>sticky</em> by adding the <code>\'sticky\': {\'analog\': True }</code> dict to its configuration.
+The previous API, used up until <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.1-green" /></a> using <code>\'hold_offset\': 50 }</code> is still supported, and a deprecation warning will be issued. 
+Importantly, when an element is sticky, the values of the currently playing pulse will be <strong>added</strong> to the previously held value.
 A sticky element always ramps back to its DC offset value when the element has reached its final instruction of the program.
+The duration of the ramp in ns can be set by configuring <code>\'sticky\': {\'analog\': True, \'duration\': 50 }</code>. 
 This ramp can also be explicitly initiated by the <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.ramp_to_zero"><code>ramp_to_zero()</code></a> function.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With the previous API the ramp time was defined in clock cycles using <code>\hold_offset\</code> using the new API with <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.3-green" /></a>
+the ramp time is defined in ns, consistently with any time duration in the configuration. Note that this is not a breaking change since the old API, 
+i.e. using <code>\hold_offset\</code> to define the ramp duration in clock cycles is still supported.</p>
+</div>
+<p>Starting from <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.2-blue" /></a>, it possible to set the digital marker, associated with the sticky element, to be sticky as well
+by configuring <code>\'sticky\': {\'analog\': True, \'digital\': True }</code>. Doing so will hold the last value of the digital
+marker until the next pulse begins. Playing the next digital marker will override the held value and once again the last
+value will be held. Once a ramp to zero has been initiated at the end of the sequence or upon command, 
+the digital marker will stop at the beginning of the ramp. This can be seen in the figure shown below (lower panel) when the digital pulse sets down at about 2600 ns.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The amplitude of sticky pulses is accumulated with a resolution of 16 bit.
@@ -3991,21 +4055,27 @@ We first define the quantum element as follows:</p>
 <a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>    <span class="s2">&quot;singleInput&quot;</span><span class="p">:</span> <span class="p">{</span>
 <a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>    <span class="p">},</span>
-<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>    <span class="s1">&#39;intermediate_frequency&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>    <span class="s1">&#39;hold_offset&#39;</span><span class="p">:{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">},</span>
-<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>    <span class="s1">&#39;operations&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>        <span class="s1">&#39;pulse&#39;</span><span class="p">:</span> <span class="s2">&quot;pulse&quot;</span><span class="p">,</span>
-<a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a>    <span class="p">},</span>
-<a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="p">},</span>
-<a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="s2">&quot;qe2&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a>    <span class="s2">&quot;singleInput&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>    <span class="s2">&quot;digitalInputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>    <span class="s1">&#39;intermediate_frequency&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>    <span class="s1">&#39;sticky&#39;</span><span class="p">:{</span>
+<a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>        <span class="s1">&#39;analog&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> 
+<a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a>        <span class="s1">&#39;digital&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> 
+<a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a>        <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">200</span>
+<a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a>    <span class="p">},</span>
+<a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a>    <span class="s1">&#39;operations&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a>        <span class="s1">&#39;pulse&#39;</span><span class="p">:</span> <span class="s2">&quot;pulse&quot;</span><span class="p">,</span>
 <a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a>    <span class="p">},</span>
-<a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a>    <span class="s1">&#39;intermediate_frequency&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a>    <span class="s1">&#39;operations&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a>        <span class="s1">&#39;pulse&#39;</span><span class="p">:</span> <span class="s2">&quot;pulse&quot;</span><span class="p">,</span>
-<a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a>    <span class="p">},</span>
-<a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a><span class="p">}</span>
+<a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a><span class="p">},</span>
+<a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a><span class="s2">&quot;qe2&quot;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a>    <span class="s2">&quot;singleInput&quot;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a>    <span class="p">},</span>
+<a id="__codelineno-33-20" name="__codelineno-33-20" href="#__codelineno-33-20"></a>    <span class="s2">&quot;digitalInputs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<a id="__codelineno-33-21" name="__codelineno-33-21" href="#__codelineno-33-21"></a>    <span class="s1">&#39;intermediate_frequency&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-33-22" name="__codelineno-33-22" href="#__codelineno-33-22"></a>    <span class="s1">&#39;operations&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-33-23" name="__codelineno-33-23" href="#__codelineno-33-23"></a>        <span class="s1">&#39;pulse&#39;</span><span class="p">:</span> <span class="s2">&quot;pulse&quot;</span><span class="p">,</span>
+<a id="__codelineno-33-24" name="__codelineno-33-24" href="#__codelineno-33-24"></a>    <span class="p">},</span>
+<a id="__codelineno-33-25" name="__codelineno-33-25" href="#__codelineno-33-25"></a><span class="p">}</span>
 </code></pre></div>
 <p>Note the <code>{'duration': 200}</code> which sets the ramp to zero duration, in clock cycles.
 We also define a second quantum element <code>qe2</code> which is not sticky.</p>
@@ -4020,10 +4090,12 @@ We also define a second quantum element <code>qe2</code> which is not sticky.</p
 <a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse&#39;</span><span class="p">,</span><span class="s1">&#39;qe2&#39;</span><span class="p">)</span>
 </code></pre></div>
 <p>The resulting pulse sequence is shown below, where the sticky element is in blue and the non-sticky element is in orange.</p>
-<p><a class="glightbox" href="../ramp_to_zero.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="ramp to zero example" src="../ramp_to_zero.png" /></a></p>
+<p><a class="glightbox" href="../ramp_to_zero_with_digital.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="ramp to zero example" src="../ramp_to_zero_with_digital.png" /></a></p>
 <p>The duration of each pulse is 1000 samples, with the sticky element in blue maintaining its final value between its first
 and second play commands. Furthermore, the second pulse on the sticky element is added to the last pulse sample.
-At the end of the program, the blue trace is ramped to zero within 200 clock cycles, as defined in the configuration.</p>
+At the end of the program, the blue trace is ramped to zero within 200 clock cycles, as defined in the configuration.
+The lower panel shows the non-sticky (blue) and the sticky (orange) digital markers associated with each element, 
+with the sticky pulse also held between pulses.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The example above is for an element without an intermediate frequency. In case of an element with an intermediate
@@ -4279,6 +4351,19 @@ This is done using the <code>multipleInputs</code> dictionary item:</p>
 <a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="p">}</span>
 </code></pre></div>
 <p>Here we specify a 110 ns delay for all signals coming out of port 1 and a 21 delay on all signals coming out of port 2.</p>
+<h2 id="inverted-digital-marker">Inverted Digital Marker<a class="headerlink" href="#inverted-digital-marker" title="Permanent link">&para;</a></h2>
+<p><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2.2-blue" /></a></p>
+<p>The digital marker can be configured to be inverted, for example to suit both 'normally on' and 'normally off' switch types. 
+The HIGH state will be the default state when configuring
+<code>'inverted': True</code> for a digital output, and the marker will switch to the LOW state when a digital pulse is played.</p>
+<p>To do so we configure this property in the <a href="../../Introduction/config/#controllers">port's configuration</a>. For example</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="s1">&#39;digital_outputs&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;inverted&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>    <span class="mi">2</span><span class="p">:</span> <span class="p">{},</span>
+<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="p">}</span>
+</code></pre></div>
+Note that the default value of <code>inverted</code> is <code>False</code>. When inverted, The output of the digital marker will change to HIGH
+immediately when the QM is opened and will resort back to the default behavior (LOW) when the QM is closed. </p>
 <h2 id="threads">Threads<a class="headerlink" href="#threads" title="Permanent link">&para;</a></h2>
 <p>The maximum number of quantum elements that can be used simultaneously is limited by the number of processing threads in the hardware.
 A single-input quantum element requires one thread and a mixed input (IQ) element uses two <em>threads</em>, one for each channel.
@@ -4287,46 +4372,46 @@ By default, <em>threads</em> are not shared between different quantum elements. 
 are never played together can share a <em>thread</em>, as explained below. Sharing threads allow the user to define more quantum elements and write more complex programs.</p>
 <h3 id="automatic-thread-allocation">Automatic Thread Allocation<a class="headerlink" href="#automatic-thread-allocation" title="Permanent link">&para;</a></h3>
 <p>It is possible to add a flag when executing a QUA program that will enable the <em>Automatic Thread Allocation</em>. In order to enable it, use:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;auto-element-thread&#39;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;auto-element-thread&#39;</span><span class="p">])</span>
 </code></pre></div>
 <p>When the flag is set, the QUA compiler will automatically try to figure out which elements are never played together and these elements will share a <em>thread</em>.
 Since the code can be complicated and not deterministic, the compiler uses the <code>align</code> statement to know which quantum elements are playing in parallel and which are not.
 For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog1</span><span class="p">:</span>
-<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
-<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;marker&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
-<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse&quot;</span><span class="p">,</span> <span class="s2">&quot;qe2&quot;</span><span class="p">)</span>
-<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a>    <span class="n">align</span><span class="p">(</span><span class="s2">&quot;qe2&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
-<a id="__codelineno-55-6" name="__codelineno-55-6" href="#__codelineno-55-6"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;marker&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
-<a id="__codelineno-55-7" name="__codelineno-55-7" href="#__codelineno-55-7"></a>    <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">):</span>
-<a id="__codelineno-55-8" name="__codelineno-55-8" href="#__codelineno-55-8"></a>        <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse&quot;</span> <span class="o">*</span> <span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog1</span><span class="p">:</span>
+<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">declare</span><span class="p">(</span><span class="n">fixed</span><span class="p">)</span>
+<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;marker&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
+<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse&quot;</span><span class="p">,</span> <span class="s2">&quot;qe2&quot;</span><span class="p">)</span>
+<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>    <span class="n">align</span><span class="p">(</span><span class="s2">&quot;qe2&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
+<a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;marker&quot;</span><span class="p">,</span> <span class="s2">&quot;qeDig&quot;</span><span class="p">)</span>
+<a id="__codelineno-56-7" name="__codelineno-56-7" href="#__codelineno-56-7"></a>    <span class="k">with</span> <span class="n">for_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">):</span>
+<a id="__codelineno-56-8" name="__codelineno-56-8" href="#__codelineno-56-8"></a>        <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse&quot;</span> <span class="o">*</span> <span class="n">amp</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>It seems that "qeDig" plays in parallel with both "qe1" and "qe2", but "qe1" and "qe2" never play in parallel.
 This means that "qe2" and "qe1" can share the same <em>thread</em>.</p>
 <p>Because the <code>align</code> statement is being used for the Automatic Thread Allocation, it is important to use it whenever possible.</p>
 <h3 id="manual-thread-allocation">Manual Thread Allocation<a class="headerlink" href="#manual-thread-allocation" title="Permanent link">&para;</a></h3>
 <p>It is also possible to manually assign the <em>threads</em> to the quantum elements, when defining them, in the following manner:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>    <span class="o">...</span>
-<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>    <span class="s1">&#39;elements&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a>        <span class="s1">&#39;qe1&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
-<a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a>            <span class="o">...</span>
-<a id="__codelineno-56-7" name="__codelineno-56-7" href="#__codelineno-56-7"></a>        <span class="p">},</span>
-<a id="__codelineno-56-8" name="__codelineno-56-8" href="#__codelineno-56-8"></a>        <span class="s1">&#39;qe2&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-56-9" name="__codelineno-56-9" href="#__codelineno-56-9"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
-<a id="__codelineno-56-10" name="__codelineno-56-10" href="#__codelineno-56-10"></a>            <span class="o">...</span>
-<a id="__codelineno-56-11" name="__codelineno-56-11" href="#__codelineno-56-11"></a>        <span class="p">},</span>
-<a id="__codelineno-56-12" name="__codelineno-56-12" href="#__codelineno-56-12"></a>        <span class="s1">&#39;qe3&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-56-13" name="__codelineno-56-13" href="#__codelineno-56-13"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
-<a id="__codelineno-56-14" name="__codelineno-56-14" href="#__codelineno-56-14"></a>            <span class="o">...</span>
-<a id="__codelineno-56-15" name="__codelineno-56-15" href="#__codelineno-56-15"></a>        <span class="p">},</span>
-<a id="__codelineno-56-16" name="__codelineno-56-16" href="#__codelineno-56-16"></a>        <span class="s1">&#39;qe4&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-56-17" name="__codelineno-56-17" href="#__codelineno-56-17"></a>            <span class="o">...</span>
-<a id="__codelineno-56-18" name="__codelineno-56-18" href="#__codelineno-56-18"></a>        <span class="p">},</span>
-<a id="__codelineno-56-19" name="__codelineno-56-19" href="#__codelineno-56-19"></a>    <span class="p">}</span>
-<a id="__codelineno-56-20" name="__codelineno-56-20" href="#__codelineno-56-20"></a>    <span class="o">...</span>
-<a id="__codelineno-56-21" name="__codelineno-56-21" href="#__codelineno-56-21"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>    <span class="o">...</span>
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a>    <span class="s1">&#39;elements&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a>        <span class="s1">&#39;qe1&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+<a id="__codelineno-57-6" name="__codelineno-57-6" href="#__codelineno-57-6"></a>            <span class="o">...</span>
+<a id="__codelineno-57-7" name="__codelineno-57-7" href="#__codelineno-57-7"></a>        <span class="p">},</span>
+<a id="__codelineno-57-8" name="__codelineno-57-8" href="#__codelineno-57-8"></a>        <span class="s1">&#39;qe2&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-57-9" name="__codelineno-57-9" href="#__codelineno-57-9"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+<a id="__codelineno-57-10" name="__codelineno-57-10" href="#__codelineno-57-10"></a>            <span class="o">...</span>
+<a id="__codelineno-57-11" name="__codelineno-57-11" href="#__codelineno-57-11"></a>        <span class="p">},</span>
+<a id="__codelineno-57-12" name="__codelineno-57-12" href="#__codelineno-57-12"></a>        <span class="s1">&#39;qe3&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-57-13" name="__codelineno-57-13" href="#__codelineno-57-13"></a>            <span class="s2">&quot;thread&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+<a id="__codelineno-57-14" name="__codelineno-57-14" href="#__codelineno-57-14"></a>            <span class="o">...</span>
+<a id="__codelineno-57-15" name="__codelineno-57-15" href="#__codelineno-57-15"></a>        <span class="p">},</span>
+<a id="__codelineno-57-16" name="__codelineno-57-16" href="#__codelineno-57-16"></a>        <span class="s1">&#39;qe4&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-57-17" name="__codelineno-57-17" href="#__codelineno-57-17"></a>            <span class="o">...</span>
+<a id="__codelineno-57-18" name="__codelineno-57-18" href="#__codelineno-57-18"></a>        <span class="p">},</span>
+<a id="__codelineno-57-19" name="__codelineno-57-19" href="#__codelineno-57-19"></a>    <span class="p">}</span>
+<a id="__codelineno-57-20" name="__codelineno-57-20" href="#__codelineno-57-20"></a>    <span class="o">...</span>
+<a id="__codelineno-57-21" name="__codelineno-57-21" href="#__codelineno-57-21"></a><span class="p">}</span>
 </code></pre></div>
 <p>In the example above, "qe2" and "qe1" are assigned to <em>thread</em> "a" and can never run at the same time. "qe3" is being assigned to <em>thread</em> "b".
 Any quantum element which does not have a <em>thread</em> directly specified will have its own <em>thread</em>.</p>
@@ -4336,10 +4421,10 @@ Any quantum element which does not have a <em>thread</em> directly specified wil
 If "qe2" has a single input, it will use one of the <em>threads</em> which is used by "qe1".</p>
 </div>
 <p>If "qe2" and "qe1" will be given a play command, they will be played one after the other and not at the same time. For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
-<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse1&quot;</span><span class="p">,</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
-<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse2&quot;</span><span class="p">,</span> <span class="s2">&quot;qe2&quot;</span><span class="p">)</span>
-<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse3&quot;</span><span class="p">,</span> <span class="s2">&quot;qe3&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
+<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse1&quot;</span><span class="p">,</span> <span class="s2">&quot;qe1&quot;</span><span class="p">)</span>
+<a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse2&quot;</span><span class="p">,</span> <span class="s2">&quot;qe2&quot;</span><span class="p">)</span>
+<a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a>    <span class="n">play</span><span class="p">(</span><span class="s2">&quot;pulse3&quot;</span><span class="p">,</span> <span class="s2">&quot;qe3&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>In the example above, "qe1" will be played first and only when it is done "qe2" will be played.
 Because "qe3" is on another <em>thread</em>, it will start immediately with "qe1". See examples <a href="../timing_in_qua/#examples-for-timing-scenarios-in-qua">here</a></p>
@@ -4351,39 +4436,39 @@ For information on how to define shared oscillators, see the <a href="../../Intr
 <p>Sharing oscillators between elements shares their frequency, their frame and their mixer correction matrix.
 This means that any operation that affects these on any of the elements, would affect them all.
 In the following example, <code>qe1</code>, <code>qe2</code> and <code>qe3</code> share an oscillator:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
-<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a>    <span class="n">update_frequency</span><span class="p">(</span><span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="mf">50e6</span><span class="p">)</span>
-<a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 50 MHz pulse</span>
-<a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a>    <span class="n">update_frequency</span><span class="p">(</span><span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="mf">100e6</span><span class="p">)</span>
-<a id="__codelineno-58-5" name="__codelineno-58-5" href="#__codelineno-58-5"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 100 MHz pulse</span>
-<a id="__codelineno-58-6" name="__codelineno-58-6" href="#__codelineno-58-6"></a>    <span class="n">frame_rotation_2pi</span><span class="p">(</span><span class="s2">&quot;qe3&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-<a id="__codelineno-58-7" name="__codelineno-58-7" href="#__codelineno-58-7"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 100 MHz pulse, but with the frame rotated by pi</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
+<a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a>    <span class="n">update_frequency</span><span class="p">(</span><span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="mf">50e6</span><span class="p">)</span>
+<a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 50 MHz pulse</span>
+<a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a>    <span class="n">update_frequency</span><span class="p">(</span><span class="s2">&quot;qe1&quot;</span><span class="p">,</span> <span class="mf">100e6</span><span class="p">)</span>
+<a id="__codelineno-59-5" name="__codelineno-59-5" href="#__codelineno-59-5"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 100 MHz pulse</span>
+<a id="__codelineno-59-6" name="__codelineno-59-6" href="#__codelineno-59-6"></a>    <span class="n">frame_rotation_2pi</span><span class="p">(</span><span class="s2">&quot;qe3&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-59-7" name="__codelineno-59-7" href="#__codelineno-59-7"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="s1">&#39;qe2&#39;</span><span class="p">)</span>  <span class="c1"># Plays a 100 MHz pulse, but with the frame rotated by pi</span>
 </code></pre></div>
 <h2 id="precompile-jobs">Precompile Jobs<a class="headerlink" href="#precompile-jobs" title="Permanent link">&para;</a></h2>
 <p>It is possible to separate the compilation and the execution parts of running a job, which is useful when a job is
 repeated many times and the compilation run time is not negligible.
 To precompile a job, use the <code>compile</code> function:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="n">program_id</span> <span class="o">=</span> <span class="n">qm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="n">program_id</span> <span class="o">=</span> <span class="n">qm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
 </code></pre></div>
 <p>This will return a <code>program_id</code>, which can later be directly added to the <code>JobQueue</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">add_compiled</span><span class="p">(</span><span class="n">program_id</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">add_compiled</span><span class="p">(</span><span class="n">program_id</span><span class="p">)</span>
 </code></pre></div>
 <p>This can be done many times with a program which has been compiled once.</p>
 <p>In addition, it is possible to change an analog waveform between runs using the <code>overrides</code> argument of the
 <code>add_compiled</code> function:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">add_compiled</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a>    <span class="s1">&#39;waveforms&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a>        <span class="s1">&#39;my_arbitrary_waveform&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
-<a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a>        <span class="s1">&#39;my_constant_waveform&#39;</span><span class="p">:</span> <span class="mf">0.2</span>
-<a id="__codelineno-61-5" name="__codelineno-61-5" href="#__codelineno-61-5"></a>    <span class="p">}</span>
-<a id="__codelineno-61-6" name="__codelineno-61-6" href="#__codelineno-61-6"></a><span class="p">})</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">add_compiled</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a>    <span class="s1">&#39;waveforms&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a>        <span class="s1">&#39;my_arbitrary_waveform&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a>        <span class="s1">&#39;my_constant_waveform&#39;</span><span class="p">:</span> <span class="mf">0.2</span>
+<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>    <span class="p">}</span>
+<a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a><span class="p">})</span>
 </code></pre></div>
 <p>An arbitrary waveform has to be declared as overridable in advance in the configuration file. For the example above:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="s1">&#39;my_arbitrary_waveform&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;arbitrary&#39;</span><span class="p">,</span>
-<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a>    <span class="s1">&#39;is_overridable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a>    <span class="s1">&#39;samples&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
-<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="s1">&#39;my_arbitrary_waveform&#39;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;arbitrary&#39;</span><span class="p">,</span>
+<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a>    <span class="s1">&#39;is_overridable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a>    <span class="s1">&#39;samples&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
+<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a><span class="p">}</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4394,9 +4479,9 @@ It is currently not possible to change the bandwidth of an overridable arbitrary
 <h2 id="compilation-options">Compilation Options<a class="headerlink" href="#compilation-options" title="Permanent link">&para;</a></h2>
 <p>There are a few optional features and modification in the compilation process from QUA to the OPX low-level code.
 These options can be activated by passing a list of flags to the execution, compile or simulation commands as shown below:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span>  <span class="c1"># execution</span>
-<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span>  <span class="c1"># compilation</span>
-<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a><span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span> <span class="c1"># simulation</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span>  <span class="c1"># execution</span>
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span>  <span class="c1"># compilation</span>
+<a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a><span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flag1&#39;</span><span class="p">,</span> <span class="s1">&#39;flag2&#39;</span><span class="p">])</span> <span class="c1"># simulation</span>
 </code></pre></div>
 <p>The following is a short list of optional flags and their description:</p>
 <ul>
@@ -4408,7 +4493,7 @@ These options can be activated by passing a list of flags to the execution, comp
 <li>'not-strict-timing' - <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QOP" class="middle" src="https://img.shields.io/badge/OPX+-2-blue" /></a> Gaps within a <a class="autorefs autorefs-internal" href="../../API_references/qua/dsl_main/#qm.qua._dsl.strict_timing_"><code>strict_timing_()</code></a> block will not block execution by raising warnings instead of errors. Read more about the strict timing feature <a href="../timing_in_qua/#strict-timing">here</a>.</li>
 </ul>
 <p>For example, in the following code, we use the automatic thread allocation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;auto-element-thread&#39;</span><span class="p">])</span>  <span class="c1"># execution</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;auto-element-thread&#39;</span><span class="p">])</span>  <span class="c1"># execution</span>
 </code></pre></div>
 
   
@@ -4425,7 +4510,7 @@ These options can be activated by passing a list of flags to the execution, comp
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-03-27T11:55:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-03-27</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-05-31T08:31:26+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-05-31</span>
       </span>
     
     

@@ -1,4 +1,3 @@
-import pytest
 from ..serialization.sample_config import config
 
 from qm.program._qua_config_to_pb import load_config_pb

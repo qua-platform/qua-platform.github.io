@@ -21,14 +21,14 @@ def _convert_mixers(mixers):
     for name, data in mixers.items():
         temp_list = []
         for correction in data["correction"]:
-            if "frequencyDouble" in data:
+            if "frequencyDouble" in correction:
                 frequency = float(correction["frequencyDouble"])
             elif "frequency" in correction:
                 frequency = float(correction["frequency"])
             else:
                 frequency = 0.0
 
-            if "frequencyNegative" in data:
+            if "frequencyNegative" in correction:
                 if bool(correction["frequencyNegative"]):
                     frequency = -frequency
 
@@ -387,7 +387,7 @@ def _convert_sticky(sticky):
     res = {
         "analog": sticky.get("analog", True),
         "digital": sticky.get("digital", False),
-        "duration": sticky.get("duration", 1),
+        "duration": sticky.get("duration", 1) * 4,
     }
     return res
 
