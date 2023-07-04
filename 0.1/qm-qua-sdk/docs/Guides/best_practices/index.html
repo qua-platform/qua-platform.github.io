@@ -2290,17 +2290,18 @@
 
 
 <h1 id="qua-best-practice-guide">QUA "Best Practice" Guide<a class="headerlink" href="#qua-best-practice-guide" title="Permanent link">&para;</a></h1>
-<p>This article showcases what we consider best practice when writing in QUA. That is both for user readability as well as
-for improved performance. We note cases where there is a clear tradeoff between the two.</p>
-<p>QUA is a new language that keeps evolving, and we expect this guide to evolve with it. We'll be happy for any comments
-or suggestions.</p>
+<p>This article showcases best practices when writing in QUA to optimize user readability and performance. 
+However, in certain situations, there is a clear tradeoff between the two. These cases will be noted to optimize your QUA program.</p>
+<p>QUA is a new language that keeps evolving, and as a result, we expect this guide to evolve as well. 
+Therefore, we would be happy to receive any comments or suggestions.</p>
 <h2 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p>Pulse amplitude and duration should be set in the configuration whenever possible. Using the <code>* amp()</code> and
-  <code>duration</code> fields requires real-time computation that can introduce gaps. They should only be used when sweeping
-  the parameters, either dynamically in QUA or manually.
-  If you require two different amplitudes, define two different operations.</p>
+<p>Pulse amplitude and duration should be set in the configuration whenever possible. 
+  The reason being that modifying pulses in the program (i.e., <code>* amp()</code> and
+  <code>duration</code>) requires real-time computation, which can introduce time gaps in the program's execution. 
+  For example, If you require two different amplitudes, define two different operations.
+  Ideally, real-time modification of pulses should only be used when sweeping parameters, either dynamically in QUA or manually.</p>
 </li>
 <li>
 <p>Beware of accumulated errors when using <a href="../features/#sticky-element">sticky elements</a> and when using <a href="../../Introduction/qua_overview/#updating-the-frame-phase">frame rotations</a>. Make sure to reset the
@@ -2415,7 +2416,7 @@ or suggestions.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-02-22T13:41:51+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-02-22</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-07-04T12:57:10+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-07-04</span>
       </span>
     
     

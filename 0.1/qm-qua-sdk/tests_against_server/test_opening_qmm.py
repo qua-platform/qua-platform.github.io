@@ -5,13 +5,6 @@ from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.exceptions import QmServerDetectionError, QMConnectionError
 
 
-def test_we_find_port(host_port):
-    new_host_port = {**host_port}
-    new_host_port["port"] = None
-    found = QuantumMachinesManager(**new_host_port)
-    assert found._server_details.port == host_port["port"]
-
-
 def test_fail_to_connect_wrong_host(host_port):
     with pytest.raises(QmServerDetectionError, match="Failed to detect to QuantumMachines server. Tried connecting to 1.2.3.4:9510."):
         host_port["host"] = "1.2.3.4"

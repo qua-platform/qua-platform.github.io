@@ -14,7 +14,7 @@ from qm.api.models.server_details import BASE_TIMEOUT, MAX_MESSAGE_SIZE, ServerD
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_PORTS = (80, 9510)
+DEFAULT_PORTS = (80,)
 
 
 def detect_server(
