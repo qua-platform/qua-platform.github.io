@@ -1113,7 +1113,7 @@ def while_(cond: QuaExpressionType = None) -> "_BodyScope":
 
     Example:
         ```python
-        x = declare(fixed)
+        x = declare(int)
         assign(x, 0)
         with while_(x<=30):
             play('pulse', 'element')
