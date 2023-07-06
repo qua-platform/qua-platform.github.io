@@ -131,8 +131,7 @@ nav:
     - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
   - "Hardware":
 #    - qm-qua-sdk/docs/Hardware/index.md
-    - "Network Configuration": "qm-qua-sdk/docs/Hardware/Network.md"
-    - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md" 
+    - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md"
     - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
     - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
     - "OPD - Operator Digital": "qm-qua-sdk/docs/Hardware/dib.md"
