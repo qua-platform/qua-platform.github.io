@@ -1017,8 +1017,6 @@
       
         
       
-        
-      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -1056,32 +1054,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Network.md" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Network Configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2461,7 +2433,7 @@ restart the cluster, configure clock settings, access logs, and more. As detaile
 </div>
 </li>
 <li>
-<p>Determine your <a href="#network-overview-and-configuration">network configuration</a></p>
+<p>Determine your <a href="#network-overview-and-configuration">network configuration</a>.</p>
 </li>
 <li>
 <p>Connect the system:</p>
@@ -2515,7 +2487,7 @@ restart the cluster, configure clock settings, access logs, and more. As detaile
 <li>
 <p>Turn on all the devices.</p>
 </li>
-<li>When using new devices, configure the cluster, as shown <a href="#cluster-devices">below</a>. This step can take ~30 minutes. </li>
+<li>When using new devices, configure the cluster, as shown <a href="#configuring-opx-octave">below</a>. This step can take ~30 minutes. </li>
 <li>Once clustered, the system will start calibrations, and the boot sequence should take a few minutes.</li>
 <li>
 <p>Open a browser and type the system's IP in the address field to access the admin panel where you can configure the system, check its status and more. See the <a href="#network-overview-and-configuration">network overview section below</a> for more details on how to access the cluster</p>
@@ -2539,13 +2511,13 @@ We list below four possible configurations and details on accessing the cluster.
 <p class="admonition-title">Note</p>
 <p>If you plan to connect the system to your local network, please check if it requires whitelisting the MAC address.
 Depending on the configuration below, you might need to whitelist the supplied router MAC address or the individual devices' MAC addresses.
-All QM devices have their MAC address printed on them. To find the QM router MAC address, follow the <a href="#configuring-the-router">guide</a> below or contact your QM representative.</p>
+All QM devices have their MAC address printed on them. To find the QM router MAC address, follow the <a href="#configuring-the-qm-router">guide</a> below or contact your QM representative.</p>
 </div>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:4"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Option A</label><label for="__tabbed_3_2">Option B</label><label for="__tabbed_3_3">Option C</label><label for="__tabbed_3_4">Option D</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>In this scenario, both the QM router and the client PC are connected to the institute's network, with the QM router listed as a device on the network. 
-All the QM devices are in a local area network (LAN) behind the QM router.</p>
+All QM devices are in a local area network (LAN) behind the QM router.</p>
 <p><strong>Network Setup:</strong> </p>
 <ol>
 <li>
@@ -2554,7 +2526,7 @@ All the QM devices are in a local area network (LAN) behind the QM router.</p>
 <li>
 <p>Connect the QM router to the network through port 1. By default, it will be assigned an IP through DHCP (Automatic).
 If a static IP is required, the IT department at the institution needs to provide it.
-More information on configuring the QM router can be found <a href="#configuring-the-router">here</a>.  </p>
+More information on configuring the QM router can be found <a href="#configuring-the-qm-router">here</a>.  </p>
 </li>
 </ol>
 <p>Accessing the web admin and connecting to the cluster using Python can be done in the following way:  </p>
@@ -2562,15 +2534,15 @@ More information on configuring the QM router can be found <a href="#configuring
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>There is one web admin panel for all devices and clusters that is accessible by typing the IP address of the QM router in a web browser. 
-If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-router">here</a>.
+If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-qm-router">here</a>.
 Moreover, all clusters behind the router must have the same version for the admin panel to control them.</p>
 <p>To open a communication with the cluster in Python, use the following with the name of the cluster, as defined in the admin panel.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;QM_Router_IP&#39;</span><span class="p">,</span> <span class="n">cluster_name</span><span class="o">=</span><span class="s1">&#39;My_cluster_name&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<p>There is one cluster per router, and the web admin panel is available by typing in the IP address of the QM router in a web browser. .
-If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-router">here</a>.</p>
+<p>There is one cluster per router, and the web admin panel is available by typing in the IP address of the QM router in a web browser.
+If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-qm-router">here</a>.</p>
 <p>To open a communication with the cluster in Python, use the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;QM_Router_IP&#39;</span><span class="p">)</span>  
 </code></pre></div>
@@ -2580,14 +2552,14 @@ If you are unsure what is the QM router's IP address is, see <a href="#configuri
 </div>
 <div class="tabbed-block">
 <p>In this scenario the QM router and the client PC are connected to a local unmanaged switch.
-  All the QM devices are in a local area network (LAN) behind the QM router.</p>
+  All QM devices are in a local area network (LAN) behind the QM router.</p>
 <p><strong>Network Setup:</strong></p>
 <ol>
 <li>
 <p>Connect the QM router to the switch through <strong>port one</strong> .</p>
 </li>
 <li>
-<p>Set the QM router's IP to a static one, as required by the switch's LAN. Instructions can be found <a href="#configuring-the-router">here</a>. </p>
+<p>Set the QM router's IP to a static one, as required by the switch's LAN. Instructions can be found <a href="#configuring-the-qm-router">here</a>. </p>
 </li>
 </ol>
 <p>Accessing the web admin and connecting to the cluster using Python can be done in the following way:  </p>
@@ -2595,7 +2567,7 @@ If you are unsure what is the QM router's IP address is, see <a href="#configuri
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>There is one web admin panel for all devices and clusters that is accessible by typing the IP address of the QM router in a web browser. 
-If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-router">here</a>.
+If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-qm-router">here</a>.
 Moreover, all clusters behind the router must have the same version for the admin panel to control them.</p>
 <p>To open a communication with the cluster in Python, use the following with the name of the cluster, as defined in the admin panel.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;QM_Router_IP&#39;</span><span class="p">,</span> <span class="n">cluster_name</span><span class="o">=</span><span class="s1">&#39;My_cluster_name&#39;</span><span class="p">)</span>
@@ -2603,7 +2575,7 @@ Moreover, all clusters behind the router must have the same version for the admi
 </div>
 <div class="tabbed-block">
 <p>There is one cluster per router, and the web admin panel is available by typing in the IP address of the QM router in a web browser. 
-If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-router">here</a>.</p>
+If you are unsure what is the QM router's IP address is, see <a href="#configuring-the-qm-router">here</a>.</p>
 <p>To open a communication with the cluster in Python, use the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;QM_Router_IP&#39;</span><span class="p">)</span>  
 </code></pre></div>
@@ -2634,7 +2606,7 @@ It is recommended to set all QM devices (e.g., OPXes and Octaves) to static IP a
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>To access the web admin panel, type any device's IP in a web browser to access all clusters using the same QOP version.
-To find the IP of the devices connected, follow the steps <a href="#check-devices-ip">below</a></p>
+To find the IP of the devices connected, follow the steps <a href="#configuring-opx-octave">below</a></p>
 <p>To open a communication with the cluster in Python, use the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;MAIN_QM_OPX_IP&#39;</span><span class="p">)</span> <span class="c1"># If you have multiple clusters in the network, use the main OPX of each cluster </span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;ANY_QM_OPX_IP&#39;</span><span class="p">,</span> <span class="n">cluster_name</span><span class="o">=</span><span class="s1">&#39;My_cluster_name&#39;</span><span class="p">)</span>
@@ -2670,7 +2642,7 @@ To find the IP of the devices connected, follow the steps <a href="#check-device
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>To access the web admin panel, type any device's IP in a web browser to access all clusters using the same QOP version.
-To find the IP of the devices connected, follow the steps <a href="#check-devices-ip">below</a></p>
+To find the IP of the devices connected, follow the steps <a href="#configuring-opx-octave">below</a></p>
 <p>To open a communication with the cluster in Python, use the following:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;MAIN_QM_OPX_IP&#39;</span><span class="p">)</span> <span class="c1"># If you have multiple clusters in the network, use the main OPX of each cluster </span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;ANY_QM_OPX_IP&#39;</span><span class="p">,</span> <span class="n">cluster_name</span><span class="o">=</span><span class="s1">&#39;My_cluster_name&#39;</span><span class="p">)</span>
@@ -2907,7 +2879,7 @@ can click back and return to the previous screen.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-07-05T12:51:40+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-07-05</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-07-06T07:01:34+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-07-06</span>
       </span>
     
     
