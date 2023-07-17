@@ -166,7 +166,7 @@ nav:
       - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
   - "QUA academy":
     - "qua-academy/README.md"
-    - "Meet QM Hardware": "qua-academy/level0.md"
+    - "| GROUND STATE >": "qua-academy/ground_state.md"
     - "Introduction to X": "qua-academy/introduction.md"
     - "test": "qua-academy/test.md"
     # - "Zero to Hero Journey": "qua-academy/"Zero_to_Hero_Journey.md"
