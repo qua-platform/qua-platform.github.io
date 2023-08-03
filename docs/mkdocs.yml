@@ -129,6 +129,7 @@ nav:
     - "Messages and Errors": "qm-qua-sdk/docs/Guides/error.md"
     - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
     - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
+    - "QM Web Applications": "qm-qua-sdk/docs/Guides/webadmin_panel.md"
   - "Hardware":
 #    - qm-qua-sdk/docs/Hardware/index.md
     - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md"
@@ -165,7 +166,6 @@ nav:
     - "Terms of use": "qm-qua-sdk/docs/legal/terms_of_use.md"
     - "Website Privacy Policy": "qm-qua-sdk/docs/legal/privacy_policy.md"
     - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
-    - "Web Admin Panel": "qm-qua-sdk/docs/Tools/webadmin_panel.md"
   # - "QuAM SDK":
   #   - "Overview": "quam_sdk/index.md"
   #   - "Getting started": "quam_sdk/getting_started.md"
