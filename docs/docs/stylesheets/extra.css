@@ -102,3 +102,68 @@ a.autorefs-external:hover::after {
 .md-tabs{
   background-color: var(--md-tabs-color);
 }
+
+
+.thebe-button{
+  border:2px solid cornflowerblue;
+  padding:5px;
+  margin:3px;
+  border-radius: 10px;  
+}
+.thebe-button:hover{
+  background-color: white;
+}
+.thebe-input{
+  font-size:0.8em;
+}
+.thebe-output{
+  background-color: white;
+  font-size:0.8em;
+}
+.thebe-status {
+  border-radius: 10px;
+  font-size: 0.8em;
+}
+
+.thebe-status-field.thebe-status-downloading {
+  /* Binder is building the image */
+  background-color: yellow;
+}
+
+.thebe-status-field.thebe-status-building {
+  /* Binder is building the image */
+  background-color: yellow;
+}
+
+.thebe-status-field.thebe-status-built {
+  /* Binder is building the image */
+  background-color: yellow;
+}
+
+.thebe-status-field.thebe-status-launching {
+  /* Binder launching the server */
+  background-color: yellow;
+}
+.thebe-status-field.thebe-status-server-ready {
+  /* Binder launching the server */
+  background-color: yellow;
+}
+.thebe-status-field.thebe-status-starting {
+  /* Binder starting the kernel */
+  background-color: yellow;
+}
+
+.thebe-status-field.thebe-status-ready {
+  /* The kernel is connected and ready */
+  background-color: lightgreen;
+}
+
+.thebe-status-field.thebe-status-failed {
+  /* Building the image or launching the kernel failed */
+  background-color: red;
+}
+
+.thebe-status-field.thebe-status-busy {
+  /* The kernel is busy (this event is not hooked up yet) */
+  background-color: yellow;
+}

@@ -321,3 +321,6 @@ extra_javascript:
   - javascripts/redoc.standalone.js
   - javascripts/typewriterjs.js
   - javascripts/front_page.js
+  - javascripts/sweetalert2.js
+  - javascripts/thebe.js
+  - javascripts/interactive_code.js
