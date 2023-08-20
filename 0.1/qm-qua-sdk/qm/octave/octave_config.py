@@ -6,7 +6,7 @@ from functools import lru_cache
 from typing import Dict, List, Tuple, Union, Generic, TypeVar, Optional
 
 from deprecation import deprecated
-from octave_sdk import OctaveOutput, OctaveLOSource, Octave
+from octave_sdk import Octave, OctaveOutput, OctaveLOSource
 
 from qm.octave.calibration_db import CalibrationDB
 

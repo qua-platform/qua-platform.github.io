@@ -24,10 +24,10 @@ from qm.simulate.interface import SimulationConfig
 from qm.elements_db import ElementsDB, init_elements
 from qm.utils.types_utils import convert_object_type
 from qm.api.models.capabilities import ServerCapabilities
-from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 from qm.program.ConfigBuilder import convert_msg_to_config
 from qm._QmJobErrors import InvalidDigitalInputPolarityError
 from qm.elements.element_with_octave import ElementWithOctave
+from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 from qm.type_hinting.config_types import DictQuaConfig, PortReferenceType, DigitalInputPortConfigType
 from qm.type_hinting.general import Value, Number, PathLike, NumpySupportedFloat, NumpySupportedValue
 from qm.elements.native_elements import MixInputsElement, SingleInputElement, static_set_mixer_correction

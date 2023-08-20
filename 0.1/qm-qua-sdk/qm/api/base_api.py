@@ -13,6 +13,7 @@ from grpclib.events import SendMessage, SendRequest, RecvInitialMetadata, listen
 from qm.api.models.server_details import ConnectionDetails
 from qm.exceptions import QMTimeoutError, QMConnectionError
 from qm.utils.async_utils import EventLoopThread, run_async
+from qm.utils.general_utils import is_debug
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +27,14 @@ def connection_error_handle_decorator(func: Callable[P, Ret]) -> Callable[P, Ret
         try:
             return func(*args, **kwargs)
         except grpclib.exceptions.GRPCError as e:
-            logger.exception("Encountered connection error from QOP")
+            if is_debug():
+                logger.exception("Encountered connection error from QOP")
             raise QMConnectionError(
                 f"Encountered connection error from QOP: details: {e.message}, status: {e.status}"
             ) from e
         except asyncio.TimeoutError as e:
-            logger.exception(f"Timeout reached while running '{func.__name__}'")
+            if is_debug():
+                logger.exception(f"Timeout reached while running '{func.__name__}'")
             raise QMTimeoutError(f"Timeout reached while running '{func.__name__}'") from e
 
     return wrapped

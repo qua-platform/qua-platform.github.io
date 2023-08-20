@@ -14,6 +14,7 @@ from qm.grpc.qua_config import QuaConfig
 from qm.utils import deprecation_message
 from qm.api.frontend_api import FrontendApi
 from qm.program import Program, load_config
+from qm.utils.general_utils import is_debug
 from qm.QuantumMachine import QuantumMachine
 from qm.api.models.debug_data import DebugData
 from qm.jobs.simulated_job import SimulatedJob
@@ -26,15 +27,27 @@ from qm.persistence import BaseStore, SimpleFileStore
 from qm.api.models.server_details import ServerDetails
 from qm.type_hinting.config_types import DictQuaConfig
 from qm.program._qua_config_to_pb import load_config_pb
-from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 from qm.octave.calibration_db import load_from_calibration_db
 from qm.exceptions import QmmException, ConfigValidationException
 from qm.program._qua_config_schema import validate_config_capabilities
 from qm.containers.capabilities_container import create_capabilities_container
+from qm.api.models.compiler import CompilerOptionArguments, standardize_compiler_params
 
 logger = logging.getLogger(__name__)
 
-Version = TypedDict("Version", {"client": str, "server": Optional[str]})
+Version = TypedDict(
+    "Version",
+    {"qm-qua": str, "QOP": str, "OPX": str, "client": str, "server": str},
+)
+
+SERVER_TO_QOP_VERSION_MAP = {
+    "2.40-144e7bb": "2.0.0",
+    "2.40-82d4afc": "2.0.1",
+    "2.40-8521884": "2.0.2",
+    "2.40-3a0d7f1": "2.0.3",
+    "2.50-1a24163": "2.1.3",
+    "2.60-5ba458f": "2.2.0",
+}
 
 
 class QuantumMachinesManager:
@@ -132,15 +145,45 @@ class QuantumMachinesManager:
         """
         self._frontend.healthcheck(strict)
 
+    def version_dict(self) -> Version:
+        """
+        Returns:
+            A dictionary with the qm-qua and QOP versions
+        """
+        from qm.version import __version__
+
+        output_dict = {}
+        server_version = self._server_details.server_version
+        output_dict["qm-qua"] = __version__
+        if server_version in SERVER_TO_QOP_VERSION_MAP:
+            output_dict["QOP"] = SERVER_TO_QOP_VERSION_MAP[server_version]
+        else:
+            output_dict["OPX"] = server_version
+        if is_debug():
+            logger.debug(f"OPX version: {server_version}")
+
+        return output_dict
+
     def version(self) -> Version:
         """
         Returns:
-            The SDK and QOP versions
+            A dictionary with the qm-qua and QOP versions
         """
-        server_version = self._server_details.qop_version
-        from qm.version import __version__
+        warnings.warn(
+            deprecation_message(
+                "QuantumMachineManager.version()",
+                "1.1.4",
+                "1.2.0",
+                "QuantumMachineManager.version() will have a different return type in 1.2.0. Use `QuantumMachineManager.version_dict()` instead",
+            ),
+            category=DeprecationWarning,
+        )
+        output_dict = self.version_dict()
 
-        return {"client": __version__, "server": server_version}
+        output_dict["client"] = output_dict["qm-qua"]
+        output_dict["server"] = self._server_details.server_version
+
+        return output_dict
 
     def reset_data_processing(self) -> None:
         """Stops current data processing for ALL running jobs"""

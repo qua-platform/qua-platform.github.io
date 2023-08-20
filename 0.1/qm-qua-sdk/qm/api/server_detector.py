@@ -1,16 +1,16 @@
-import ssl
 import logging
-from typing import Set, Dict, Tuple, Optional
+import ssl
+import traceback
+from typing import Set, Dict, Tuple, Optional, List
 
-from qm.utils.async_utils import run_async
 from qm.api.frontend_api import FrontendApi
-from qm.utils.general_utils import is_debug
-from qm.api.models.info import QuaMachineInfo
-from qm.api.models.debug_data import DebugData
 from qm.api.info_service_api import InfoServiceApi
-from qm.communication.http_redirection import send_redirection_check
-from qm.exceptions import QMTimeoutError, QMConnectionError, QmServerDetectionError
+from qm.api.models.debug_data import DebugData
+from qm.api.models.info import QuaMachineInfo
 from qm.api.models.server_details import BASE_TIMEOUT, MAX_MESSAGE_SIZE, ServerDetails, ConnectionDetails
+from qm.communication.http_redirection import send_redirection_check
+from qm.exceptions import QmServerDetectionError
+from qm.utils.async_utils import run_async
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +32,11 @@ def detect_server(
     ports_to_try = _get_ports(port_from_user_config, user_provided_port)
 
     headers = _create_headers(extra_headers or {}, cluster_name, user_token)
+    errors: List[Tuple[str, str]] = []
 
     for port in ports_to_try:
-        logger.debug(f"Probing gateway at: {host}:{port}")
+        dst = f"{host}:{port}"
+        logger.debug(f"Probing gateway at: {dst}")
         debug_data = DebugData()
 
         connection_details = ConnectionDetails(
@@ -48,28 +50,38 @@ def detect_server(
             debug_data=debug_data if add_debug_data else None,
         )
 
-        connection_details = _try_redirection(connection_details)
-        info, qop_version = _try_connection(connection_details)
+        try:
+            connection_details = _redirect(connection_details)
+            info, server_version = _connect(connection_details)
+        except Exception as e:
+            errors.append((dst, f"{e}\n{traceback.format_exc()}"))
+            continue
 
-        if qop_version:
-            logger.debug(f"Gateway discovered at: {host}:{port}")
-            return ServerDetails(
-                port=port,
-                host=host,
-                qop_version=qop_version,
-                qua_implementation=info,
-                connection_details=connection_details,
-            )
+        if not server_version:
+            errors.append((dst, "could not get server version"))
+            continue
+
+        logger.debug(f"Gateway discovered at: {dst}")
+        return ServerDetails(
+            port=port,
+            host=host,
+            server_version=server_version,
+            qua_implementation=info,
+            connection_details=connection_details,
+        )
 
     targets = ",".join([f"{host}:{port}" for port in ports_to_try])
-    message = f"Failed to detect to QuantumMachines server. Tried connecting to {targets}."
-    logger.error(message)
+    message = f"Failed to detect a QuantumMachines server. Tried connecting to {targets}."
+    errors_msgs = "\n".join([f"{dst}: {error}" for dst, error in errors])
+    logger.error(f"{message}\nErrors:\n{errors_msgs}.")
     raise QmServerDetectionError(message)
 
 
-def _try_redirection(connection_details: ConnectionDetails) -> ConnectionDetails:
+def _redirect(connection_details: ConnectionDetails) -> ConnectionDetails:
     host, port = run_async(
-        send_redirection_check(connection_details.host, connection_details.port, connection_details.headers)
+        send_redirection_check(
+            connection_details.host, connection_details.port, connection_details.headers, connection_details.timeout
+        )
     )
 
     if host != connection_details.host or port != connection_details.port:
@@ -82,26 +94,21 @@ def _try_redirection(connection_details: ConnectionDetails) -> ConnectionDetails
     return connection_details
 
 
-def _try_connection(
+def _connect(
     connection_details: ConnectionDetails,
 ) -> Tuple[Optional[QuaMachineInfo], Optional[str]]:
     frontend = FrontendApi(connection_details)
     info_service = InfoServiceApi(connection_details)
 
-    qop_version = None
-    info = None
-
-    try:
-        qop_version = frontend.get_version()
-        info = info_service.get_info()
-
-    except (QMConnectionError, OSError, QMTimeoutError):
-        if is_debug():
-            logger.exception("Connection error:")
-        return info, qop_version
+    info = info_service.get_info()
+    if info.implementation.version:
+        server_version = info.implementation.version
+    else:
+        server_version = frontend.get_version()
 
     logger.debug(f"Established connection to {connection_details.host}:{connection_details.port}")
-    return info, qop_version
+
+    return info, server_version
 
 
 def _get_ports(port_from_config: Optional[int], user_provided_port: Optional[int]) -> Set[int]:

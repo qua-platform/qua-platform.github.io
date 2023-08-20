@@ -1,6 +1,7 @@
 import logging
 import zipfile
-from typing import Dict, List, Tuple, Union, BinaryIO, Optional, Generator, cast
+from collections.abc import Mapping
+from typing import Dict, List, Tuple, Union, BinaryIO, KeysView, Optional, Generator, ItemsView, ValuesView, cast
 
 from qm.persistence import BaseStore
 from qm.utils.async_utils import run_async
@@ -20,7 +21,7 @@ from qm.results.base_streaming_result_fetcher import (
 logger = logging.getLogger(__name__)
 
 
-class StreamingResultFetcher:
+class StreamingResultFetcher(Mapping):
     """Access to the results of a QmJob
 
     This object is created by calling [QmJob.result_handles][qm.jobs.running_qm_job.RunningQmJob.result_handles]
@@ -90,6 +91,9 @@ class StreamingResultFetcher:
                 )
             self._all_results[name] = result
 
+    def __len__(self) -> Optional[int]:
+        return len(self._all_results)
+
     def __getitem__(self, item: str) -> Optional[BaseStreamingResultFetcher]:
         return self.get(item)
 
@@ -106,6 +110,24 @@ class StreamingResultFetcher:
     def __iter__(self) -> Generator[Tuple[str, Optional[BaseStreamingResultFetcher]], None, None]:
         for item in self._schema.items.values():
             yield item.name, self.get(item.name)
+
+    def keys(self) -> KeysView[str]:
+        """
+        Returns a view of the names of the results
+        """
+        return self._all_results.keys()
+
+    def items(self) -> ItemsView[str, BaseStreamingResultFetcher]:
+        """
+        Returns a view, in which the first item is the name of the result and the second is the result
+        """
+        return self._all_results.items()
+
+    def values(self) -> ValuesView[BaseStreamingResultFetcher]:
+        """
+        Returns a view of the results
+        """
+        return self._all_results.values()
 
     def is_processing(self) -> bool:
         """Check if the job is still processing results
@@ -173,7 +195,7 @@ class StreamingResultFetcher:
         Returns:
             A handle object to the results `MultipleNamedJobResult` or `SingleNamedJobResult` or None if the named results in unknown
         """
-        return self._all_results[name] if name in self._all_results else None
+        return self._all_results.get(name)
 
     def __contains__(self, name: str) -> bool:
         return name in self._all_results

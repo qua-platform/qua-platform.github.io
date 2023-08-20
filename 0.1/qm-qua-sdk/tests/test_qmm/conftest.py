@@ -18,7 +18,7 @@ def qmm_mock(monkeypatch, capability_container):
         lambda *x, **k: ServerDetails(
             host="mock-host",
             port=1234,
-            qop_version="mock",
+            server_version="mock",
             connection_details=ConnectionDetails(
                 host="mock-host",
                 port=1234,

@@ -458,7 +458,10 @@ def _stream_processing_function(array):
 
     if function == "average":
         if len(array) > 1:
-            var = array[1].string_value
+            if array[1].string_value:
+                var = array[1].string_value
+            else:
+                var = _stream_processing_operator(array[1].list_value.values)
         else:
             var = ""
         return f"average({var})"

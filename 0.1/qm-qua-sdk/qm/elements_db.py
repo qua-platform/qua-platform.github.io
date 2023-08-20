@@ -5,6 +5,7 @@ from octave_sdk import Octave, OctaveOutput, OctaveLOSource  # type: ignore[impo
 
 from qm.octave import QmOctaveConfig
 from qm.api.frontend_api import FrontendApi
+from qm.octave.octave_config import get_device
 from qm.elements.basic_element import BasicElement
 from qm.elements.element_with_octave import ElementWithOctave
 from qm.grpc.octave_models import OctaveIfInputPort, OctaveIfInputPortName
@@ -22,7 +23,6 @@ from qm.grpc.qua_config import (
     QuaConfigDacPortReference,
     QuaConfigSingleInputCollection,
 )
-from qm.octave.octave_config import get_device
 
 MaybeOctaveInputPort = Optional[OctaveIfInputPort]
 
