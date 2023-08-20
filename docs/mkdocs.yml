@@ -131,6 +131,7 @@ nav:
     - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
   - "Hardware":
 #    - qm-qua-sdk/docs/Hardware/index.md
+    - "Safety Information": "qm-qua-sdk/docs/safety.md"
     - "OPX & OPX+ Specification": "qm-qua-sdk/docs/Hardware/OPX_hardware.md"
     - "OPX+ Installation Guide": "qm-qua-sdk/docs/Hardware/opx+installation.md"
     - "Octave": "qm-qua-sdk/docs/Hardware/octave.md"
@@ -169,14 +170,14 @@ nav:
   #   - "Overview": "quam_sdk/index.md"
   #   - "Getting started": "quam_sdk/getting_started.md"
   #   - "API & Structure": "quam_sdk/api.md"
-  #   - "Examples": "usecase/quam_simple.md"   
+  #   - "Examples": "usecase/quam_simple.md"
   # - "EntropyLab":
   #   - "Overview": "entropylab/index.md"
   #   - "Getting started": "entropylab/getting_started.md"
-  #   - NodeIO: 
+  #   - NodeIO:
   #     - "Overview": "entropylab/nodeio/overview.md"
   #     - "API reference": "entropylab/nodeio/api_reference.md"
-  #   - Workflow: 
+  #   - Workflow:
   #     - "Overview": "entropylab/workflow/overview.md"
   #     - "API reference": "entropylab/workflow/api_reference.md"
   #   - "Examples": "usecase/refactoring.md"
@@ -200,9 +201,9 @@ nav:
   #     - "Results": "py-qua-tools/qualang_tools/results/README.md"
   #     - "Units": "py-qua-tools/qualang_tools/units/README.md"
   #     - "Analysis": "py-qua-tools/qualang_tools/analysis/README.md"
-  #     - "Multi-user": "py-qua-tools/qualang_tools/multi_user/README.md" 
+  #     - "Multi-user": "py-qua-tools/qualang_tools/multi_user/README.md"
   #     - "Bakery": "py-qua-tools/qualang_tools/bakery/README.md"
-  #     - "Addons": "py-qua-tools/qualang_tools/addons/README.md" 
+  #     - "Addons": "py-qua-tools/qualang_tools/addons/README.md"
   #   - Use cases:
   #     - "Atom sorting": "qua-libs/Quantum-Control-Applications/AMO/Use Case 1 - Saffman Lab - Atom Sorting/readme.md"
   #     - "Two qubit gate optimization with cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md"
@@ -210,14 +211,14 @@ nav:
   #     - "Carr-Purcell-Meiboom-Gill (CPMG) in an NV ensemble with ESR": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/Electron Spin Resonance/Use case 1 - Sekhar Lab - CPMG/README.md"
   #     - "Single NV center in a confocal setup": "qua-libs/Quantum-Control-Applications/Optically addressable spin qubits/NV center in a confocal setup/README.md"
   #     - "Fast Two Dimensional Scans Using a Spiral Pattern": "qua-libs/Quantum-Control-Applications/Quantum-Dots/Use Case 1 - Fast 2D Scans/README.md"
-  #     - " Two-qubit SWAP spectroscopy improved with pre-distortion digital filters": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md" 
+  #     - " Two-qubit SWAP spectroscopy improved with pre-distortion digital filters": "qua-libs/Quantum-Control-Applications/Superconducting/Multiple Flux Tunable Transmons/Use Case 1 - Two qubit gate optimization with cryoscope/readme.md"
   #     - "Qubit Frequency Tracking": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 1 - Schuster Lab - Qubit Frequency Tracking/README.md"
   #     - "Optimized readout with optimal weights": "qua-libs/Quantum-Control-Applications/Superconducting/Single Fixed Transmon/Use Case 2 - Optimized readout with optimal weights/README.md"
   #     - "Cryoscope": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 1 - Paraoanu Lab - Cryoscope/readme.md"
   #     - "DRAG and AC Stark-shift calibraiton": "qua-libs/Quantum-Control-Applications/Superconducting/Single Flux Tunable Transmon/Use Case 2 - DRAG coefficient calibration/README.md"
   # - Learn:
   #   - "learn/index.md"
-  #   - "QUA tutorials": 
+  #   - "QUA tutorials":
   #     - "Intro to digital output": "qua-libs/Tutorials/basic-digital-output/readme.md"
   #     - "Intro to frame & phase": "qua-libs/Tutorials/frame-and-phase-intro/readme.md"
   #     - "Intro to demodulation": "qua-libs/Tutorials/intro-to-demod/readme.md"
@@ -228,7 +229,7 @@ nav:
   #     - "Intro to chirped signals": "qua-libs/Tutorials/basic-chirp/readme.md"
   #     - "Intro to timing": "qua-libs/Tutorials/intro-to-timing/readme.md"
   # - Community: "https://uxdiscuss.entropy-lab.io"
-      
+
 plugins:
   - meta
   - search
