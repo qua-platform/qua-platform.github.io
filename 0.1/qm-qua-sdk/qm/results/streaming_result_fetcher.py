@@ -65,7 +65,7 @@ class StreamingResultFetcher(Mapping):
     def _add_job_results(self) -> None:
         self._schema = StreamingResultFetcher._load_schema(self._job_id, self._service)
         stream_metadata_errors, stream_metadata_dict = self._get_stream_metadata()
-        for (name, item_schema) in self._schema.items.items():
+        for name, item_schema in self._schema.items.items():
             stream_metadata = stream_metadata_dict.get(name)
             result: BaseStreamingResultFetcher
             if item_schema.is_single:
@@ -159,7 +159,7 @@ class StreamingResultFetcher(Mapping):
         zipf = None
         try:
             zipf = zipfile.ZipFile(writer, allowZip64=True, mode="w", compression=zipfile.ZIP_DEFLATED)
-            for (name, result) in self:
+            for name, result in self:
                 if result is not None:
                     with zipf.open(f"{name}.npy", "w") as entry:
                         result.save_to_store(cast(BinaryIO, entry), flat_struct)

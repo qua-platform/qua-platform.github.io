@@ -545,7 +545,6 @@ def integration_weights_to_pb(data) -> qua_config.QuaConfigIntegrationWeightDec:
 
 
 def load_config_pb(config) -> qua_config.QuaConfig:
-
     pb_config = qua_config.QuaConfig(v1_beta=qua_config.QuaConfigQuaConfigV1())
 
     def set_controllers():

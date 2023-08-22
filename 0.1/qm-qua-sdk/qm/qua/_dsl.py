@@ -1054,7 +1054,7 @@ def for_each_(var: OneOrMore[QuaVariableType], values: ForEachValuesType) -> "_B
     if not _is_iter(var) or isinstance(var, _Expression):
         var = (var,)
 
-    for (i, v) in enumerate(var):
+    for i, v in enumerate(var):
         if not isinstance(v, _Expression):
             raise QmQuaException(f"for_each_ var {i} must be a variable")
 

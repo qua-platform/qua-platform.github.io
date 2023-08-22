@@ -2541,7 +2541,12 @@
 
   <div class="doc doc-contents ">
   
-      <p>Calibrate the mixer associated with an element for the given LO &amp; IF frequencies.</p>
+      <p>Calibrate the up converter associated with an element for the given LO &amp; IF frequencies.</p>
+<ul>
+<li>Frequencies are given as a list of tuples : [(LO,IF1)(LO,IF2)...]</li>
+<li>The function need to be run for each LO frequency and element separately</li>
+<li>If close_open_quantum_machines is set to True one must open a new quantum machine after calibration ends</li>
+</ul>
 
   <table>
     <thead>
@@ -2691,7 +2696,7 @@ in the element list</p>
         <tr>
           <td><code>elements</code></td>
           <td class="doc-param-details">
-            <p>A list of elements to load LO frequencies from</p>
+            <p>A list of elements to load LO frequencies for from the configuration</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -2719,8 +2724,14 @@ in the element list</p>
 
   <div class="doc doc-contents ">
   
-      <p>This function will set the octave clock type - internal, external or buffered.
+      <p>This function sets the octave clock type - internal, external or buffered.
 It can also set the clock frequency - 10, 100 or 1000 MHz</p>
+<ul>
+<li>Internal can only be 10 MHz</li>
+<li>External can be 10, 100, or 1000 MHz</li>
+<li>Buffered and External behave the same when using 1000 MHz clock</li>
+<li>ClockType &amp; ClockFrequency will be deprecated soon, users should use clock_mode: ClockMode instead</li>
+</ul>
 
   <table>
     <thead>
@@ -2777,7 +2788,7 @@ It can also set the clock frequency - 10, 100 or 1000 MHz</p>
         <tr>
           <td><code>clock_mode</code></td>
           <td class="doc-param-details">
-            
+            <p>Clock mode according to ClockMode</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -2809,9 +2820,17 @@ It can also set the clock frequency - 10, 100 or 1000 MHz</p>
 
   <div class="doc doc-contents ">
   
-      <p>Sets the LO source and frequency for the downconverters.
-The LO source will be the one associated with the element's upconversion.
-If only the element is given, the LO source for downconversion will be the upconversion LO of the element.</p>
+      <p>Sets the LO source and frequency for the downconverter of a given element. Sets also the mode of the I and Q lines after downconversion</p>
+<ul>
+<li>The LO source will be the one associated with the element's upconversion.</li>
+<li>If only the element is given, the LO source and frequency for downconversion will be the same as those set for the upconversion of the element.</li>
+<li>IFMode sets the I/Q lines mode after downconversion and can be:<ul>
+<li>direct: bypass</li>
+<li>envelope: goes through an envelope detector for advanced applications</li>
+<li>Mixer: goes through a low frequency mixer for advanced applications</li>
+</ul>
+</li>
+</ul>
 
   <table>
     <thead>
@@ -2836,7 +2855,7 @@ If only the element is given, the LO source for downconversion will be the upcon
         <tr>
           <td><code>lo_source</code></td>
           <td class="doc-param-details">
-            <p>allowed LO source</p>
+            <p>LO source according to the allowed LO sources</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -2861,6 +2880,38 @@ If only the element is given, the LO source for downconversion will be the upcon
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
                     <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>if_mode_i</code></td>
+          <td class="doc-param-details">
+            <p>Sets the I channel mode of the downconverter</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="octave_sdk.IFMode">IFMode</span></code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>IFMode.direct</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>if_mode_q</code></td>
+          <td class="doc-param-details">
+            <p>Sets the Q channel mode of the downconverter</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="octave_sdk.IFMode">IFMode</span></code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>IFMode.direct</code>
                 </span>
             </p>
           </td>
@@ -2901,7 +2952,7 @@ matching LO sources and elements if True</p>
 
   <div class="doc doc-contents ">
   
-      <p>Sets the LO frequency of the synthesizer associated to element. Will not change the synthesizer if set_source = False</p>
+      <p>Sets the LO frequency of the synthesizer associated with the given element. Will not change the synthesizer if set_source = False</p>
 
   <table>
     <thead>
@@ -2939,7 +2990,7 @@ matching LO sources and elements if True</p>
           <td><code>set_source</code></td>
           <td class="doc-param-details">
             <p>Set the synthesizer (True) or just
-update the client (False)</p>
+update the local database (False)</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -2971,7 +3022,7 @@ update the client (False)</p>
 
   <div class="doc doc-contents ">
   
-      <p>Associate  the given LO source with the given element. Always be sure the given LO source is internally connected to the element</p>
+      <p>Associate the given LO source with the given element. Always be sure the given LO source is internally connected to the element according to the Octave Block Diagram in the documentation</p>
 
   <table>
     <thead>
@@ -3025,7 +3076,7 @@ according the internal connectivity</p>
 
   <div class="doc doc-contents ">
   
-      <p>Sets the octave downconversion port for the element.</p>
+      <p>Sets the octave down conversion port for the given element.</p>
 
   <table>
     <thead>
@@ -3062,7 +3113,7 @@ according the internal connectivity</p>
         <tr>
           <td><code>rf_input_index</code></td>
           <td class="doc-param-details">
-            <p>input index</p>
+            <p>input index - can be 1 or 2</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -3091,10 +3142,10 @@ according the internal connectivity</p>
   <div class="doc doc-contents ">
   
       <p>Sets the RF output gain for the up-converter associated with the element.
-RF_gain is in steps of 0.5dB from -20 to +24 and is referring
-to the maximum OPX output power of 4dBm (=0.5V pk-pk) So for a value of -24
+RF_gain is in steps of 0.5dB from -20 to +20 and is referring
+to the maximum OPX output power of 4dBm (=0.5V pk-pk) So for a value of -20
 for example, an IF signal coming from the OPX at max power (4dBm) will be
-upconverted and come out of Octave at -20dBm</p>
+upconverted and come out of Octave at -16dBm</p>
 
   <table>
     <thead>
@@ -3148,10 +3199,13 @@ upconverted and come out of Octave at -20dBm</p>
   <div class="doc doc-contents ">
   
       <p>Configures the output switch of the upconverter associated to element.
-switch_mode can be either: 'on', 'off', 'trig_normal' or 'trig_inverse'
-When in 'trig_normal' mode a high trigger will turn the switch on and a low trigger will turn it off
-When in 'trig_inverse' mode a high trigger will turn the switch off and a low trigger will turn it on
-When in 'on' the switch will be permanently on. When in 'off' mode the switch will be permanently off.</p>
+switch_mode can be either: 'on', 'off', 'trig_normal' or 'trig_inverse':</p>
+<ul>
+<li>'trig_normal' mode a high trigger will turn the switch on and a low trigger will turn it off</li>
+<li>'trig_inverse' mode a high trigger will turn the switch off and a low trigger will turn it on</li>
+<li>'on' the switch will be permanently on.</li>
+<li>'off' mode the switch will be permanently off.</li>
+</ul>
 
   <table>
     <thead>
@@ -3205,7 +3259,7 @@ allowed states</p>
 
   <div class="doc doc-contents ">
   
-      <p>Updates the client on the external LO frequency (provided by the user)
+      <p>Updates the local database on the external LO frequency (provided by the user)
 associated with element</p>
 
   <table>

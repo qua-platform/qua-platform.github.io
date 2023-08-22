@@ -74,7 +74,7 @@ def validate_config_capabilities(pb_config, server_capabilities: ServerCapabilit
 
     if not server_capabilities.supports_shared_ports:
         shared_ports_by_controller = {}
-        for (con_name, con) in pb_config.v1_beta.controllers.items():
+        for con_name, con in pb_config.v1_beta.controllers.items():
             shared_ports_by_type = {}
             analog_outputs = [port_id for port_id, port in con.analog_outputs.items() if port.shareable]
             analog_inputs = [port_id for port_id, port in con.analog_inputs.items() if port.shareable]

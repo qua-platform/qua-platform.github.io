@@ -2448,6 +2448,8 @@
 
   <div class="doc doc-contents first">
 
+  
+      <p>Holds connectivity and calibrations database information</p>
 
 
 
@@ -2477,6 +2479,7 @@
   
       <p>Sets the octave info  - the IP address can be either the router ip or the actual ip
 depends on the installation configuration (cluster or standalone mode)</p>
+<p>In order to add more than one octave run the function with different octave names ips and ports as the number of octaves in the cluster</p>
 
   <table>
     <thead>
@@ -2621,20 +2624,41 @@ according to OctaveLOSource</p>
   <div class="doc doc-contents ">
   
       <p>Adds port mapping which is different from the default one. should be in the form:
-{('con1', 1): ('oct1', 'I1'),
-('con1', 2): ('oct1', 'Q1'),
-('con1', 3): ('oct1', 'I2'),
-('con1', 4): ('oct1', 'Q2'),
-('con1', 5): ('oct1', 'I3'),
-('con1', 6): ('oct1', 'Q3'),
-('con1', 7): ('oct1', 'I4'),
-('con1', 8): ('oct1', 'Q4'),
-('con1', 9): ('oct1', 'I5'),
-('con1', 10): ('oct1', 'Q5')}
-```</p>
-<p>Args:
-    connections (ConnectionMapping): mapping of OPXs to octaves
-        connections</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>{(&#39;con1&#39;, 1): (&#39;oct1&#39;, &#39;I1&#39;),
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>(&#39;con1&#39;, 2): (&#39;oct1&#39;, &#39;Q1&#39;),
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>(&#39;con1&#39;, 3): (&#39;oct1&#39;, &#39;I2&#39;),
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>(&#39;con1&#39;, 4): (&#39;oct1&#39;, &#39;Q2&#39;),
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>(&#39;con1&#39;, 5): (&#39;oct1&#39;, &#39;I3&#39;),
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>(&#39;con1&#39;, 6): (&#39;oct1&#39;, &#39;Q3&#39;),
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>(&#39;con1&#39;, 7): (&#39;oct1&#39;, &#39;I4&#39;),
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>(&#39;con1&#39;, 8): (&#39;oct1&#39;, &#39;Q4&#39;),
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>(&#39;con1&#39;, 9): (&#39;oct1&#39;, &#39;I5&#39;),
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>(&#39;con1&#39;, 10): (&#39;oct1&#39;, &#39;Q5&#39;)}
+</code></pre></div></p>
+<p>Will be deprecated soon, should use the "connectivity" key in "controllers" inside the configuration</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>connections</code></td>
+          <td class="doc-param-details">
+            <p>mapping of OPXs to octaves connections</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="qm.octave.octave_config.ConnectionMapping">ConnectionMapping</span></code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
 
   </div>
 
@@ -2831,7 +2855,7 @@ according to OctaveLOSource</p>
 
   <div class="doc doc-contents ">
   
-      <p>Sets the path to the calibration DB</p>
+      <p>Sets the path to the calibration database</p>
 
   <table>
     <thead>
@@ -2873,6 +2897,7 @@ according to OctaveLOSource</p>
   <div class="doc doc-contents ">
   
       <p>Sets the default port mapping for each <code>opx, octave</code> names</p>
+<p>Will be deprecated soon, should use the "connectivity" key in "controllers" inside the configuration</p>
 
   <table>
     <thead>

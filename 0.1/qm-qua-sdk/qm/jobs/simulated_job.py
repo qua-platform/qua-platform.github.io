@@ -38,7 +38,6 @@ class SimulatorOutput:
         self._simulation_api = SimulationApi.from_api(frontend)
 
     def get_quantum_state(self) -> DensityMatrix:
-
         state = self._simulation_api.get_simulated_quantum_state(self._id)
         flatten = numpy.array([complex(item.re, item.im) for item in state.data])
         n = int(numpy.sqrt(len(flatten)))

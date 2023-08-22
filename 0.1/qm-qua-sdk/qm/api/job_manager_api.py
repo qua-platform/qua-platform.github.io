@@ -195,7 +195,6 @@ class JobManagerApi(BaseApi):
         position: Optional[int],
         user_id: Optional[str],
     ) -> List[PendingJobData]:
-
         request = JobManagerApi._create_job_query_params(quantum_machine_id, job_id, position, user_id)
         response = run_async(self._frontend_stub.get_pending_jobs(request, timeout=self._timeout))
         return [

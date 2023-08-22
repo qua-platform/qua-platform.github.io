@@ -156,7 +156,6 @@ class OctaveManager:
         qmm: Optional["QuantumMachinesManager"] = None,
         capabilities: ServerCapabilities = None,
     ) -> None:
-
         self._octave_config: QmOctaveConfig
         self._qmm = qmm
         self._capabilities: ServerCapabilities = capabilities
@@ -222,7 +221,6 @@ class OctaveManager:
 
     @contextlib.contextmanager
     def batch_mode(self):
-
         self.start_batch_mode()
         yield
         self.end_batch_mode()
@@ -234,7 +232,6 @@ class OctaveManager:
         frequency: Optional[ClockFrequency] = None,
         clock_mode: Optional[ClockMode] = None,
     ):
-
         """This function will set the octave clock type - internal, external or buffered.
         It can also set the clock frequency - 10, 100 or 1000 MHz
 

@@ -1201,50 +1201,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#octave-features-and-specifications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Octave Features and Specifications
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Started
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-requisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-requisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sample-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sample Code
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#octave-block-diagram" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2285,50 +2241,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#octave-features-and-specifications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Octave Features and Specifications
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Started
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-requisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-requisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sample-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sample Code
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#octave-block-diagram" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2378,278 +2290,133 @@
 
 
 <h1 id="octave">Octave<a class="headerlink" href="#octave" title="Permanent link">&para;</a></h1>
-<p>The Octave is a separate product that enhances the OPX by up- and down-converting its analog outputs, yielding a seamless and calibrated RF front-end from the Quantum Orchestration Platform. The Octave has five RF outputs and two combined RF inputs operating in a frequency band of 2GHz to 18GHz.
-Controlling the Octave is done with its own API that directly connects with the QM Python package.</p>
-<p><a class="glightbox" href="../octopx.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="octopx" src="../octopx.png" /></a></p>
-<h2 id="octave-features-and-specifications">Octave Features and Specifications<a class="headerlink" href="#octave-features-and-specifications" title="Permanent link">&para;</a></h2>
-<p>The purpose of the Octave is to take the intermediate-frequency control signals originating in the OPX and up-convert them to match the qubit frequency.
-The conversion method used in the Octave is IQ mixing, meaning we use pair of IQ signals at the intermediate frequency (the ones coming from the OPX) and mix them with an RF LO signal, which can be generated inside the Octave or be fed from an external LO source.
-The resulting signal is a high-frequency RF signal at IF+LO. The up-converters outputs are AC coupled.</p>
-<p>Four internal LO sources are connected to the mixers of the up and down converters:</p>
-<ul>
-<li>Synthesizer 1 - connected to up-converter 1 and down-converter 1</li>
-<li>Synthesizer 2 - connected to up-converter 2 &amp; 3</li>
-<li>Synthesizer 3 - connected to up-converter 4 &amp; 5</li>
-<li>Calibration Synthesizer - connected to down-converter 1 &amp; 2</li>
-</ul>
-<p>The mixers are automatically calibrated internally by a calibration signal path from each up converter to down converter 2.
-The Octave outputs can be triggered by the OPX or other external sources for fast conditional pulsing.
-In addition, the Octave has controllable tunable gain, enabling gain values at the range of <span class="arithmatex">\(-10:0.5:20 dB\)</span> on the RF outputs.
-The two down-converted channels are amplified and the input power should be between <span class="arithmatex">\(-30 dBm\)</span> to <span class="arithmatex">\(-40 dBm\)</span>.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>When using an external LO source, its power should be <span class="arithmatex">\(12-15 dBm\)</span></p>
-</div>
-<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<p>Take your octave out of the box and place it in the rack with your OPX, preferably directly above or below it. Plug the supplied power supplier to the Octave and
-connect an ethernet cable from the most right bottom LAN port to the same router your OPX is connected to. Connect IF OUT1 from the octave to analog input 1 on the opx and IF OUT2 from the octave to analog input 2.
-If you want to use an external clock or an OPT, connect it to
-the external clock port on the back panel of the octave. Now you can power up the octave and connect it to the OPX.
-Connect the Octave to the OPX in a way that suits you experiment setup. The default connection map should be:</p>
-<p><a class="glightbox" href="../Slide1.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Slide1" src="../Slide1.png" /></a></p>
-<p>Now connect the RF outputs and inputs to your fridge (or a spectrum analyzer if you want to see the signals) and proceed
-to the next section.</p>
-<h2 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Install the latest <code>QUA</code> package by typing <code>pip install -U qm-qua</code> to a shell with an active Python environment.</li>
-<li>Install the latest <code>Octave-SDK</code> package by typing <code>pip install -U qm-octave</code> to a shell with an active Python environment.</li>
-</ol>
-<h2 id="sample-code">Sample Code<a class="headerlink" href="#sample-code" title="Permanent link">&para;</a></h2>
-<p>We start by importing the required packages we installed in the last sections</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">os</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">time</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">qm</span> <span class="kn">import</span> <span class="n">QuantumMachinesManager</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">qm.octave</span> <span class="kn">import</span> <span class="o">*</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">from</span> <span class="nn">qm.qua</span> <span class="kn">import</span> <span class="o">*</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</code></pre></div>
-<p>Now, we need to define our <a href="../../Introduction/config">config file</a>. If you used IQ mixers before in your OPX setup
-you should notice that there is nothing new in it. There are a few new things in the config to pay attention to when using octave:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="s1">&#39;qubit&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="s1">&#39;mixInputs&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;con1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;con1&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s1">&#39;lo_frequency&#39;</span><span class="p">:</span> <span class="n">LO_frequency</span> <span class="p">,</span> <span class="c1"># The mixer&#39;s LO</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s1">&#39;mixer&#39;</span><span class="p">:</span> <span class="s1">&#39;mixer_name&#39;</span>  <span class="c1"># The mixer&#39;s name</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="p">},</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="o">...</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="p">},</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="s1">&#39;mixers&#39;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="s1">&#39;mixer_name&#39;</span><span class="p">:</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">[</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="p">{</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>     <span class="s1">&#39;intermediate_frequency&#39;</span><span class="p">:</span> <span class="n">IF_frequency</span><span class="p">,</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>     <span class="s1">&#39;lo_frequency&#39;</span><span class="p">:</span> <span class="n">LO_frequency</span><span class="p">,</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>     <span class="s1">&#39;correction&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="p">}</span> <span class="c1"># parameters for correction</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="p">],</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="p">},</span>
-</code></pre></div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Mixers names must be in the form: <code>octave_{OCTAVE_NAME}_{RF_PORT}</code>. For example for octave1 with up-converter one it will be octave_octave1_1</p>
-</div>
-<p>Here is a simple configuration code that uses one mixer at LO = 6GHz and IF = 100 MHz</p>
-<details class="example">
-<summary>Configuration</summary>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>  <span class="n">readout_len</span> <span class="o">=</span> <span class="mf">10e6</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  <span class="n">if_freq</span> <span class="o">=</span> <span class="mf">100e6</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  <span class="n">lo_freq</span><span class="o">=</span><span class="mf">6e9</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  <span class="n">calibration_amp</span> <span class="o">=</span> <span class="mf">0.125</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  <span class="n">calibration_pulse_length</span> <span class="o">=</span> <span class="mf">10e3</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  <span class="n">time_of_flight</span> <span class="o">=</span> <span class="mi">192</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  <span class="n">offset_amp</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="o">-</span><span class="mi">3</span>  <span class="c1"># (0.125)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  <span class="s2">&quot;controllers&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>      <span class="s2">&quot;con1&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>          <span class="s2">&quot;analog_outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>              <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mf">0.0</span><span class="p">},</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>              <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mf">0.0</span><span class="p">},</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>          <span class="p">},</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>          <span class="s2">&quot;analog_inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>              <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mf">0.0</span><span class="p">},</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>              <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="o">+</span><span class="mf">0.0</span><span class="p">},</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>          <span class="p">},</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>      <span class="p">}</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>  <span class="p">},</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>  <span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>      <span class="s2">&quot;qe1&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>          <span class="s2">&quot;mixInputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>                  <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>                  <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>                  <span class="s2">&quot;lo_frequency&quot;</span><span class="p">:</span> <span class="n">lo_freq</span><span class="p">,</span>
-<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>                  <span class="s2">&quot;mixer&quot;</span><span class="p">:</span> <span class="s2">&quot;octave_octave1_1&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>              <span class="p">},</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>              <span class="s2">&quot;intermediate_frequency&quot;</span><span class="p">:</span> <span class="n">if_freq</span><span class="p">,</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>              <span class="s2">&quot;operations&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>                  <span class="s2">&quot;CW&quot;</span><span class="p">:</span> <span class="s2">&quot;calibration_pulse&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>              <span class="p">},</span>
-<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>              <span class="s2">&quot;digitalInputs&quot;</span><span class="p">:</span> <span class="p">{},</span>
-<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>      <span class="p">},</span>
-<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>  <span class="p">},</span>
-<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>  <span class="s2">&quot;pulses&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>          <span class="s2">&quot;calibration_pulse&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>              <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>              <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">calibration_pulse_length</span><span class="p">,</span>
-<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>              <span class="s2">&quot;waveforms&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>                  <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="s2">&quot;CW_wf&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>                  <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="s2">&quot;zero_wf&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>              <span class="p">},</span>
-<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>          <span class="p">},</span>
-<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>      <span class="s2">&quot;waveforms&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>          <span class="s2">&quot;CW_wf&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a>              <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="n">calibration_amp</span><span class="p">,</span>
-<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>          <span class="p">},</span>
-<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>          <span class="s2">&quot;zero_wf&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a>              <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-<a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a>          <span class="p">},</span>
-<a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a>      <span class="p">},</span>
-<a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a>      <span class="s2">&quot;digital_waveforms&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a>          <span class="s2">&quot;ON&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]},</span>
-<a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a>          <span class="s2">&quot;OFF&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]},</span>
-<a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a>      <span class="p">},</span>
-<a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a>      <span class="s2">&quot;integration_weights&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a>          <span class="s2">&quot;cosine_weights&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a>              <span class="s2">&quot;cosine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a>              <span class="s2">&quot;sine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a>          <span class="p">},</span>
-<a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a>          <span class="s2">&quot;sine_weights&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a>              <span class="s2">&quot;cosine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a>              <span class="s2">&quot;sine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a>          <span class="p">},</span>
-<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a>          <span class="s2">&quot;minus_sine_weights&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a>              <span class="s2">&quot;cosine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a>              <span class="s2">&quot;sine&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">calibration_pulse_length</span><span class="p">)],</span>
-<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a>          <span class="p">},</span>
-<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a>      <span class="p">},</span>
-<a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a>  <span class="s2">&quot;mixers&quot;</span><span class="p">:</span> <span class="p">{</span>
-<a id="__codelineno-2-76" name="__codelineno-2-76" href="#__codelineno-2-76"></a>          <span class="s2">&quot;octave_octave1_1&quot;</span><span class="p">:</span> <span class="p">[</span>
-<a id="__codelineno-2-77" name="__codelineno-2-77" href="#__codelineno-2-77"></a>  <span class="p">{</span>
-<a id="__codelineno-2-78" name="__codelineno-2-78" href="#__codelineno-2-78"></a>                  <span class="s2">&quot;intermediate_frequency&quot;</span><span class="p">:</span> <span class="n">if_freq</span><span class="p">,</span>
-<a id="__codelineno-2-79" name="__codelineno-2-79" href="#__codelineno-2-79"></a>                  <span class="s2">&quot;lo_frequency&quot;</span><span class="p">:</span> <span class="n">lo_freq</span><span class="p">,</span>
-<a id="__codelineno-2-80" name="__codelineno-2-80" href="#__codelineno-2-80"></a>                  <span class="s2">&quot;correction&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
-<a id="__codelineno-2-81" name="__codelineno-2-81" href="#__codelineno-2-81"></a>              <span class="p">},</span>
-<a id="__codelineno-2-82" name="__codelineno-2-82" href="#__codelineno-2-82"></a>          <span class="p">],</span>
-<a id="__codelineno-2-83" name="__codelineno-2-83" href="#__codelineno-2-83"></a>      <span class="p">},</span>
-<a id="__codelineno-2-84" name="__codelineno-2-84" href="#__codelineno-2-84"></a>  <span class="p">}</span>
-</code></pre></div>
-</details>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For best performance the IF amplitude should be set to 0.125 [V]</p>
-</div>
-<p>To use Octave in our setup we must first create a new instance of <code>QmOctaveConfig</code> and then set device info with <a class="autorefs autorefs-internal" href="../../API_references/octave_config/#qm.octave.octave_config.QmOctaveConfig.add_device_info"><code>add_device_info()</code></a> for all Octaves in the setup.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">opx_ip</span> <span class="o">=</span> <span class="s1">&#39;xxx.xxx.xxx.xxx&#39;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">opx_port</span> <span class="o">=</span> <span class="mi">80</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">octave_ip</span> <span class="o">=</span> <span class="s1">&#39;xxx.xxx.xxx.xxx&#39;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">octave_port</span> <span class="o">=</span> <span class="mi">80</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">octave_config</span> <span class="o">=</span> <span class="n">QmOctaveConfig</span><span class="p">()</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">octave_config</span><span class="o">.</span><span class="n">add_device_info</span><span class="p">(</span><span class="s1">&#39;octave1&#39;</span><span class="p">,</span> <span class="n">octave_ip</span><span class="p">,</span> <span class="n">octave_port</span><span class="p">)</span>
-</code></pre></div>
-<p>After we added our Octaves, we want to tell QUA and the OPX how the systems are connected. This is done by <a class="autorefs autorefs-internal" href="../../API_references/octave_config/#qm.octave.octave_config.QmOctaveConfig.set_opx_octave_mapping"><code>set_opx_octave_mapping()</code></a>
-which gets a list of tuples, where each tuple is a set of <code>(opx, octave)</code> by their names. This function will set the port map to the default where
-<code>(I1, Q1)</code> goes to RF1, <code>(I2, Q2)</code> goes to RF2, and so on.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">octave_config</span><span class="o">.</span><span class="n">set_opx_octave_mapping</span><span class="p">([(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span><span class="s2">&quot;octave1&quot;</span><span class="p">)])</span>
-</code></pre></div>
-<p>If we want to configure the port mapping between the OPXs and Octaves in another way,
-It can be done with the function <a class="autorefs autorefs-internal" href="../../API_references/octave_config/#qm.octave.octave_config.QmOctaveConfig.add_opx_octave_port_mapping"><code>add_opx_octave_port_mapping()</code></a> by giving the function a precise mapping
-of OPX to octave ports.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">octave_config</span><span class="o">.</span><span class="n">add_opx_octave_port_mapping</span><span class="p">(</span><span class="n">portmap</span><span class="p">)</span>
-</code></pre></div>
-<p>We then would like to tell the OPX the path to the calibration database (If it is the first calibration, a database will be generated in that path). It is done by calling <a class="autorefs autorefs-internal" href="../../API_references/octave_config/#qm.octave.octave_config.QmOctaveConfig.set_calibration_db"><code>set_calibration_db()</code></a></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">octave_config</span><span class="o">.</span><span class="n">set_calibration_db</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
-</code></pre></div>
-<p>It is now possible to open a <code>QuantumMachinesManager</code> which now also gets the Octave config object</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">qmm</span> <span class="o">=</span> <span class="n">QuantumMachinesManager</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">opx_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">opx_port</span><span class="p">,</span> <span class="n">octave</span><span class="o">=</span><span class="n">octave_config</span><span class="p">)</span>
-</code></pre></div>
-<p>For the sake of simplicity the sample qua code for this example will just play constant wave</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">with</span> <span class="n">program</span><span class="p">()</span> <span class="k">as</span> <span class="n">prog</span><span class="p">:</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">with</span> <span class="n">infinite_loop_</span><span class="p">():</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="n">play</span><span class="p">(</span><span class="s1">&#39;CW&#39;</span><span class="p">,</span><span class="s1">&#39;qe1&#39;</span><span class="p">)</span>
-</code></pre></div>
-<p>Now you should open a quantum machine with the configuration</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">qm</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">open_qm</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<p>It is possible to set the clock of the octave now. If nothing is done regarding the clock, the octave will boot with the last clock configuration that was set. 
-Setting the clock to use the internal clock is done with the following:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_clock</span><span class="p">(</span><span class="s2">&quot;octave1&quot;</span><span class="p">,</span> <span class="n">ClockMode</span><span class="o">.</span><span class="n">internal</span><span class="p">)</span>
-</code></pre></div>
-<p>Setting the clock to use the external clock is done with (for example):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_clock</span><span class="p">(</span><span class="s2">&quot;octave1&quot;</span><span class="p">,</span> <span class="n">ClockType</span><span class="o">.</span><span class="n">External_100MHz</span><span class="p">)</span>
-</code></pre></div>
-<p>External clock source can be at one of three frequencies: 10, 100, and 1000 MHz and the clock signal amplitude should be between -4dBm to +4dBm. 
-Note that the behavior of the 1GHz external is different from the 10 and 100 MHz - in the later 2 the octave locks an 
-internal 1GHz clock whereas when an external 1GHz is set, it is propagated instead of the internal clock.</p>
-<p>Now before executing our QUA program, we should configure a few things on the Octave:</p>
-<ul>
-<li>
-<p><a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.set_lo_frequency"><code>set_lo_frequency()</code></a>: this function will override the LO frequency written in the configuration file for the element.</p>
-</li>
-<li>
-<p><a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.set_rf_output_gain"><code>set_rf_output_gain()</code></a>: this function will set the output gain of the element.</p>
-</li>
-<li>
-<p><a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.set_rf_output_mode"><code>set_rf_output_mode()</code></a>: with this function, it is possible to set the RF output mode to:</p>
-<ul>
-<li><code>on</code> - Output is always on</li>
-<li><code>off</code> - Output is always off</li>
-<li><code>trig_normal</code> - The output will play when a digital trigger is detected in the Octave's digital port</li>
-<li><code>trig_inverse</code> - The output will play when a digital trigger is set off in the Octave's digital port</li>
-</ul>
-</li>
-</ul>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_lo_frequency</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">lo_freq</span><span class="p">)</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_rf_output_gain</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_rf_output_mode</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">RFOutputMode</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
-</code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Notice that the internal LO resolution is 250MHz</p>
-</div>
-<p>We can also set the LO source to be external or internal. Supported internal connections are <a href="#octave-block-diagram">per the block diagram</a>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_lo_source</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">OctaveLOSource</span><span class="o">.</span><span class="n">LO1</span><span class="p">)</span>
-</code></pre></div>
-<p>Now we would like to calibrate the up converter. It is possible to calibrate it manually by using the
-OPX's dc offsets, but the Octave can do it automatically per element, LO frequency and IF frequency using the function
-<a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.calibrate_element"><code>calibrate_element()</code></a>. It can even calibrate for a list of (LO, IF) couples.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>After calibration is done, we must open the quantum machine again.</p>
-</div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">calibrate_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="p">[(</span><span class="n">lo_freq</span><span class="p">,</span> <span class="n">if_freq</span><span class="p">)])</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">qm</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">open_qm</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<p>We can also define the downconversion port per element with <a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.set_qua_element_octave_rf_in_port"><code>set_qua_element_octave_rf_in_port()</code></a>
-and <a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#qm.octave.qm_octave.QmOctave.set_downconversion"><code>set_downconversion()</code></a>. In order to use internal LO source use:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_qua_element_octave_rf_in_port</span><span class="p">(</span><span class="n">element</span><span class="p">,</span><span class="s2">&quot;octave1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_downconversion</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-</code></pre></div>
-<p>in order to use an external LO source use:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_qua_element_octave_rf_in_port</span><span class="p">(</span><span class="n">element</span><span class="p">,</span><span class="s2">&quot;octave1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_downconversion</span><span class="p">(</span><span class="n">element</span><span class="p">,</span><span class="n">lo_source</span><span class="o">=</span><span class="n">RFInputLOSource</span><span class="o">.</span><span class="n">Dmd1LO</span><span class="p">)</span>
-</code></pre></div>
-<p>After we configured everything for our experiment, we can execute the program</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span>
-</code></pre></div>
+<p>The Octave is a complementary solution for enhancing the OPX capabilities by up- and down-converting its analog outputs,
+creating a seamless RF front-end OPX. With the Octave, one can have up to five RF outputs and two combined RF inputs operating in a frequency band of 2GHz to 18GHz. The following page describes Octave's block diagram and port specifications. For a detailed user manual, see the <a href="../../Guides/octave/">Octave guide</a></p>
+<p><a class="glightbox" href="../OCTAVE_diagram.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Octave_Diagram" src="../OCTAVE_diagram.png" title="OPX+ &amp; Octave" /></a></p>
 <h2 id="octave-block-diagram">Octave Block Diagram<a class="headerlink" href="#octave-block-diagram" title="Permanent link">&para;</a></h2>
-<p>Click the image to enlarge</p>
-<p><a class="glightbox" href="../Octave_user_diagram-1.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Octave_user_diagram-1" src="../Octave_user_diagram-1.png" /></a></p>
+<p>In the diagram, one can see all the internal and external connections of the octave.
+It shows the three synthesizers and their connections to the five upconverters and two downconverters.
+The diagram also shows all the internal routing one can configure to perform specific experiments
+Using the following diagram one can plan the connections to and from an octave to best match one's experiment.</p>
+<p><a class="glightbox" href="../octave_user_diagram-1.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Octave_user_diagram-1" src="../octave_user_diagram-1.png" title="Octave User Diagram" /></a></p>
+<details class="note">
+<summary>Requirements if using external LO</summary>
+<p>The synth to up-converters internal connectivity entails the following requirements:</p>
+<ul>
+<li>If both up-converters 2 and 3 are being utilized, with one using an internal LO and the other using an external LO, the configuration must be set up as follows: up-converter 2 will utilize the external LO, and up-converter 3 will use the internal LO.</li>
+<li>If both up-converters 4 and 5 are being utilized, with one using an internal LO and the other using an external LO, the configuration must be set up as follows: up-converter 4 will utilize the external LO, and up-converter 5 will use the internal LO.</li>
+<li>If both up-converter 1 and down-converter 1 are being utilized, with one using an internal LO and the other using an external LO, the configuration must be set up as follows: down-converter 1 will utilize the external LO, and up-converter 1 will use the internal LO.</li>
+</ul>
+</details>
 <h2 id="octave-front-panel">Octave Front Panel<a class="headerlink" href="#octave-front-panel" title="Permanent link">&para;</a></h2>
-<p>Click the image to enlarge</p>
-<p><a class="glightbox" href="../OctaveFront.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="OctaveFront" src="../OctaveFront.png" /></a></p>
+<p><a class="glightbox" href="../OctaveFront.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="OctaveFront" src="../OctaveFront.png" title="Octave Front Panel" /></a></p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">RF Outputs (RF 1-5)</th>
+<th align="left">RF Inputs (RF 1/2 in)</th>
+<th align="left">Digital Inputs (Trig 1-5)</th>
+<th align="left">IF Inputs (I/Q 1-5)</th>
+<th align="left">IF Outputs (IF out 1/2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Power rating</td>
+<td align="left">-40 to +10 dBm</td>
+<td align="left">-40 to -20 dBm</td>
+<td align="left">3.3V (LVTTL)</td>
+<td align="left">±0.5 V or 4 dBm</td>
+<td align="left">±0.5 V or 4 dBm</td>
+</tr>
+<tr>
+<td align="left">Bandwidth</td>
+<td align="left">±350 MHz</td>
+<td align="left">±350 MHz</td>
+<td align="left">pulse width &gt; 4ns</td>
+<td align="left">±350 MHz</td>
+<td align="left">±350 MHz</td>
+</tr>
+<tr>
+<td align="left">Impedance</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+<td align="left">High Z</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+</tr>
+<tr>
+<td align="left">Frequency range</td>
+<td align="left">2-18 GHz</td>
+<td align="left">2-18 GHz</td>
+<td align="left">-</td>
+<td align="left">±350 MHz</td>
+<td align="left">±350 MHz</td>
+</tr>
+</tbody>
+</table>
 <h2 id="octave-back-panel">Octave Back Panel<a class="headerlink" href="#octave-back-panel" title="Permanent link">&para;</a></h2>
-<p>Click the image to enlarge</p>
-<p><a class="glightbox" href="../OctaveBack.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="OctaveBack" src="../OctaveBack.png" /></a></p>
+<p><a class="glightbox" href="../OctaveBack.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="OctaveBack" src="../OctaveBack.png" title="Octave Back Panel" /></a></p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">LO</th>
+<th align="left">Synth</th>
+<th align="left">Clock in</th>
+<th align="left">Clock out</th>
+<th align="left">IF LO</th>
+<th align="left">Dig &amp; Aux &amp; Qsync</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Function</td>
+<td align="left">External LO signal input</td>
+<td align="left">Internal synthesizer output</td>
+<td align="left">Clock input</td>
+<td align="left">Clock output</td>
+<td align="left">External low frequency LO</td>
+<td align="left">Future features</td>
+</tr>
+<tr>
+<td align="left">Frequency range</td>
+<td align="left">2-18 GHz</td>
+<td align="left">2-18 GHz</td>
+<td align="left">10, 100, 1000 MHz</td>
+<td align="left">1 Ghz</td>
+<td align="left">±350 MHz</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">Power rating</td>
+<td align="left">12-15 dBm</td>
+<td align="left">12-15 dBm</td>
+<td align="left">Up to 0 dBm</td>
+<td align="left">0 dBm</td>
+<td align="left">10 dBm</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">Impedance</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+<td align="left">50 Ω</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Ports <code>synth 1/2/3</code> should always be kept terminated to 50Ω when not in use</p>
+<ul>
+<li>Ports <code>synth 1/2/3</code> should always be kept terminated to 50Ω when not in use</li>
+<li>For best performance, one should maintain a space of 1/3U at least above each octave</li>
+<li>Network should only be connected to <code>Ethernet 2</code></li>
+<li>Use only the supplied power supplier</li>
+</ul>
 </div>
 
   
@@ -2666,7 +2433,7 @@ and <a class="autorefs autorefs-internal" href="../../API_references/qm_octave/#
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-04-17T14:13:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-04-17</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-08-22T09:27:13+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-08-22</span>
       </span>
     
     

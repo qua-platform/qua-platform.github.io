@@ -219,7 +219,6 @@ class FrontendApi(BaseApi):
         return job_id
 
     def add_compiled_to_queue(self, machine_id: str, program_id: str, execution_overrides: ExecutionOverrides) -> str:
-
         queue_position = QueuePosition()
         queue_position.end = Empty()
 
@@ -264,7 +263,6 @@ class FrontendApi(BaseApi):
         return program_id
 
     def _perform_qm_request(self, request: HighQmApiRequest) -> None:
-
         response = run_async(self._stub.perform_qm_request(request, timeout=self._timeout))
 
         if not response.ok:

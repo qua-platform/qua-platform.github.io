@@ -99,6 +99,10 @@ def get_device(
 
 
 class QmOctaveConfig:
+    """
+    Holds connectivity and calibrations database information
+    """
+
     def __init__(self, fan=None) -> None:
         self._devices: Dict[str, ConnectionInfo] = {}
         self._calibration_db_path: Optional[str] = None
@@ -123,6 +127,8 @@ class QmOctaveConfig:
         """Sets the octave info  - the IP address can be either the router ip or the actual ip
         depends on the installation configuration (cluster or standalone mode)
 
+        In order to add more than one octave run the function with different octave names ips and ports as the number of octaves in the cluster
+
         Args:
             name (str): The octave name
             host (str): The octave/QOP ip
@@ -139,7 +145,7 @@ class QmOctaveConfig:
         return self._devices
 
     def set_calibration_db(self, path):
-        """Sets the path to the calibration DB
+        """Sets the path to the calibration database
 
         Args:
             path (str): path to the calibration database
@@ -152,6 +158,8 @@ class QmOctaveConfig:
 
     def set_opx_octave_mapping(self, mappings: List[Tuple[str, str]]):
         """Sets the default port mapping for each `opx, octave` names
+
+        Will be deprecated soon, should use the "connectivity" key in "controllers" inside the configuration
 
         Args:
             mappings: list of tuples of [OPX_name, octave_name] to connect
@@ -177,6 +185,7 @@ class QmOctaveConfig:
     def add_opx_octave_port_mapping(self, connections: ConnectionMapping):
         """
         Adds port mapping which is different from the default one. should be in the form:
+        ```
         {('con1', 1): ('oct1', 'I1'),
         ('con1', 2): ('oct1', 'Q1'),
         ('con1', 3): ('oct1', 'I2'),
@@ -189,9 +198,10 @@ class QmOctaveConfig:
         ('con1', 10): ('oct1', 'Q5')}
         ```
 
+        Will be deprecated soon, should use the "connectivity" key in "controllers" inside the configuration
+
         Args:
-            connections (ConnectionMapping): mapping of OPXs to octaves
-                connections
+            connections (ConnectionMapping): mapping of OPXs to octaves connections
         """
         # ("con1", 1): ("octave1", "I1")
         # validate structure:

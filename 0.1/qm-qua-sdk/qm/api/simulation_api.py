@@ -42,7 +42,6 @@ class SimulationApi(BaseApi):
         simulate: SimulationConfig,
         compiler_options: CompilerOptionArguments,
     ) -> Tuple[str, SimulatedResponsePart]:
-
         if type(program) is not Program:
             raise Exception("program argument must be of type qm.program.Program")
 

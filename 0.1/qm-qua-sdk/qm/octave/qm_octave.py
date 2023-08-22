@@ -30,12 +30,12 @@ class QmOctave:
         return self._octave_manager.batch_mode()
 
     def set_qua_element_octave_rf_in_port(self, element, octave_name, rf_input_index):
-        """Sets the octave downconversion port for the element.
+        """Sets the octave down conversion port for the given element.
 
         Args:
             element (str): The name of the element
             octave_name (str): The octave name
-            rf_input_index (RFInputRFSource): input index
+            rf_input_index (RFInputRFSource): input index - can be 1 or 2
         """
         inst = self._elements_db[element]
         client = self._octave_manager._octave_clients[octave_name]
@@ -46,7 +46,7 @@ class QmOctave:
         in the element list
 
         Args:
-            elements: A list of elements to load LO frequencies from
+            elements: A list of elements to load LO frequencies for from the configuration
         """
         warnings.warn(
             "lo_frequency is now set directly from config when a QuantumMachine is created, no need to do it directly. "
@@ -55,13 +55,13 @@ class QmOctave:
         )
 
     def set_lo_frequency(self, element: str, lo_frequency: float, set_source: bool = True):
-        """Sets the LO frequency of the synthesizer associated to element. Will not change the synthesizer if set_source = False
+        """Sets the LO frequency of the synthesizer associated with the given element. Will not change the synthesizer if set_source = False
 
         Args:
             element (str): The name of the element
             lo_frequency (float): The LO frequency
             set_source (Boolean): Set the synthesizer (True) or just
-                update the client (False)
+                update the local database (False)
         """
         inst = self._elements_db[element]
         inst.set_lo_frequency(lo_frequency, set_source)
@@ -71,7 +71,7 @@ class QmOctave:
         element: str,
         lo_frequency: float,
     ):
-        """Updates the client on the external LO frequency (provided by the user)
+        """Updates the local database on the external LO frequency (provided by the user)
         associated with element
 
         Args:
@@ -82,7 +82,7 @@ class QmOctave:
         self._elements_db[element].set_lo_frequency(lo_frequency)
 
     def set_lo_source(self, element: str, lo_port: OctaveLOSource):
-        """Associate  the given LO source with the given element. Always be sure the given LO source is internally connected to the element
+        """Associate the given LO source with the given element. Always be sure the given LO source is internally connected to the element according to the Octave Block Diagram in the documentation
 
         Args:
             element (str): The name of the element
@@ -96,10 +96,12 @@ class QmOctave:
 
     def set_rf_output_mode(self, element: str, switch_mode: RFOutputMode):
         """Configures the output switch of the upconverter associated to element.
-        switch_mode can be either: 'on', 'off', 'trig_normal' or 'trig_inverse'
-        When in 'trig_normal' mode a high trigger will turn the switch on and a low trigger will turn it off
-        When in 'trig_inverse' mode a high trigger will turn the switch off and a low trigger will turn it on
-        When in 'on' the switch will be permanently on. When in 'off' mode the switch will be permanently off.
+        switch_mode can be either: 'on', 'off', 'trig_normal' or 'trig_inverse':
+
+        - 'trig_normal' mode a high trigger will turn the switch on and a low trigger will turn it off
+        - 'trig_inverse' mode a high trigger will turn the switch off and a low trigger will turn it on
+        - 'on' the switch will be permanently on.
+        - 'off' mode the switch will be permanently off.
 
         Args:
             element (str): The name of the element
@@ -111,10 +113,10 @@ class QmOctave:
 
     def set_rf_output_gain(self, element: str, gain_in_db: float):
         """Sets the RF output gain for the up-converter associated with the element.
-        RF_gain is in steps of 0.5dB from -20 to +24 and is referring
-        to the maximum OPX output power of 4dBm (=0.5V pk-pk) So for a value of -24
+        RF_gain is in steps of 0.5dB from -20 to +20 and is referring
+        to the maximum OPX output power of 4dBm (=0.5V pk-pk) So for a value of -20
         for example, an IF signal coming from the OPX at max power (4dBm) will be
-        upconverted and come out of Octave at -20dBm
+        upconverted and come out of Octave at -16dBm
 
         Args:
             element (str): The name of the element
@@ -134,14 +136,21 @@ class QmOctave:
         if_mode_q: IFMode = IFMode.direct,
         disable_warning: bool = False,
     ):
-        """Sets the LO source and frequency for the downconverters.
-        The LO source will be the one associated with the element's upconversion.
-        If only the element is given, the LO source for downconversion will be the upconversion LO of the element.
+        """Sets the LO source and frequency for the downconverter of a given element. Sets also the mode of the I and Q lines after downconversion
+
+        - The LO source will be the one associated with the element's upconversion.
+        - If only the element is given, the LO source and frequency for downconversion will be the same as those set for the upconversion of the element.
+        - IFMode sets the I/Q lines mode after downconversion and can be:
+            - direct: bypass
+            - envelope: goes through an envelope detector for advanced applications
+            - Mixer: goes through a low frequency mixer for advanced applications
 
         Args:
             element (str): The name of the element
-            lo_source (RFInputLOSource): allowed LO source
+            lo_source (RFInputLOSource): LO source according to the allowed LO sources
             lo_frequency (float): The LO frequency
+            if_mode_i (IFMode): Sets the I channel mode of the downconverter
+            if_mode_q (IFMode): Sets the Q channel mode of the downconverter
             disable_warning (Boolean): Disable warnings about non-
                 matching LO sources and elements if True
         """
@@ -156,7 +165,11 @@ class QmOctave:
         close_open_quantum_machines=True,
         **kwargs,
     ) -> Dict[Tuple[int, int], CalibrationResult]:
-        """Calibrate the mixer associated with an element for the given LO & IF frequencies.
+        """Calibrate the up converter associated with an element for the given LO & IF frequencies.
+
+        - Frequencies are given as a list of tuples : [(LO,IF1)(LO,IF2)...]
+        - The function need to be run for each LO frequency and element separately
+        - If close_open_quantum_machines is set to True one must open a new quantum machine after calibration ends
 
         Args:
             close_open_quantum_machines (bool): If true (default) all
@@ -193,14 +206,19 @@ class QmOctave:
         frequency: Optional[ClockFrequency] = None,
         clock_mode: Optional[ClockMode] = None,
     ):
-        """This function will set the octave clock type - internal, external or buffered.
+        """This function sets the octave clock type - internal, external or buffered.
         It can also set the clock frequency - 10, 100 or 1000 MHz
+
+        - Internal can only be 10 MHz
+        - External can be 10, 100, or 1000 MHz
+        - Buffered and External behave the same when using 1000 MHz clock
+        - ClockType & ClockFrequency will be deprecated soon, users should use clock_mode: ClockMode instead
 
         Args:
             octave_name (str): The octave name to set clock for
             clock_type (ClockType): clock type according to ClockType
             frequency (ClockFrequency): Clock frequency according to ClockFrequency
-            clock_mode (ClockMode):
+            clock_mode (ClockMode): Clock mode according to ClockMode
         """
         # TODO: get name from the QMOctave instance
         self._octave_manager.set_clock(octave_name, clock_type, frequency, clock_mode)

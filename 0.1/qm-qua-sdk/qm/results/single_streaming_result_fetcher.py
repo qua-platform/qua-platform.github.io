@@ -45,7 +45,6 @@ class SingleStreamingResultFetcher(BaseStreamingResultFetcher):
         check_for_errors: bool = False,
         flat_struct: bool = False,
     ) -> Optional[numpy.typing.NDArray[numpy.generic]]:
-
         """Fetch a single result from the current result stream saved in server memory.
         The result stream is populated by the save().
 
