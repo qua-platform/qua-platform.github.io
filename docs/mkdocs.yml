@@ -49,6 +49,7 @@ theme:
     - content.code.annotate 
     - content.code.copy
     - content.code.select
+    - content.tooltips
     - minify_html: true
   icon:
     repo: fontawesome/brands/github
@@ -129,6 +130,7 @@ nav:
     - "Messages and Errors": "qm-qua-sdk/docs/Guides/error.md"
     - "External Triggering": "qm-qua-sdk/docs/Guides/external_trigger.md"
     - "External Clock": "qm-qua-sdk/docs/Guides/external_clock.md"
+    - "Octave": "qm-qua-sdk/docs/Guides/octave.md"
   - "Hardware":
 #    - qm-qua-sdk/docs/Hardware/index.md
     - "Safety Information": "qm-qua-sdk/docs/safety.md"
