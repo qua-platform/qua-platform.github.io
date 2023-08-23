@@ -30,254 +30,23 @@
         }
       }
     },
-    "SingleInput": {
+    "Oscillator": {
       "type": "object",
       "properties": {
-        "port": {
-          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-        }
-      },
-      "title": "Single input",
-      "description": "The specification of the input of an element which has a single input port"
-    },
-    "MultipleInputs": {
-      "type": "object",
-      "properties": {
-        "inputs": {
-          "type": "object",
-          "description": "A collection of multiple single inputs to the port",
-          "additionalProperties": {
-            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-          }
-        }
-      },
-      "title": "Multiple inputs",
-      "description": "Defines a set of single inputs which are all played at once"
-    },
-    "MixInputOctaveParams": {
-      "type": "object",
-      "properties": {
-        "rf_output_port": {},
-        "output_switch_state": {
-          "type": "string"
-        },
-        "lo_source": {
-          "type": "string"
-        },
-        "downconversion_lo_source": {
-          "type": "string"
-        },
-        "output_gain": {
-          "type": "integer"
-        },
-        "downconversion_lo_frequency": {
-          "type": "number"
-        },
-        "rf_input_port": {}
-      }
-    },
-    "MixInput": {
-      "type": "object",
-      "properties": {
-        "I": {
-          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-        },
-        "Q": {
-          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-        },
-        "mixer": {
-          "type": "string",
-          "description": "The mixer used to drive the input of the element, taken from the names in mixers entry in the main configuration."
-        },
-        "lo_frequency": {
-          "type": "number",
-          "description": "The frequency of the local oscillator which drives the mixer."
-        },
-        "octave_params": {
-          "$ref": "#/definitions/MixInputOctaveParams"
-        }
-      },
-      "title": "Mixer input",
-      "description": "The specification of the input of an element which is driven by an IQ mixer"
-    },
-    "Sticky": {
-      "type": "object",
-      "properties": {
-        "analog": {
-          "type": "boolean",
-          "description": "the analog flag must be a True of False"
-        },
-        "digital": {
-          "type": "boolean",
-          "description": "the digital flag must be a True of False"
-        },
-        "duration": {
-          "type": "integer",
-          "description": "The ramp to zero duration, in ns"
-        }
-      },
-      "title": "Sticky",
-      "description": "When defined, makes the element sticky"
-    },
-    "SingleInputCollection": {
-      "type": "object",
-      "properties": {
-        "inputs": {
-          "type": "object",
-          "description": "A collection of multiple single inputs to the port",
-          "additionalProperties": {
-            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-          }
-        }
-      },
-      "title": "Single input collection",
-      "description": "Defines a set of single inputs which can be switched during play statements"
-    },
-    "HoldOffset": {
-      "type": "object",
-      "properties": {
-        "duration": {
-          "type": "integer",
-          "description": "The ramp to zero duration, in ns"
-        }
-      },
-      "title": "Hold offset",
-      "description": "When defined, makes the element sticky"
-    },
-    "DigitalInput": {
-      "type": "object",
-      "properties": {
-        "delay": {
-          "type": "integer",
-          "description": "The delay to apply to the digital pulses. In ns. An intrinsic negative delay of 136 ns exists by default"
-        },
-        "buffer": {
-          "type": "integer",
-          "description": "Digital pulses played to this element will be convolved with a digital pulse of value 1 with this length [ns]"
-        },
-        "port": {
-          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-        }
-      },
-      "title": "Digital input",
-      "description": "The specification of the digital input of an element"
-    },
-    "Element": {
-      "type": "object",
-      "properties": {
-        "outputs": {
-          "type": "object",
-          "description": "The output ports of the element.",
-          "additionalProperties": {
-            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-          }
-        },
-        "singleInput": {
-          "$ref": "#/definitions/SingleInput"
-        },
-        "multipleInputs": {
-          "$ref": "#/definitions/MultipleInputs"
-        },
-        "mixInputs": {
-          "$ref": "#/definitions/MixInput"
-        },
-        "smearing": {
-          "type": "integer",
-          "description": "Padding time, in ns, to add to both the start and end of the raw \n            ADC data window during a measure command."
-        },
-        "outputPulseParameters": {
-          "type": "object",
-          "description": "Pulse parameters for Time-Tagging"
-        },
-        "thread": {
-          "type": "string",
-          "description": "QE thread"
-        },
         "intermediate_frequency": {
           "type": "number",
           "x-nullable": true,
-          "description": "The frequency at which the controller modulates the output to this element [Hz]."
+          "description": "The frequency of this oscillator [Hz]."
         },
-        "sticky": {
-          "$ref": "#/definitions/Sticky"
+        "lo_frequency": {
+          "type": "number",
+          "description": "The frequency of the local oscillator which drives the mixer [Hz]."
         },
-        "oscillator": {
+        "mixer": {
           "type": "string",
-          "x-nullable": true,
-          "description": "The oscillator which is used by the controller to modulates the output to this element [Hz]. Can be used to share oscillators between elements"
-        },
-        "singleInputCollection": {
-          "$ref": "#/definitions/SingleInputCollection"
-        },
-        "digitalOutputs": {
-          "type": "object",
-          "additionalProperties": {
-            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
-          }
-        },
-        "hold_offset": {
-          "$ref": "#/definitions/HoldOffset"
-        },
-        "operations": {
-          "type": "object",
-          "description": "A collection of all pulse names to be used in play and measure commands",
-          "additionalProperties": {
-            "type": "string",
-            "description": "The name of the pulse as it appears under the \"pulses\" entry in the configuration dict"
-          }
-        },
-        "time_of_flight": {
-          "type": "integer",
-          "description": "The delay time, in ns, from the start of pulse until it reaches \n            the controller. Needs to be calibrated by looking at the raw ADC data. \n            Needs to be a multiple of 4 and the minimal value is 24. "
-        },
-        "digitalInputs": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/DigitalInput"
-          }
-        },
-        "measurement_qe": {
-          "type": "string",
-          "description": "not implemented"
+          "description": "The mixer used to drive the input of the oscillator, taken from the names in mixers entry in the main configuration"
         }
-      },
-      "title": "Element",
-      "description": "The specifications, parameters and connections of a single element."
-    },
-    "Pulse": {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "type": "string",
-          "description": "The type of operation. Possible values: 'control', 'measurement'"
-        },
-        "length": {
-          "type": "integer",
-          "description": "The length of pulse [ns]. Possible values: 16 to 2^31-1 in steps of 4"
-        },
-        "waveforms": {
-          "type": "object",
-          "description": "The specification of the analog waveform to be played. If the associated element has a single input, then the key is 'single'. If the associated element has 'mixInputs', then the keys are 'I' and 'Q'.",
-          "additionalProperties": {
-            "type": "string",
-            "description": "The name of analog waveform to be played."
-          }
-        },
-        "digital_marker": {
-          "type": "string",
-          "description": "The name of the digital waveform to be played with this pulse."
-        },
-        "integration_weights": {
-          "type": "object",
-          "description": "The name of the integration weight to be used in the program.",
-          "additionalProperties": {
-            "type": "string",
-            "description": "The name of the integration weights as it appears under the \"integration_weigths\" entry in the configuration dict."
-          }
-        }
-      },
-      "title": "pulse",
-      "description": "The specification and properties of a single pulse and to the measurement associated with it."
+      }
     },
     "Mixer": {
       "type": "object",
@@ -297,23 +66,18 @@
       "title": "Mixer",
       "description": "The specification of the correction matrix for an IQ mixer. This is a list of correction matrices for each LO and IF frequencies."
     },
-    "Oscillator": {
+    "IntegrationWeight": {
       "type": "object",
       "properties": {
-        "intermediate_frequency": {
-          "type": "number",
-          "x-nullable": true,
-          "description": "The frequency of this oscillator [Hz]."
+        "sine": {
+          "description": "The integration weights for the sine. Given as a list of tuples, each tuple in the format of: ([double] weight, [int] duration). weight range: [-2048, 2048] in steps of 2**-15. duration is in ns and must be a multiple of 4."
         },
-        "mixer": {
-          "type": "string",
-          "description": "The mixer used to drive the input of the oscillator, taken from the names in mixers entry in the main configuration"
-        },
-        "lo_frequency": {
-          "type": "number",
-          "description": "The frequency of the local oscillator which drives the mixer [Hz]."
+        "cosine": {
+          "description": "The integration weights for the cosine. Given as a list of tuples, each tuple in the format of: ([double] weight, [int] duration). weight range: [-2048, 2048] in steps of 2**-15. duration is in ns and must be a multiple of 4."
         }
-      }
+      },
+      "title": "Integration weights",
+      "description": "The specification of measurements' integration weights."
     },
     "DigitalWaveForm": {
       "type": "object",
@@ -326,6 +90,58 @@
       },
       "title": "Digital waveform",
       "description": "The samples of a digital waveform"
+    },
+    "DigitalInputPortDef": {
+      "type": "object",
+      "properties": {
+        "threshold": {
+          "type": "number",
+          "description": "The minimum voltage to trigger when a pulse arrives"
+        },
+        "deadtime": {
+          "type": "integer",
+          "description": "The minimal time between pulses, in ns."
+        },
+        "polarity": {
+          "type": "string",
+          "enum": [
+            "RISING",
+            "FALLING"
+          ],
+          "description": "The Detection edge - Whether to trigger in the rising or falling edge of the pulse"
+        },
+        "connectivity": {
+          "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
+        },
+        "shareable": {
+          "type": "boolean",
+          "description": "Whether the port is shareable with other QM instances"
+        }
+      },
+      "title": "Digital input port",
+      "description": "The specifications and properties of a digital input port of the controller."
+    },
+    "AnalogInputPortDef": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "number",
+          "description": "DC offset to the input, range: (-0.5, 0.5). Will be applied only when program runs."
+        },
+        "connectivity": {
+          "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
+        },
+        "gain_db": {
+          "type": "integer",
+          "description": "Gain of the pre-ADC amplifier, in dB. Accepts integers in the range: -12 to 20"
+        },
+        "shareable": {
+          "type": "boolean",
+          "description": "Whether the port is shareable with other QM instances"
+        }
+      },
+      "title": "Analog input port",
+      "description": "The specifications and properties of an analog input port of the controller."
     },
     "AnalogOutputFilterDef": {
       "type": "object",
@@ -349,6 +165,13 @@
     "AnalogOutputPortDef": {
       "type": "object",
       "properties": {
+        "offset": {
+          "type": "number",
+          "description": "DC offset to the output, range: (-0.5, 0.5). Will be applied while quantum machine is open."
+        },
+        "filter": {
+          "$ref": "#/definitions/AnalogOutputFilterDef"
+        },
         "delay": {
           "type": "integer",
           "description": "Output's delay, in units of ns."
@@ -356,93 +179,34 @@
         "connectivity": {
           "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
-        "shareable": {
-          "type": "boolean",
-          "description": "Whether the port is shareable with other QM instances"
-        },
-        "filter": {
-          "$ref": "#/definitions/AnalogOutputFilterDef"
-        },
-        "offset": {
-          "type": "number",
-          "description": "DC offset to the output, range: (-0.5, 0.5). Will be applied while quantum machine is open."
-        },
         "crosstalk": {
           "type": "object",
           "description": "",
           "additionalProperties": {
             "type": "number"
           }
+        },
+        "shareable": {
+          "type": "boolean",
+          "description": "Whether the port is shareable with other QM instances"
         }
       },
       "title": "Analog output port",
       "description": "The specifications and properties of an analog output port of the controller."
     },
-    "DigitalInputPortDef": {
-      "type": "object",
-      "properties": {
-        "threshold": {
-          "type": "number",
-          "description": "The minimum voltage to trigger when a pulse arrives"
-        },
-        "connectivity": {
-          "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
-        },
-        "shareable": {
-          "type": "boolean",
-          "description": "Whether the port is shareable with other QM instances"
-        },
-        "deadtime": {
-          "type": "integer",
-          "description": "The minimal time between pulses, in ns."
-        },
-        "polarity": {
-          "type": "string",
-          "enum": [
-            "RISING",
-            "FALLING"
-          ],
-          "description": "The Detection edge - Whether to trigger in the rising or falling edge of the pulse"
-        }
-      },
-      "title": "Digital input port",
-      "description": "The specifications and properties of a digital input port of the controller."
-    },
-    "AnalogInputPortDef": {
-      "type": "object",
-      "properties": {
-        "shareable": {
-          "type": "boolean",
-          "description": "Whether the port is shareable with other QM instances"
-        },
-        "gain_db": {
-          "type": "integer",
-          "description": "Gain of the pre-ADC amplifier, in dB. Accepts integers in the range: -12 to 20"
-        },
-        "connectivity": {
-          "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
-        },
-        "offset": {
-          "type": "number",
-          "description": "DC offset to the input, range: (-0.5, 0.5). Will be applied only when program runs."
-        }
-      },
-      "title": "Analog input port",
-      "description": "The specifications and properties of an analog input port of the controller."
-    },
     "DigitalOutputPortDef": {
       "type": "object",
       "properties": {
-        "shareable": {
+        "inverted": {
           "type": "boolean",
-          "description": "Whether the port is shareable with other QM instances"
+          "description": "Whether the port is inverted. If True, the output will be inverted."
         },
         "connectivity": {
           "description": "Connectivity (for now only for octave), Tuple of: ([str] Octave name, [str] port name)"
         },
-        "inverted": {
+        "shareable": {
           "type": "boolean",
-          "description": "Whether the port is inverted. If True, the output will be inverted."
+          "description": "Whether the port is shareable with other QM instances"
         }
       },
       "title": "Digital port",
@@ -451,17 +215,6 @@
     "Controller": {
       "type": "object",
       "properties": {
-        "analog_outputs": {
-          "type": "object",
-          "description": "The analog output ports and their properties.",
-          "additionalProperties": {
-            "$ref": "#/definitions/AnalogOutputPortDef"
-          }
-        },
-        "connectivity": {
-          "type": "string",
-          "description": "Here you can specify the connection of the OPX, for now, you can put here the name of the octave and it will set the default connection between OPX and Octave."
-        },
         "digital_inputs": {
           "type": "object",
           "description": "The digital inputs ports and their properties.",
@@ -476,8 +229,19 @@
             "$ref": "#/definitions/AnalogInputPortDef"
           }
         },
+        "connectivity": {
+          "type": "string",
+          "description": "Here you can specify the connection of the OPX, for now, you can put here the name of the octave and it will set the default connection between OPX and Octave."
+        },
         "type": {
           "default": "opx1"
+        },
+        "analog_outputs": {
+          "type": "object",
+          "description": "The analog output ports and their properties.",
+          "additionalProperties": {
+            "$ref": "#/definitions/AnalogOutputPortDef"
+          }
         },
         "digital_outputs": {
           "type": "object",
@@ -490,18 +254,254 @@
       "title": "controller",
       "description": "The specification of a single controller and its properties."
     },
-    "IntegrationWeight": {
+    "HoldOffset": {
       "type": "object",
       "properties": {
-        "sine": {
-          "description": "The integration weights for the sine. Given as a list of tuples, each tuple in the format of: ([double] weight, [int] duration). weight range: [-2048, 2048] in steps of 2**-15. duration is in ns and must be a multiple of 4."
-        },
-        "cosine": {
-          "description": "The integration weights for the cosine. Given as a list of tuples, each tuple in the format of: ([double] weight, [int] duration). weight range: [-2048, 2048] in steps of 2**-15. duration is in ns and must be a multiple of 4."
+        "duration": {
+          "type": "integer",
+          "description": "The ramp to zero duration, in ns"
         }
       },
-      "title": "Integration weights",
-      "description": "The specification of measurements' integration weights."
+      "title": "Hold offset",
+      "description": "When defined, makes the element sticky"
+    },
+    "SingleInputCollection": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "object",
+          "description": "A collection of multiple single inputs to the port",
+          "additionalProperties": {
+            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+          }
+        }
+      },
+      "title": "Single input collection",
+      "description": "Defines a set of single inputs which can be switched during play statements"
+    },
+    "MultipleInputs": {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "object",
+          "description": "A collection of multiple single inputs to the port",
+          "additionalProperties": {
+            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+          }
+        }
+      },
+      "title": "Multiple inputs",
+      "description": "Defines a set of single inputs which are all played at once"
+    },
+    "MixInputOctaveParams": {
+      "type": "object",
+      "properties": {
+        "downconversion_lo_frequency": {
+          "type": "number"
+        },
+        "output_switch_state": {
+          "type": "string"
+        },
+        "output_gain": {
+          "type": "integer"
+        },
+        "rf_output_port": {},
+        "downconversion_lo_source": {
+          "type": "string"
+        },
+        "rf_input_port": {},
+        "lo_source": {
+          "type": "string"
+        }
+      }
+    },
+    "MixInput": {
+      "type": "object",
+      "properties": {
+        "I": {
+          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+        },
+        "Q": {
+          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+        },
+        "lo_frequency": {
+          "type": "number",
+          "description": "The frequency of the local oscillator which drives the mixer."
+        },
+        "mixer": {
+          "type": "string",
+          "description": "The mixer used to drive the input of the element, taken from the names in mixers entry in the main configuration."
+        },
+        "octave_params": {
+          "$ref": "#/definitions/MixInputOctaveParams"
+        }
+      },
+      "title": "Mixer input",
+      "description": "The specification of the input of an element which is driven by an IQ mixer"
+    },
+    "DigitalInput": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+        },
+        "buffer": {
+          "type": "integer",
+          "description": "Digital pulses played to this element will be convolved with a digital pulse of value 1 with this length [ns]"
+        },
+        "delay": {
+          "type": "integer",
+          "description": "The delay to apply to the digital pulses. In ns. An intrinsic negative delay of 136 ns exists by default"
+        }
+      },
+      "title": "Digital input",
+      "description": "The specification of the digital input of an element"
+    },
+    "Sticky": {
+      "type": "object",
+      "properties": {
+        "digital": {
+          "type": "boolean",
+          "description": "the digital flag must be a True of False"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "The ramp to zero duration, in ns"
+        },
+        "analog": {
+          "type": "boolean",
+          "description": "the analog flag must be a True of False"
+        }
+      },
+      "title": "Sticky",
+      "description": "When defined, makes the element sticky"
+    },
+    "SingleInput": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+        }
+      },
+      "title": "Single input",
+      "description": "The specification of the input of an element which has a single input port"
+    },
+    "Element": {
+      "type": "object",
+      "properties": {
+        "hold_offset": {
+          "$ref": "#/definitions/HoldOffset"
+        },
+        "smearing": {
+          "type": "integer",
+          "description": "Padding time, in ns, to add to both the start and end of the raw \n            ADC data window during a measure command."
+        },
+        "outputs": {
+          "type": "object",
+          "description": "The output ports of the element.",
+          "additionalProperties": {
+            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+          }
+        },
+        "oscillator": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The oscillator which is used by the controller to modulates the output to this element [Hz]. Can be used to share oscillators between elements"
+        },
+        "operations": {
+          "type": "object",
+          "description": "A collection of all pulse names to be used in play and measure commands",
+          "additionalProperties": {
+            "type": "string",
+            "description": "The name of the pulse as it appears under the \"pulses\" entry in the configuration dict"
+          }
+        },
+        "thread": {
+          "type": "string",
+          "description": "QE thread"
+        },
+        "intermediate_frequency": {
+          "type": "number",
+          "x-nullable": true,
+          "description": "The frequency at which the controller modulates the output to this element [Hz]."
+        },
+        "digitalOutputs": {
+          "type": "object",
+          "additionalProperties": {
+            "description": "Controller port to use. Tuple of: ([str] controller name, [int] controller port)"
+          }
+        },
+        "singleInputCollection": {
+          "$ref": "#/definitions/SingleInputCollection"
+        },
+        "time_of_flight": {
+          "type": "integer",
+          "description": "The delay time, in ns, from the start of pulse until it reaches \n            the controller. Needs to be calibrated by looking at the raw ADC data. \n            Needs to be a multiple of 4 and the minimal value is 24. "
+        },
+        "outputPulseParameters": {
+          "type": "object",
+          "description": "Pulse parameters for Time-Tagging"
+        },
+        "multipleInputs": {
+          "$ref": "#/definitions/MultipleInputs"
+        },
+        "measurement_qe": {
+          "type": "string",
+          "description": "not implemented"
+        },
+        "mixInputs": {
+          "$ref": "#/definitions/MixInput"
+        },
+        "digitalInputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/DigitalInput"
+          }
+        },
+        "sticky": {
+          "$ref": "#/definitions/Sticky"
+        },
+        "singleInput": {
+          "$ref": "#/definitions/SingleInput"
+        }
+      },
+      "title": "Element",
+      "description": "The specifications, parameters and connections of a single element."
+    },
+    "Pulse": {
+      "type": "object",
+      "properties": {
+        "integration_weights": {
+          "type": "object",
+          "description": "The name of the integration weight to be used in the program.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "The name of the integration weights as it appears under the \"integration_weigths\" entry in the configuration dict."
+          }
+        },
+        "waveforms": {
+          "type": "object",
+          "description": "The specification of the analog waveform to be played. If the associated element has a single input, then the key is 'single'. If the associated element has 'mixInputs', then the keys are 'I' and 'Q'.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "The name of analog waveform to be played."
+          }
+        },
+        "digital_marker": {
+          "type": "string",
+          "description": "The name of the digital waveform to be played with this pulse."
+        },
+        "length": {
+          "type": "integer",
+          "description": "The length of pulse [ns]. Possible values: 16 to 2^31-1 in steps of 4"
+        },
+        "operation": {
+          "type": "string",
+          "description": "The type of operation. Possible values: 'control', 'measurement'"
+        }
+      },
+      "title": "pulse",
+      "description": "The specification and properties of a single pulse and to the measurement associated with it."
     },
     "QmConfig": {
       "type": "object",
@@ -591,6 +591,13 @@
     "ArbitraryWaveform": {
       "type": "object",
       "properties": {
+        "samples": {
+          "type": "array",
+          "description": "list of values of an arbitrary waveforms, range: (-0.5, 0.5)",
+          "items": {
+            "type": "number"
+          }
+        },
         "is_overridable": {
           "type": "boolean",
           "description": "Allows overriding the waveform after compilation. Cannot use with the non-default sampling_rate"
@@ -598,13 +605,6 @@
         "max_allowed_error": {
           "type": "number",
           "description": "\"Maximum allowed error for automatic compression\""
-        },
-        "samples": {
-          "type": "array",
-          "description": "list of values of an arbitrary waveforms, range: (-0.5, 0.5)",
-          "items": {
-            "type": "number"
-          }
         },
         "type": {
           "type": "string",
