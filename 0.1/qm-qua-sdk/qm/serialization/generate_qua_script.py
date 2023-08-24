@@ -1,17 +1,19 @@
 import re
 import sys
 import types
+import logging
 import datetime
 import traceback
 from typing import Any, Dict, Optional
 
 import betterproto
 import numpy as np
+from marshmallow import ValidationError
 
-from qm import Program, version
+from qm import Program, version, DictQuaConfig
 from qm.program import load_config
 from qm.grpc.qua_config import QuaConfig
-from qm.exceptions import ConfigSerializationException
+from qm.exceptions import ConfigSerializationException, ConfigValidationException
 from qm.program.ConfigBuilder import convert_msg_to_config
 from qm.serialization.qua_node_visitor import QuaNodeVisitor
 from qm.serialization.qua_serializing_visitor import QuaSerializingVisitor
@@ -25,7 +27,10 @@ CONFIG_ERROR = "CONFIG SERIALIZATION ERROR"
 SERIALIZATION_NOT_COMPLETE = "SERIALIZATION WAS NOT COMPLETE"
 
 
-def generate_qua_script(prog: Program, config: Optional[dict] = None) -> str:
+logger = logging.getLogger(__name__)
+
+
+def generate_qua_script(prog: Program, config: Optional[DictQuaConfig] = None) -> str:
     if prog.is_in_scope():
         raise RuntimeError("Can not generate script inside the qua program scope")
 
@@ -33,10 +38,10 @@ def generate_qua_script(prog: Program, config: Optional[dict] = None) -> str:
     if config is not None:
         try:
             proto_config = load_config(config)
-        except Exception as e:
-            raise RuntimeError(
-                "Can not generate script - bad config",
-            ) from e
+        except (ConfigValidationException, ValidationError) as e:
+            raise RuntimeError("Can not generate script - bad config") from e
+        except AttributeError:
+            logger.warning("Could not generate a loaded config. Maybe there is no `QuantumMachinesManager` instance?")
 
     proto_prog = prog.build(QuaConfig())
     return _generate_qua_script_pb(proto_prog, proto_config, config)
