@@ -166,8 +166,17 @@ nav:
       - "Cookie Policy": "qm-qua-sdk/docs/legal/cookie_policy.md"
   - "QUA academy":
     - "qua-academy/README.md"
-    - "| GROUND STATE >": "qua-academy/ground_state.md"
-    - "Introduction to X": "qua-academy/introduction.md"
+    - "Introduction": "qua-academy/introduction.md"
+    - "Manual Mixer Calibration": "qua-academy/manual_mixer_calibration.md"
+    - "Analog Input Calibration": "qua-academy/analog_input_calibration.md"
+    - "|State One>": 
+      - "Introduction": "qua-academy/state_one/state_one.md"
+      - "play": "qua-academy/state_one/state_one_play.md"
+      - "measure": "qua-academy/state_one/state_one_measure.md"
+      - "Stream processing": "qua-academy/state_one/state_one_sp.md"
+      - "configuration": "qua-academy/state_one/state_one_config.md"
+      - "Debrief": "qua-academy/state_one/state_one_debrief.md"
+
     - "test": "qua-academy/test.md"
     # - "Zero to Hero Journey": "qua-academy/"Zero_to_Hero_Journey.md"
   # - "QuAM SDK":
