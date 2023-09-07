@@ -13,7 +13,7 @@ from qm.program._qua_config_schema import (
     ControllerSchema,
     validate_config_capabilities,
 )
-from tests.conftest import ignore_deprecation_warnings_context
+from tests.conftest import ignore_warnings_context
 
 _POSSIBLE_INPUTS = [
     {
@@ -52,7 +52,7 @@ def _create_server_capabilities(
     supports_inverted_digital_output=False,
     supports_sticky_elements=False,
     supports_octave_reset=False,
-    supports_fast_frame_rotation=False
+    supports_fast_frame_rotation=False,
 ) -> ServerCapabilities:
     return ServerCapabilities(
         has_job_streaming_state=has_job_streaming_state,
@@ -68,7 +68,7 @@ def _create_server_capabilities(
         supports_inverted_digital_output=supports_inverted_digital_output,
         supports_sticky_elements=supports_sticky_elements,
         supports_octave_reset=supports_octave_reset,
-        supports_fast_frame_rotation=supports_fast_frame_rotation
+        supports_fast_frame_rotation=supports_fast_frame_rotation,
     )
 
 
@@ -131,12 +131,7 @@ class TestElementWithMultipleInputs:
             ConfigValidationException,
             match="Server does not support multiple inputs for elements",
         ):
-            validate_config_capabilities(
-                conf,
-                _create_server_capabilities(
-                    has_job_streaming_state=True
-                )
-            )
+            validate_config_capabilities(conf, _create_server_capabilities(has_job_streaming_state=True))
 
     def test_qua_config_pass_if_no_capability(self):
         schema = QuaConfigSchema()
@@ -159,9 +154,7 @@ class TestPortWithAnalogDelay:
 
     def test_qua_config_fail_if_no_capability(self):
         schema = QuaConfigSchema()
-        conf = schema.load(
-            {"version": "1", "controllers": {"con1": self._valid_config}}
-        )
+        conf = schema.load({"version": "1", "controllers": {"con1": self._valid_config}})
         with pytest.raises(
             ConfigValidationException,
             match="Server does not support analog delay used in controller",
@@ -175,9 +168,7 @@ class TestPortWithAnalogDelay:
 
     def test_qua_config_pass_if_capability(self):
         schema = QuaConfigSchema()
-        conf = schema.load(
-            {"version": "1", "controllers": {"con1": self._valid_config}}
-        )
+        conf = schema.load({"version": "1", "controllers": {"con1": self._valid_config}})
         validate_config_capabilities(
             conf,
             _create_server_capabilities(
@@ -373,14 +364,8 @@ class TestElementWithOutputPulseParameters:
         }
         self._basic_config["outputPulseParameters"] = output_pulse_parameters
         loaded = schema.load(self._basic_config)
-        assert (
-            loaded.output_pulse_parameters.signal_polarity
-            == QuaConfigOutputPulseParametersPolarity.ASCENDING
-        )
-        assert (
-            loaded.output_pulse_parameters.derivative_polarity
-            == QuaConfigOutputPulseParametersPolarity.DESCENDING
-        )
+        assert loaded.output_pulse_parameters.signal_polarity == QuaConfigOutputPulseParametersPolarity.ASCENDING
+        assert loaded.output_pulse_parameters.derivative_polarity == QuaConfigOutputPulseParametersPolarity.DESCENDING
 
         output_pulse_parameters = {
             "signalThreshold": 800,
@@ -390,14 +375,8 @@ class TestElementWithOutputPulseParameters:
         }
         self._basic_config["outputPulseParameters"] = output_pulse_parameters
         loaded = schema.load(self._basic_config)
-        assert (
-            loaded.output_pulse_parameters.signal_polarity
-            == QuaConfigOutputPulseParametersPolarity.DESCENDING
-        )
-        assert (
-            loaded.output_pulse_parameters.derivative_polarity
-            == QuaConfigOutputPulseParametersPolarity.ASCENDING
-        )
+        assert loaded.output_pulse_parameters.signal_polarity == QuaConfigOutputPulseParametersPolarity.DESCENDING
+        assert loaded.output_pulse_parameters.derivative_polarity == QuaConfigOutputPulseParametersPolarity.ASCENDING
 
     def test_all_new_parameters(self):
         schema = ElementSchema()
@@ -409,14 +388,8 @@ class TestElementWithOutputPulseParameters:
         }
         self._basic_config["outputPulseParameters"] = output_pulse_parameters
         loaded = schema.load(self._basic_config)
-        assert (
-            loaded.output_pulse_parameters.signal_polarity
-            == QuaConfigOutputPulseParametersPolarity.ASCENDING
-        )
-        assert (
-            loaded.output_pulse_parameters.derivative_polarity
-            == QuaConfigOutputPulseParametersPolarity.DESCENDING
-        )
+        assert loaded.output_pulse_parameters.signal_polarity == QuaConfigOutputPulseParametersPolarity.ASCENDING
+        assert loaded.output_pulse_parameters.derivative_polarity == QuaConfigOutputPulseParametersPolarity.DESCENDING
 
         output_pulse_parameters = {
             "signalThreshold": 800,
@@ -426,14 +399,8 @@ class TestElementWithOutputPulseParameters:
         }
         self._basic_config["outputPulseParameters"] = output_pulse_parameters
         loaded = schema.load(self._basic_config)
-        assert (
-            loaded.output_pulse_parameters.signal_polarity
-            == QuaConfigOutputPulseParametersPolarity.DESCENDING
-        )
-        assert (
-            loaded.output_pulse_parameters.derivative_polarity
-            == QuaConfigOutputPulseParametersPolarity.ASCENDING
-        )
+        assert loaded.output_pulse_parameters.signal_polarity == QuaConfigOutputPulseParametersPolarity.DESCENDING
+        assert loaded.output_pulse_parameters.derivative_polarity == QuaConfigOutputPulseParametersPolarity.ASCENDING
 
     def test_invalid_missing_one(self):
         schema = ElementSchema()
@@ -488,12 +455,7 @@ class TestElementWithOutputPulseParameters:
 
 
 class TestPortWithCrosstalk:
-    _valid_config = {
-        'type': 'opx1',
-        'analog_outputs': {
-            1: {'offset': 0.0, "crosstalk": {1: 0.2, 2: 0.3}}
-        }
-    }
+    _valid_config = {"type": "opx1", "analog_outputs": {1: {"offset": 0.0, "crosstalk": {1: 0.2, 2: 0.3}}}}
 
     def test_valid_crosstalk(self):
         schema = ControllerSchema()
@@ -501,9 +463,7 @@ class TestPortWithCrosstalk:
 
     def test_qua_config_fail_if_no_capability(self):
         schema = QuaConfigSchema()
-        conf = schema.load(
-            {"version": "1", "controllers": {"con1": self._valid_config}}
-        )
+        conf = schema.load({"version": "1", "controllers": {"con1": self._valid_config}})
         with pytest.raises(
             ConfigValidationException,
             match="Server does not support channel weights used in controller",
@@ -517,9 +477,7 @@ class TestPortWithCrosstalk:
 
     def test_qua_config_pass_if_capability(self):
         schema = QuaConfigSchema()
-        conf = schema.load(
-            {"version": "1", "controllers": {"con1": self._valid_config}}
-        )
+        conf = schema.load({"version": "1", "controllers": {"con1": self._valid_config}})
         validate_config_capabilities(
             conf,
             _create_server_capabilities(
@@ -539,92 +497,54 @@ class TestElementWithDoubleIntermediateFreq:
         "intermediate_frequency": 10000.1,
     }
     _elements = {
-        'readout_res': {
-            'mixInputs': {
-                'I': ('con1', 5),
-                'Q': ('con1', 6),
-                'lo_frequency': 6.1423e9,
-                'mixer': 'mxr_rr'
-            },
-            'intermediate_frequency': 12e6,
-            'operations': {
-                'pulse1': 'pulse1_in',
-                'ro_pulse': 'meas_pulse_in',
-                'ro_pulse_long': 'long_meas_pulse_in'
-            },
-            'time_of_flight': 200,
-            'smearing': 0,
-            'outputs': {
-                'out1': ('con1', 1),
-                'out2': ('con1', 2)
-            }
-
+        "readout_res": {
+            "mixInputs": {"I": ("con1", 5), "Q": ("con1", 6), "lo_frequency": 6.1423e9, "mixer": "mxr_rr"},
+            "intermediate_frequency": 12e6,
+            "operations": {"pulse1": "pulse1_in", "ro_pulse": "meas_pulse_in", "ro_pulse_long": "long_meas_pulse_in"},
+            "time_of_flight": 200,
+            "smearing": 0,
+            "outputs": {"out1": ("con1", 1), "out2": ("con1", 2)},
         },
-        'qe_iq_ref': {
-            'mixInputs': {
-                'I': ("con1", 1),
-                'Q': ("con1", 2),
-                'lo_frequency': 0.0,
-                'mixer': 'mxr1'
+        "qe_iq_ref": {
+            "mixInputs": {"I": ("con1", 1), "Q": ("con1", 2), "lo_frequency": 0.0, "mixer": "mxr1"},
+            "intermediate_frequency": 0.0,
+            "operations": {"pulse1": "pulse1_iq_in", "pulse_long": "pulse_long_iq_in", "ramp": "ramp_arb"},
+        },
+        "qe_iq1": {
+            "mixInputs": {
+                "I": ("con1", 3),
+                "Q": ("con1", 4),
             },
-            'intermediate_frequency': 0.0,
-            'operations': {
-                'pulse1': 'pulse1_iq_in',
-                'pulse_long': 'pulse_long_iq_in',
-                'ramp': 'ramp_arb'
+            "intermediate_frequency": 0.0,
+            "operations": {
+                "pulse1": "pulse1_iq_in",
             },
         },
-        'qe_iq1': {
-            'mixInputs': {
-                'I': ("con1", 3),
-                'Q': ("con1", 4),
+        "qe1": {
+            "singleInput": {"port": ("con1", 5)},
+            "intermediate_frequency": 0.0,
+            "operations": {
+                "pulse1": "pulse1_in",
+                "pulse_long": "pulse_long_in",
+                "pulse_tiny": "tiny_pulse_in",
+                "pulse_short": "pulse_short_in",
+                "pulse_arb": "pulse_arb",
+                "gaussian": "gaussian_in",
             },
-            'intermediate_frequency': 0.0,
-            'operations': {
-                'pulse1': 'pulse1_iq_in',
-            },
-        },
-        'qe1': {
-            'singleInput': {
-                'port': ("con1", 5)
-            },
-            'intermediate_frequency': 0.0,
-            'operations': {
-                'pulse1': 'pulse1_in',
-                'pulse_long': 'pulse_long_in',
-                'pulse_tiny': 'tiny_pulse_in',
-                'pulse_short': 'pulse_short_in',
-                'pulse_arb': 'pulse_arb',
-                'gaussian': 'gaussian_in'
-            },
-            'outputs': {
-                'out1': ["con1", 2]
-            },
+            "outputs": {"out1": ["con1", 2]},
             "time_of_flight": 0,
-            "smearing": 0
+            "smearing": 0,
         },
-        'qe2': {
-            'singleInput': {
-                'port': ("con1", 6)
-            },
-            'intermediate_frequency': 0.0,
-            'operations': {
-                'pulse1': 'pulse1_in',
-                'pulse_long': 'pulse_long_in',
-                'pulse_short': 'pulse_short_in'
-
-            },
+        "qe2": {
+            "singleInput": {"port": ("con1", 6)},
+            "intermediate_frequency": 0.0,
+            "operations": {"pulse1": "pulse1_in", "pulse_long": "pulse_long_in", "pulse_short": "pulse_short_in"},
         },
-        'qe3': {
-            'singleInput': {
-                'port': ("con1", 7)
-            },
-            'intermediate_frequency': 0.0,
-            'operations': {
-                'pulse_long': 'pulse_long_in',
-                'pulse1': 'pulse1_in'
-            },
-        }
+        "qe3": {
+            "singleInput": {"port": ("con1", 7)},
+            "intermediate_frequency": 0.0,
+            "operations": {"pulse_long": "pulse_long_in", "pulse1": "pulse1_in"},
+        },
     }
 
     def test_element_schema_with_int_freq(self):
@@ -632,45 +552,35 @@ class TestElementWithDoubleIntermediateFreq:
         self._single_element["intermediate_frequency"] = 10000
         conf = schema.load(self._single_element)
         intermediate_frequency = conf.intermediate_frequency_double
-        assert (
-            intermediate_frequency
-            == self._single_element["intermediate_frequency"]
-        )
+        assert intermediate_frequency == self._single_element["intermediate_frequency"]
         assert isinstance(intermediate_frequency, float)
 
     def test_element_schema_with_float_freq(self):
         schema = ElementSchema()
         conf = schema.load(self._single_element)
         intermediate_frequency = conf.intermediate_frequency_double
-        assert (
-            intermediate_frequency
-            == self._single_element["intermediate_frequency"]
-        )
+        assert intermediate_frequency == self._single_element["intermediate_frequency"]
         assert isinstance(intermediate_frequency, float)
 
     @pytest.mark.parametrize("element", argvalues=list(_elements.values()), ids=list(_elements.keys()))
     def test_many_elements_schema_with_float_freq(self, element: dict, capability_container):
-        with ignore_deprecation_warnings_context():
-            capability_container.capabilities.override(ServerCapabilities(True, True, True, True, True, True, True,
-                                                                          True, False, True, True, True, True, True))
+        with ignore_warnings_context():
+            capability_container.capabilities.override(
+                ServerCapabilities(True, True, True, True, True, True, True, True, False, True, True, True, True, True)
+            )
             schema = ElementSchema()
             conf = schema.load(element)
             intermediate_frequency_int = conf.intermediate_frequency
-            assert (
-                intermediate_frequency_int
-                == int(element["intermediate_frequency"])
-            )
+            assert intermediate_frequency_int == int(element["intermediate_frequency"])
             assert isinstance(intermediate_frequency_int, int)
 
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True))
+                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
+            )
             schema = ElementSchema()
             conf = schema.load(element)
             intermediate_frequency = conf.intermediate_frequency_double
-            assert (
-                intermediate_frequency
-                == element["intermediate_frequency"]
-            )
+            assert intermediate_frequency == element["intermediate_frequency"]
             assert isinstance(intermediate_frequency, float)
 
 
@@ -679,12 +589,11 @@ class TestElementWithSticky:
         "singleInput": {
             "port": ("con1", 1),
         },
-        "sticky": {"analog": True, "duration": 16, "digital": True}
-
+        "sticky": {"analog": True, "duration": 16, "digital": True},
     }
 
     def test_element_scheme_with_sticky(self, capability_container):
-        with ignore_deprecation_warnings_context():
+        with ignore_warnings_context():
             capability_container.capabilities.override(
                 ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
             )
@@ -696,7 +605,7 @@ class TestElementWithSticky:
             assert sticky.digital == self._single_element["sticky"]["digital"]
 
     def test_element_scheme_sticky_without_capabilities(self, capability_container):
-        with ignore_deprecation_warnings_context():
+        with ignore_warnings_context():
             capability_container.capabilities.override(
                 ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, False, True)
             )
@@ -704,7 +613,4 @@ class TestElementWithSticky:
             schema = ElementSchema()
             conf = schema.load(self._single_element)
             hold_offset = conf.hold_offset
-            assert (
-                hold_offset.duration == int(self._single_element["sticky"]["duration"] / 4)
-            )
-
+            assert hold_offset.duration == int(self._single_element["sticky"]["duration"] / 4)

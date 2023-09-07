@@ -45,6 +45,7 @@ class ServerDetails:
                 details="Use ServerDetails.server_version instead.",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return self.server_version
 

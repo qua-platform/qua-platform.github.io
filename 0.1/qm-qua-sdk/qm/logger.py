@@ -7,4 +7,5 @@ warnings.warn(
     "To change logging levels, you can either use the function `set_logging_level(...)` from `qm.logging_utils` "
     'or you can use python native `logging.getLogger("qm").setLevel(...)`.',
     category=DeprecationWarning,
+    stacklevel=2,
 )

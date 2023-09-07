@@ -33,7 +33,9 @@ def deprecate_to_property(value: T, name: str, deprecated_in: str, removed_in: s
 
     class DeprecatedProperty(value_type):  # type: ignore[misc, valid-type]
         def __call__(self, *args: Any, **kwargs: Any) -> Any:
-            warnings.warn(deprecation_message(name, deprecated_in, removed_in, details), category=DeprecationWarning)
+            warnings.warn(
+                deprecation_message(name, deprecated_in, removed_in, details), category=DeprecationWarning, stacklevel=2
+            )
             return value
 
     return DeprecatedProperty(value)

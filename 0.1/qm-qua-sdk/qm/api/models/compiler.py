@@ -37,6 +37,7 @@ def standardize_compiler_params(
             "Using **kwargs for the compiler arguments is deprecated. "
             "Please set the options inside the object 'CompilerOptionArguments'.",
             DeprecationWarning,
+            stacklevel=2,
         )
         return CompilerOptionArguments(strict=strict, flags=flags or [])
 

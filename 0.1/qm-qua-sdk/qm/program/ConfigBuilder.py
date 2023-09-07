@@ -306,15 +306,9 @@ def _convert_elements(elements):
             element_config_data["smearing"] = int(data["smearing"])
 
         if "intermediateFrequencyOscillatorDouble" in data:
-            freq = float(data["intermediateFrequencyOscillatorDouble"])
-            if "intermediateFrequencyNegative" in data and bool(data["intermediateFrequencyNegative"]):
-                freq = -freq
-            element_config_data["intermediate_frequency"] = freq
+            element_config_data["intermediate_frequency"] = float(data["intermediateFrequencyOscillatorDouble"])
         elif "intermediateFrequencyOscillator" in data:
-            freq = float(data["intermediateFrequencyOscillator"])
-            if "intermediateFrequencyNegative" in data and bool(data["intermediateFrequencyNegative"]):
-                freq = -freq
-            element_config_data["intermediate_frequency"] = freq
+            element_config_data["intermediate_frequency"] = float(data["intermediateFrequencyOscillator"])
         elif "namedOscillator" in data:
             element_config_data["oscillator"] = str(data["namedOscillator"])
         elif "intermediateFrequencyDouble" in data:
@@ -327,6 +321,7 @@ def _convert_elements(elements):
             if "intermediateFrequencyNegative" in data and bool(data["intermediateFrequencyNegative"]):
                 freq = -freq
             element_config_data["intermediate_frequency"] = freq
+
         if "operations" in data:
             element_config_data["operations"] = data["operations"]
 

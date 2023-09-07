@@ -145,6 +145,7 @@ class SimulatedJob(RunningQmJob):
                 details="use 'get_simulated_waveform_report' instead.",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return self._simulated_analog_outputs["waveforms"]
 
@@ -175,6 +176,7 @@ class SimulatedJob(RunningQmJob):
                 details="use 'get_simulated_waveform_report' instead.",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return self._simulated_digital_outputs["waveforms"]
 

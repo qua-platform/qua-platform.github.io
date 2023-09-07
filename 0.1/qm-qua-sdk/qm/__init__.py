@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from qm.jobs.qm_job import QmJob  # noqa
 from qm.type_hinting import DictQuaConfig
@@ -45,6 +46,9 @@ __all__ = [
     "LoopbackInterface",
     "DictQuaConfig",
 ]
+
+warnings.filterwarnings("default", category=DeprecationWarning, module="qm")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="qm.grpc")
 
 config = UserConfig.create_from_file()
 config_loggers(config)

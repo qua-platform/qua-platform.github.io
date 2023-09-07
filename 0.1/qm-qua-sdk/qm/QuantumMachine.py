@@ -95,6 +95,7 @@ class QuantumMachine:
                 details="QuantumMachine no longer has 'manager' property",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return None
 
@@ -117,6 +118,7 @@ class QuantumMachine:
                 details="Use ElementWithOctave instead. For further details, see elements API.",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return self._octave
 
@@ -768,6 +770,7 @@ class QuantumMachine:
                 method="QuantumMachine.peek", deprecated_in="1.1.0", removed_in="1.2.0", details="Not Implemented"
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         raise NotImplementedError()
         # if you must use this, code below will work for a specific controller
@@ -783,6 +786,7 @@ class QuantumMachine:
                 method="QuantumMachine.poke", deprecated_in="1.1.0", removed_in="1.2.0", details="Not Implemented"
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         pass
 

@@ -32,6 +32,7 @@ class RunningQmJob(QmBaseJob):
                 details="QMJob no longer has 'manager' property",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         return None
 

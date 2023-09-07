@@ -130,7 +130,9 @@ class QuantumMachinesManager:
 
     @property
     def octave_manager(self) -> OctaveManager:
-        warnings.warn("Do not use OctaveManager, it will be removed in the next version", DeprecationWarning)
+        warnings.warn(
+            "Do not use OctaveManager, it will be removed in the next version", DeprecationWarning, stacklevel=2
+        )
         return self._octave_manager
 
     @property
@@ -177,6 +179,7 @@ class QuantumMachinesManager:
                 "QuantumMachineManager.version() will have a different return type in 1.2.0. Use `QuantumMachineManager.version_dict()` instead",
             ),
             category=DeprecationWarning,
+            stacklevel=2,
         )
         output_dict = self.version_dict()
 
@@ -194,6 +197,7 @@ class QuantumMachinesManager:
         warnings.warn(
             deprecation_message("QuantumMachineManager.close()", "1.1.0", "1.2.0", "close will be removed."),
             category=DeprecationWarning,
+            stacklevel=2,
         )
         pass
 

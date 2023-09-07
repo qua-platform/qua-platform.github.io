@@ -52,6 +52,7 @@ class QmOctave:
             "lo_frequency is now set directly from config when a QuantumMachine is created, no need to do it directly. "
             "If you want, you can run over the elements and do set_frequency.",
             category=DeprecationWarning,
+            stacklevel=2,
         )
 
     def set_lo_frequency(self, element: str, lo_frequency: float, set_source: bool = True):

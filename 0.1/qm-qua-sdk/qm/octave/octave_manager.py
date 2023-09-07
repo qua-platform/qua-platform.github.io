@@ -249,6 +249,7 @@ class OctaveManager:
                 "set_clock is changing its API, and the 'clock_type' and 'frequency' arguments will be "
                 "removed in the next version, please use the 'mode' parameter.",
                 category=DeprecationWarning,
+                stacklevel=2,
             )
         else:
             clock_type, frequency = clock_mode.value

@@ -159,6 +159,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
                 details="function no longer supported, will be removed.",
             ),
             DeprecationWarning,
+            stacklevel=2,
         )
         writer_opened = False
         if writer is None or isinstance(writer, str):
@@ -208,6 +209,7 @@ class BaseStreamingResultFetcher(metaclass=abc.ABCMeta):
             warnings.warn(
                 "Parameter `timeout` can only be float since 1.1.0, please use `wait_for_all_values()` instead",
                 category=DeprecationWarning,
+                stacklevel=2,
             )
 
         def on_iteration() -> bool:

@@ -167,6 +167,7 @@ class QmOctaveConfig:
         warnings.warn(
             "OctaveConfig.set_opx_octave_mapping is deprecated as of 1.1.0 and will be removed in 1.2.0, The port mapping was moved to the config. Please set the mapping there",
             DeprecationWarning,
+            stacklevel=2,
         )
         if self._opx_octave_port_mapping is None:
             self._opx_octave_port_mapping = {}
@@ -234,6 +235,7 @@ class QmOctaveConfig:
         warnings.warn(
             "Setting port mapping was moved to the config, please move your mapping there",
             DeprecationWarning,
+            stacklevel=2,
         )
         return self._opx_octave_port_mapping
 
@@ -312,6 +314,7 @@ class QmOctaveConfig:
         warnings.warn(
             "Loopbacks were moved to the qua-config, move them there",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = {}
