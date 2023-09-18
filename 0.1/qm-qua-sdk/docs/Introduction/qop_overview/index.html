@@ -537,6 +537,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#stack-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stack Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pc-to-qpu-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PC to QPU Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qpu-to-pc-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QPU to PC Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2345,6 +2395,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#stack-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stack Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pc-to-qpu-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PC to QPU Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qpu-to-pc-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QPU to PC Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2404,6 +2504,28 @@ Multiple QUA developers can work in parallel from one or more client interfaces.
 </figure>
 <h2 id="scalable-architecture">Scalable Architecture<a class="headerlink" href="#scalable-architecture" title="Permanent link">&para;</a></h2>
 <p>Multiple OPXs can be connected to a single quantum system, to allow working with a large number of qubits, while the software interface and in particular programing QUA programs, remains the same.</p>
+<h2 id="stack-overview">Stack Overview<a class="headerlink" href="#stack-overview" title="Permanent link">&para;</a></h2>
+<p>The execution of a program involves a seamless flow, starting from its definition on your lab PC, through the compilation in the OPX and ending in pulse transmission to the quantum hardware.
+This flow can be seen in the figure below.</p>
+<figure>
+<p><a class="glightbox" href="../QOP_stack_overview.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Overview of QOP stack for a single OPX+" src="../QOP_stack_overview.png" /></a>
+  </p>
+<figcaption>Overview of QOP stack for a single OPX+</figcaption>
+</figure>
+<h3 id="pc-to-qpu-flow">PC to QPU Flow<a class="headerlink" href="#pc-to-qpu-flow" title="Permanent link">&para;</a></h3>
+<p>The first step in executing a program is writing a configuration file and a QUA program in your lab pc.
+When executing it, the program is sent to the SOM inside the OPX+. The compiler, inside the SOM, is responsible for converting the QUA into low-level instructions
+and sending them to the FPGA. Inside the FPGA are 18 pulse processors designed to generate pulses which are then modulated by the internal oscillators.
+The pulses are converted to analog signals using DACs and output through the front panel's analog ports.</p>
+<h3 id="qpu-to-pc-flow">QPU to PC Flow<a class="headerlink" href="#qpu-to-pc-flow" title="Permanent link">&para;</a></h3>
+<p>In addition to pulse transmission, the system can measure and analyze incoming pulses from the quantum hardware.
+These pulses enter the analog input ports on the front panel and digitized by the ADCs. Then, a mathematical computation is performed on the signals and the relevant data, e.g., the demodulation results, is saved to the on-board memory.
+Furthermore, the measurement results can be sent to the stream processing module, on the SOM, for further data manipulation and in turn are sent to the client PC.</p>
+<h3 id="additional-features">Additional Features<a class="headerlink" href="#additional-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>It is possible to input an external trigger into the OPX+ through the back panel. This signal enters directly into the FPGA and influence the logical sequence.</li>
+<li>A notable feature of the OPX is its simulator. By transmitting a program from the lab PC to the hardware simulator within the SOM, users can anticipate the OPX's output for a given QUA program.</li>
+</ul>
 
   
     
@@ -2419,7 +2541,7 @@ Multiple QUA developers can work in parallel from one or more client interfaces.
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-03-27T11:55:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-03-27</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-09-14T12:52:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-09-14</span>
       </span>
     
     
