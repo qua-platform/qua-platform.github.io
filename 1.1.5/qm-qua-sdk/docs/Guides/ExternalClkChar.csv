@@ -1,0 +1,8 @@
+﻿Symbol,Meaning,Min,Max,Units
+EXT_CLK,Input Clock,10,1000,MHz
+t\ :sub:`CLK`\,Clock period,1,100,ns
+t\ :sub:`CLKh`\,"Clock pulse duration, high",0.47,,ns
+t\ :sub:`CLKl`\,"Clock pulse duration, low
+",0.47,,ns
+V\ :sub:`PP`\,Peak-to-peak voltage,0.35,2.3,V
+Z\ :sub:`in`\,input impedance,47,52,Ω

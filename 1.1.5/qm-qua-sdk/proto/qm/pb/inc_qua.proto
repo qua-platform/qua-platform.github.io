@@ -1,0 +1,596 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/struct.proto";
+import "qm/pb/inc_qua_config.proto";
+
+package qm.grpc.qua;
+
+message QuaProgram {
+    qm.grpc.qua_config.QuaConfig config = 1;
+    DynamicConfig dynConfig = 2;
+    Script script = 5;
+    CompilerOptions compilerOptions = 6;
+    QuaResultAnalysis resultAnalysis = 7;
+
+    enum Type {
+        INT = 0;
+        BOOL = 1;
+        REAL = 2;
+    }
+
+
+    message CompilerOptions {
+        bool useExperimentalCalculationCompiler = 1 [deprecated=true]; // deprecated since 05/12/2019
+        bool optimizeMergeCodeExecution = 2 [deprecated=true]; // deprecated since 05/12/2019
+        bool optimizeWriteReadCommands = 3 [deprecated=true]; // deprecated since 05/12/2019
+        repeated string skipOptimizations = 4 [deprecated=true]; // deprecated since 05/12/2019
+        bool strict = 5 [deprecated=true]; // deprecated since 05/12/2019
+        repeated string flags = 6;
+    }
+
+    message Script {
+        repeated VarDeclaration variables = 1;
+        StatementsCollection body = 10;
+    }
+
+    message VarDeclaration {
+        string name = 1;
+        Type type = 2;
+        int32 size = 3;
+        repeated LiteralExpression value = 4;
+        int32 dim = 5;
+        bool isInputStream = 6;
+    }
+
+    message QuantumElementReference {
+        string loc = 100;
+        string name = 1;
+    }
+    message PulseReference {
+        string loc = 100;
+        string name = 1;
+    }
+    message IntegrationWeightReference {
+        string loc = 100;
+        string name = 1;
+    }
+
+    message AnyStatement {
+        oneof statement_oneof {
+            PlayStatement play = 1;
+            MeasureStatement measure = 2;
+            WaitStatement wait = 3;
+            SyncStatement sync = 4;
+            IfStatement if = 5;
+            AssignmentStatement assign = 6;
+            ForStatement for = 7;
+            RusStatement rus = 8;
+            AlignStatement align = 9;
+            UpdateFrequencyStatement updateFrequency = 10;
+            ZRotationStatement zRotation = 11;
+            PauseStatement pause = 12;
+            SaveStatement save = 13;
+            ForEachStatement forEach = 14;
+            WaitForTriggerStatement waitForTrigger = 15;
+            QRunStatement qrun = 16 [deprecated=true];
+            UpdateCorrectionStatement updateCorrection = 17;
+            ResetPhaseStatement resetPhase = 18;
+            RampToZeroStatement rampToZero = 19;
+            ResetFrameStatement resetFrame = 20;
+            SetDcOffsetStatement setDcOffset = 21;
+            AdvanceInputStreamStatement advanceInputStream = 22;
+            StrictTimingStatement strictTiming = 23;
+            FastFrameRotationStatement fastFrameRotation = 24;
+        }
+    }
+
+    message AmpMultiplier {
+        string loc = 100;
+        AnyScalarExpression v0 = 1;
+        AnyScalarExpression v1 = 2;
+        AnyScalarExpression v2 = 3;
+        AnyScalarExpression v3 = 4;
+    }
+
+    message RampToZeroStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        google.protobuf.UInt32Value duration = 2;
+    }
+
+    message RampPulse {
+        string loc = 100;
+        AnyScalarExpression value = 2;
+    }
+
+    message Chirp {
+        string loc = 100;
+        oneof rate {
+            AnyScalarExpression scalarRate = 1;
+            ArrayVarRefExpression arrayRate = 2;
+        }
+        enum Units {
+            HzPerNanoSec = 0;
+            mHzPerNanoSec = 1;
+            uHzPerNanoSec = 2;
+            nHzPerNanoSec = 3;
+            pHzPerNanoSec = 4;
+        }
+        Units units = 3;
+        repeated uint32 times = 4;
+        bool continueChirp = 5;
+    }
+
+    message PlayStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        PulseReference pulse = 2 [deprecated = true];
+        oneof pulseType {
+            PulseReference namedPulse = 7;
+            RampPulse rampPulse = 8;
+        }
+        AmpMultiplier amp = 3;
+        AnyScalarExpression duration = 4;
+        AnyScalarExpression condition = 5;
+        string targetInput = 6;
+
+        Chirp chirp = 9;
+        AnyScalarExpression truncate = 10;
+        string timestampLabel = 11;
+    }
+
+    message UpdateFrequencyStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        AnyScalarExpression value = 2;
+        enum Units {
+            Hz = 0;
+            mHz = 1;
+            uHz = 2;
+            nHz = 3;
+            pHz = 4;
+        }
+        Units units = 3;
+        bool keepPhase = 4;
+    }
+
+    message SetDcOffsetStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        string qeInputReference = 2;
+        AnyScalarExpression offset = 3;
+    }
+    
+    message ZRotationStatement {
+        string loc = 100;
+        QuantumElementReference qe = 3;
+        AnyScalarExpression value = 2;
+    }
+
+    message ResetFrameStatement {
+        string loc = 100;
+        QuantumElementReference qe = 2;
+    }
+
+    message FastFrameRotationStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        AnyScalarExpression cosine = 2;
+        AnyScalarExpression sine = 3;
+    }
+
+    message AlignStatement {
+        string loc = 100;
+        repeated QuantumElementReference qe = 1;
+    }
+
+    message MeasureProcess {
+        oneof process {
+            AnalogMeasureProcess analog = 1;
+            DigitalMeasureProcess digital = 2;
+        }
+    }
+
+    message AnalogMeasureProcess {
+        string loc = 100;
+
+        oneof process {
+            BareIntegration bareIntegration = 1;
+            DemodIntegration demodIntegration = 2;
+            RawTimeTagging rawTimeTagging = 3;
+            DualBareIntegration dualBareIntegration = 4;
+            DualDemodIntegration dualDemodIntegration = 5;
+            HighResTimeTagging highResTimeTagging = 6;
+        }
+
+
+        message BareIntegration {
+            IntegrationWeightReference integration = 1;
+            AnalogProcessTarget target = 2;
+            string elementOutput = 9;
+        }
+
+        message DualBareIntegration {
+            IntegrationWeightReference integration1 = 1;
+            IntegrationWeightReference integration2 = 2;
+            AnalogProcessTarget target = 3;
+            string elementOutput1 = 9;
+            string elementOutput2 = 10;
+        }
+
+        message DemodIntegration {
+            IntegrationWeightReference integration = 1;
+            AnalogProcessTarget target = 2;
+            string elementOutput = 9;
+        }
+
+        message DualDemodIntegration {
+            IntegrationWeightReference integration1 = 1;
+            IntegrationWeightReference integration2 = 2;
+            AnalogProcessTarget target = 3;
+            string elementOutput1 = 9;
+            string elementOutput2 = 10;
+        }
+
+        message RawTimeTagging {
+            ArrayVarRefExpression target = 1;
+            VarRefExpression targetLen = 2;
+            int32 maxTime = 3;
+            string elementOutput = 9;
+        }
+
+        message HighResTimeTagging {
+            ArrayVarRefExpression target = 1;
+            VarRefExpression targetLen = 2;
+            int32 maxTime = 3;
+            string elementOutput = 9;
+        }
+    }
+
+    message DigitalMeasureProcess {
+        string loc = 100;
+
+        oneof process {
+            RawTimeTagging rawTimeTagging = 1;
+            Counting counting = 2;
+        }
+
+        message RawTimeTagging {
+            string elementOutput = 1;
+            ArrayVarRefExpression target = 2;
+            VarRefExpression targetLen = 3;
+            int32 maxTime = 4;
+        }
+
+        message Counting {
+            repeated string elementOutputs = 1;
+            VarRefExpression target = 2;
+            int32 maxTime = 3;
+        }
+    }
+
+    message AnalogProcessTarget {
+        string loc = 100;
+        oneof processTarget {
+            ScalarProcessTarget scalarProcess = 1;
+            VectorProcessTarget vectorProcess = 2;
+        }
+
+        message ScalarProcessTarget {
+            oneof target {
+                VarRefExpression variable = 1;
+                ArrayCellRefExpression arrayCell = 2;
+            }
+        }
+
+        message VectorProcessTarget {
+            ArrayVarRefExpression array = 1;
+            TimeDivision timeDivision = 2;
+        }
+
+        message TimeDivision {
+            oneof timeDivision {
+                AnalogTimeDivision.Sliced sliced = 2;
+                AnalogTimeDivision.Accumulated accumulated = 3;
+                AnalogTimeDivision.MovingWindow movingWindow = 4;
+            }
+        }
+    }
+
+    message AnalogTimeDivision {
+        message Sliced {
+            string loc = 100;
+            int32 samplesPerChunk = 1;
+        }
+        message Accumulated {
+            string loc = 100;
+            int32 samplesPerChunk = 1;
+        }
+        message MovingWindow {
+            string loc = 100;
+            int32 samplesPerChunk = 1;
+            int32 chunksPerWindow = 2;
+        }
+    }
+
+    message MeasureOutput {
+        string loc = 100;
+        IntegrationWeightReference integration = 1;
+        VarRefExpression variable = 2 [deprecated = true];
+
+        string output = 3;
+
+        Target target = 4;
+
+        message Target {
+            oneof target {
+                VarRefExpression variable = 1;
+                ArrayCellRefExpression arrayCell = 2;
+            }
+        }
+
+    }
+    message MeasureStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        PulseReference pulse = 2;
+        AmpMultiplier amp = 3;
+        repeated MeasureOutput outputs = 4 [deprecated = true];
+        string streamAs = 5;
+        repeated MeasureProcess measureProcesses = 7;
+        string timestampLabel = 8;
+    }
+    message WaitStatement {
+        string loc = 100;
+        repeated QuantumElementReference qe = 1;
+        AnyScalarExpression time = 2;
+    }
+    message WaitForTriggerStatement {
+        string loc = 100;
+        repeated QuantumElementReference qe = 1;
+        PulseReference pulseToPlay = 2;
+
+        oneof source {
+            google.protobuf.Empty globalTrigger = 3;
+            ElementOutput elementOutput = 4;
+        }
+
+        message ElementOutput {
+            string element = 1;
+            string output = 2;
+        }
+
+        VarRefExpression timeTagTarget = 5;
+    }
+    message UpdateCorrectionStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+        Correction correction = 2;
+    }
+
+    message ResetPhaseStatement {
+        string loc = 100;
+        QuantumElementReference qe = 1;
+    }
+
+    message Correction {
+        string loc = 100;
+        AnyScalarExpression c0 = 1;
+        AnyScalarExpression c1 = 2;
+        AnyScalarExpression c2 = 3;
+        AnyScalarExpression c3 = 4;
+    }
+
+    message SyncStatement {
+        string loc = 100;
+    }
+
+    message ElseIf {
+        AnyScalarExpression condition = 1;
+        StatementsCollection body = 2;
+        string loc = 100;
+    }
+    message IfStatement {
+        AnyScalarExpression condition = 1;
+        StatementsCollection body = 2;
+        StatementsCollection else = 3;
+        repeated ElseIf elseifs = 4;
+        bool unsafe = 5;
+        string loc = 100;
+    }
+    message ForStatement {
+        StatementsCollection init = 1;
+        AnyScalarExpression condition = 2;
+        StatementsCollection update = 3;
+        StatementsCollection body = 4;
+        string loc = 100;
+    }
+
+    message QRunStatement {
+        StatementsCollection body = 1;
+        string loc = 100;
+    }
+
+    message StrictTimingStatement {
+        StatementsCollection body = 1;
+        string loc = 100;
+    }
+
+    message ForEachStatement {
+        repeated VariableWithValues iterator = 1;
+        StatementsCollection body = 2;
+        string loc = 100;
+        message VariableWithValues {
+            VarRefExpression variable = 1;
+            ArrayVarRefExpression array = 2;
+        }
+    }
+    message RusStatement {
+        StatementsCollection doBlock = 1;
+        StatementsCollection failBlock = 2;
+        AnyScalarExpression until = 3;
+        string loc = 100;
+    }
+    message AssignmentStatement {
+        VarRefExpression variable = 1 [deprecated = true];
+        AnyScalarExpression expression = 2;
+        bool save = 3 [deprecated = true];
+
+        Target target = 4;
+
+        string loc = 100;
+
+        message Target {
+            oneof target {
+                VarRefExpression variable = 1;
+                ArrayCellRefExpression arrayCell = 2;
+            }
+        }
+    }
+
+    message PauseStatement {
+        repeated QuantumElementReference qes = 1;
+        string loc = 100;
+    }
+    message SaveStatement {
+        VarRefExpression variable = 1 [deprecated = true];
+        string tag = 2;
+
+        Source source = 3;
+
+        message Source {
+            oneof source {
+                VarRefExpression variable = 1;
+                ArrayCellRefExpression arrayCell = 2;
+                LiteralExpression literal = 3;
+            }
+        }
+
+        string loc = 100;
+    }
+
+    message StatementsCollection {
+        repeated AnyStatement statements = 1;
+    }
+
+
+    message AnyScalarExpression {
+        oneof expression_oneof {
+            VarRefExpression variable = 1;
+            LiteralExpression literal = 2;
+            BinaryExpression binaryOperation = 3;
+            ArrayCellRefExpression arrayCell = 4;
+            ArrayLengthExpression arrayLength = 5;
+            LibFunctionExpression libFunction = 6;
+        }
+    }
+
+    message LibFunctionExpression {
+        string functionName = 1;
+        repeated Argument arguments = 2;
+        string libraryName = 3;
+
+        string loc = 100;
+
+        message Argument {
+            oneof argument_oneof {
+                AnyScalarExpression scalar = 1;
+                ArrayVarRefExpression array = 2;
+            }
+        }
+    }
+
+    message AdvanceInputStreamStatement {
+        oneof stream_oneof {
+            VarRefExpression streamVariable = 1;
+            ArrayVarRefExpression streamArray = 2;
+        }
+
+        string loc = 100;
+    }
+
+
+    message ArrayLengthExpression {
+        ArrayVarRefExpression array = 1;
+
+        string loc = 100;
+    }
+
+    message VarRefExpression {
+        //        string name = 1;
+        reserved 1;
+        oneof var_oneof {
+            string name = 2;
+            int32 ioNumber = 3;
+        }
+
+        string loc = 100;
+    }
+    message ArrayVarRefExpression {
+        reserved 1;
+        string name = 2;
+
+        string loc = 100;
+    }
+
+    message ArrayCellRefExpression {
+        reserved 1;
+        ArrayVarRefExpression arrayVar = 2;
+        AnyScalarExpression index = 3;
+
+        string loc = 100;
+    }
+
+    message LiteralExpression {
+        string value = 1;
+        Type type = 2;
+        string loc = 100;
+    }
+
+    message BinaryExpression {
+        enum BinaryOperator {
+            ADD = 0;
+            SUB = 1;
+            MULT = 2;
+            DIV = 3;
+
+            // binary operators
+            AND = 4;
+            OR = 5;
+            XOR = 6;
+
+            // comparisons
+            LT = 7;
+            LET = 8;
+            GT = 9;
+            GET = 10;
+            EQ = 11;
+
+            // shifts
+            SHL = 12;
+            SHR = 13;
+        }
+        BinaryOperator op = 1;
+        AnyScalarExpression left = 4;
+        AnyScalarExpression right = 5;
+
+        string loc = 100;
+    }
+    /*
+    A config that is similar to JSON in structure and can be converted to the real config
+    It has support for versioning
+    */
+    message DynamicConfig {
+        uint32 version = 1;
+        google.protobuf.Struct root = 2;
+    }
+}
+
+message QuaResultAnalysis {
+    uint32 version = 1;
+    repeated google.protobuf.ListValue model = 3;
+}
