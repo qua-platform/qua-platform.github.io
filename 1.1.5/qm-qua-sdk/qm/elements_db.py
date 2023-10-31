@@ -4,17 +4,17 @@ import betterproto
 
 from qm.api.frontend_api import FrontendApi
 from qm._octaves_container import OctavesContainer
-from qm.elements.element_outputs import DownconvertedOutput, NoOutput, ElementOutput
 from qm.octave.octave_config import QmOctaveConfig
 from qm.elements.element import Element, AllElements
+from qm.elements.element_outputs import NoOutput, ElementOutput, DownconvertedOutput
 from qm.elements.element_inputs import NoInput, MixInputs, SingleInput, MultipleInputs, SingleInputCollection
 from qm.grpc.qua_config import (
     QuaConfig,
     QuaConfigMixInputs,
     QuaConfigSingleInput,
     QuaConfigMultipleInputs,
-    QuaConfigSingleInputCollection,
     QuaConfigGeneralPortReference,
+    QuaConfigSingleInputCollection,
 )
 
 

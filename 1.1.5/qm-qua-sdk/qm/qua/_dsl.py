@@ -222,9 +222,8 @@ def play(
     timestamp_label = None
     if isinstance(timestamp_stream, str):
         scope = _get_root_program_scope()
-        result_obj = scope.declare_save(timestamp_stream)
         scope.program.set_metadata(uses_command_timestamps=True)
-        timestamp_label = result_obj.get_var_name()
+        timestamp_label = scope.declare_save(timestamp_stream).get_var_name()
     elif isinstance(timestamp_stream, _ResultSource):
         _get_root_program_scope().program.set_metadata(uses_command_timestamps=True)
         timestamp_label = timestamp_stream.get_var_name()
@@ -460,13 +459,13 @@ def measure(
             measure_process.append(output)
 
     if stream is not None and isinstance(stream, str):
-        result_obj = _get_root_program_scope().declare_legacy_adc(stream)
+        adc_stream = _get_root_program_scope().declare_legacy_adc(stream)
     else:
         if stream is not None and (not isinstance(stream, _ResultSource)):
             raise QmQuaException("stream object is not of the right type")
-        result_obj = stream
+        adc_stream = stream
 
-    if result_obj and not result_obj._configuration.is_adc_trace:
+    if adc_stream and not adc_stream._configuration.is_adc_trace:
         logger.warning(
             "Streaming adc data without declaring the stream with "
             "`declare_stream(adc_trace=true)` might cause performance issues"
@@ -475,15 +474,14 @@ def measure(
     if isinstance(timestamp_stream, str):
         scope = _get_root_program_scope()
         scope.program.set_metadata(uses_command_timestamps=True)
-        result_obj = scope.declare_save(timestamp_stream)
-        timestamp_label = result_obj.get_var_name()
+        timestamp_label = scope.declare_save(timestamp_stream).get_var_name()
     elif isinstance(timestamp_stream, _ResultSource):
         _get_root_program_scope().program.set_metadata(uses_command_timestamps=True)
         timestamp_label = timestamp_stream.get_var_name()
     body.measure(
         pulse,
         element,
-        result_obj,
+        adc_stream,
         timestamp_label=timestamp_label,
         *[_unwrap_measure_process(x) for x in measure_process],
     )
@@ -1876,9 +1874,11 @@ class _ProgramScope(_BodyScope):
         if result_object is None:
             result_object = declare_stream()
             self._declared_streams[tag] = result_object
-            result_object.save_all(tag)
+
+            ra = _get_scope_as_result_analysis()
+            ra.auto_save_all(tag, result_object)
             if add_legacy_timestamp:
-                result_object.timestamps().save_all(tag + _TIMESTAMPS_LEGACY_SUFFIX)
+                ra.auto_save_all(tag + _TIMESTAMPS_LEGACY_SUFFIX, result_object.timestamps())
         return result_object
 
 

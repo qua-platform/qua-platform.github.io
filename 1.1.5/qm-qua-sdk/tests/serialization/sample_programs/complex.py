@@ -11,8 +11,6 @@ with program() as prog:
     play("pi", "q1", duration=5, timestamp_stream="label1")
     stream = declare_stream()
     play("pi", "q1", duration=5, timestamp_stream=stream)
-    with stream_processing():
-        stream.save_all("label2")
     # variable duration
     play("pi", "q1", duration=x)
     assign(x, 1)
@@ -40,6 +38,8 @@ with program() as prog:
     frame_rotation_2pi(1.0, "q1", "q2")
     reset_frame("q1")
     reset_frame("q1", "q2")
+    with stream_processing():
+        stream.save_all("label2")
 
 
 with program() as various_statements_with_numpy:
@@ -69,23 +69,68 @@ with program() as various_statements_with_numpy:
     set_dc_offset("q1", "1", f32(0.7))
 
 
+with program() as measure_timestamp:
+    E = declare(fixed)
+    time_st = declare_stream()
+    time2_st = declare_stream()
+    time3_st = declare_stream()
+    adc_st = declare_stream(adc_trace=True)
+    adc2_st = declare_stream(adc_trace=True)
+    measure("demod", "element", None, demod.full("cos", E, "out1"), timestamp_stream=time_st)
+    measure("demod", "element", adc_st, demod.full("cos", E, "out1"), timestamp_stream=time2_st)
+    measure("demod", "element", 'adc_legacy', demod.full("cos", E, "out1"), timestamp_stream=time3_st)
+    measure("demod", "element", None, demod.full("cos", E, "out1"), timestamp_stream='time_legacy')
+    measure("demod", "element", adc2_st, demod.full("cos", E, "out1"), timestamp_stream='time2_legacy')
+    measure("demod", "element", 'adc_legacy2', demod.full("cos", E, "out1"), timestamp_stream='time3_legacy')
+
+    with stream_processing():
+        # Will save average:
+        adc_st.input1().average().save("adc11")
+        adc_st.input2().average().save("adc12")
+        # Will save only last run:
+        adc_st.input1().save("adc11_single_run")
+        adc_st.input2().save("adc12_single_run")
+        adc2_st.input1().save("adc21_single_run")
+        adc2_st.input2().save("adc22_single_run")
+        time_st.save_all('time1')
+        time_st.save_all('time11')
+        time_st.save('time111')
+        time2_st.save_all('time2')
+        time3_st.save_all('time3')
+
+
 with program() as measure_demod:
     I = declare(fixed)
     Q = declare(fixed)
+    time_st = declare_stream()
     measure("demod", "element", None, ("cos_weights", I), ("sin_weights", Q), timestamp_stream=None)
+    measure("demod", "element", None, ("cos_weights", I), ("sin_weights", Q), timestamp_stream='timestamp')
+    measure("demod", "element", None, ("cos_weights", I), ("sin_weights", Q), timestamp_stream=time_st)
+    with stream_processing():
+        time_st.save_all('yo')
 
 with program() as measure_processes:
     I = declare(fixed)
+    time_st = declare_stream()
     measure("demod", "element", None, ("optimized_weights", "out1", I), timestamp_stream=None)
+    measure("demod", "element", None, ("optimized_weights", "out1", I), timestamp_stream='timestamp')
+    measure("demod", "element", None, ("optimized_weights", "out1", I), timestamp_stream=time_st)
+    with stream_processing():
+        time_st.save_all('yo')
 
 with program() as measure_processes_integration:
     A = declare(fixed, size=4)
     D = declare(fixed)
-    measure("demod", "element", None, integration.full("integW1", D, "out1"), timestamp_stream="label1")
+    time_st = declare_stream()
+    measure("demod", "element", None, integration.full("integW1", D, "out1"), timestamp_stream=None)
+    measure("demod", "element", None, integration.full("integW1", D, "out1"), timestamp_stream='timestamp')
+    measure("demod", "element", None, integration.full("integW1", D, "out1"), timestamp_stream=time_st)
     measure(
         "demod", "element", None, integration.moving_window("integW1", A, 7, 7, "out1")
     )
     measure("demod", "element", None, integration.accumulated("integW1", A, 7, "out1"))
+    with stream_processing():
+        time_st.save_all('yo')
 
 with program() as measure_processes_demod:
     A = declare(fixed, size=10)

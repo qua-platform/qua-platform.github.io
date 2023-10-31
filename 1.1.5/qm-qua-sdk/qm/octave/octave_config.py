@@ -5,10 +5,10 @@ from functools import lru_cache
 from typing import Any, Dict, List, Tuple, Union, Generic, TypeVar, Optional
 
 from octave_sdk import Octave, ClockType, OctaveOutput, ClockFrequency, OctaveLOSource
-from qm.exceptions import OctaveConnectionError
 
 from qm.octave.enums import ClockInfo
 from qm.type_hinting.general import PathLike
+from qm.exceptions import OctaveConnectionError
 from qm.octave.calibration_db import CalibrationDB
 
 logger = logging.getLogger(__name__)

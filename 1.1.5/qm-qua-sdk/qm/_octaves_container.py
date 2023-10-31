@@ -3,7 +3,6 @@ from typing import Dict, List, Tuple, Optional
 import betterproto
 from octave_sdk.octave import RFInput, RFOutput
 from octave_sdk import Octave, OctaveOutput, OctaveLOSource
-from qm.exceptions import OctaveConnectionError, OctaveCableSwapError, ElementUpconverterDeclarationError
 
 from qm.octave.octave_config import get_device
 from qm.elements.element_inputs import MixInputs
@@ -12,6 +11,7 @@ from qm.api.models.capabilities import ServerCapabilities
 from qm.octave.calibration_db import convert_to_correction
 from qm.elements.up_converted_input import UpconvertedInput
 from qm.octave.octave_manager import logger, get_loopbacks_from_pb
+from qm.exceptions import OctaveCableSwapError, OctaveConnectionError, ElementUpconverterDeclarationError
 from qm.grpc.qua_config import (
     QuaConfig,
     QuaConfigMatrix,

@@ -7,9 +7,9 @@ from octave_sdk.octave import ClockInfo
 from octave_sdk import IFMode, ClockType, RFOutputMode, ClockFrequency, OctaveLOSource, RFInputLOSource
 
 from qm.jobs.running_qm_job import RunningQmJob
-from qm.octave.octave_manager import ClockMode, OctaveManager
-from qm.elements.up_converted_input import UpconvertedInput
 from qm.elements.element_outputs import DownconvertedOutput
+from qm.elements.up_converted_input import UpconvertedInput
+from qm.octave.octave_manager import ClockMode, OctaveManager
 from qm.octave.octave_mixer_calibration import DeprecatedCalibrationResult, convert_to_old_calibration_result
 
 if TYPE_CHECKING:

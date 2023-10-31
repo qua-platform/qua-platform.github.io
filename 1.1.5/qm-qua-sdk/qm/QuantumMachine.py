@@ -37,11 +37,11 @@ from qm.exceptions import (
     QmValueError,
     JobCancelledError,
     ErrorJobStateError,
-    InvalidConfigError,
-    UnsupportedCapabilityError,
     FunctionInputError,
+    InvalidConfigError,
     AnotherJobIsRunning,
     CantCalibrateElementError,
+    UnsupportedCapabilityError,
 )
 
 logger = logging.getLogger(__name__)

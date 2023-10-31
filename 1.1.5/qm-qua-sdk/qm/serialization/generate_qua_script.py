@@ -1,4 +1,3 @@
-import re
 import sys
 import types
 import logging
@@ -10,6 +9,8 @@ import betterproto
 import numpy as np
 from marshmallow import ValidationError
 
+from qm.grpc import qua
+from qm.grpc.qua import QuaProgram
 from qm.program import load_config
 from qm.grpc.qua_config import QuaConfig
 from qm import Program, DictQuaConfig, version
@@ -28,6 +29,18 @@ SERIALIZATION_NOT_COMPLETE = "SERIALIZATION WAS NOT COMPLETE"
 
 
 logger = logging.getLogger(__name__)
+
+
+def assert_programs_are_equal(prog1: QuaProgram, prog2: QuaProgram):
+    StripLocationVisitor.strip(prog1)
+    StripLocationVisitor.strip(prog2)
+    RenameStreamVisitor().visit(prog1)
+    RenameStreamVisitor().visit(prog2)
+    assert prog1.compiler_options == prog2.compiler_options
+    assert prog1.config == prog2.config
+    assert prog1.dyn_config == prog2.dyn_config
+    assert prog1.script.to_dict() == prog2.script.to_dict()
+    assert sorted(prog1.result_analysis.model, key=str) == sorted(prog2.result_analysis.model, key=str)
 
 
 def generate_qua_script(prog: Program, config: Optional[DictQuaConfig] = None) -> str:
@@ -97,14 +110,16 @@ def _validate_program(old_prog, serialized_program: str) -> Optional[str]:
     exec(serialized_program, generated_mod.__dict__)
     new_prog = generated_mod.prog.build(QuaConfig())
 
-    new_prog_str = _program_string(new_prog)
-    old_prog_str = _program_string(old_prog)
+    try:
+        assert_programs_are_equal(old_prog, new_prog)
+        return ""
+    except AssertionError:
 
-    if new_prog_str != old_prog_str:
-        if not _switched_strings(new_prog_str, old_prog_str):
-            new_prog_str = new_prog_str.replace("\n", "")
-            old_prog_str = old_prog_str.replace("\n", "")
-            return f"""
+        new_prog_str = _program_string(new_prog)
+        old_prog_str = _program_string(old_prog)
+        new_prog_str = new_prog_str.replace("\n", "")
+        old_prog_str = old_prog_str.replace("\n", "")
+        return f"""
 
 ####     {SERIALIZATION_NOT_COMPLETE}     ####
 #
@@ -114,27 +129,6 @@ def _validate_program(old_prog, serialized_program: str) -> Optional[str]:
 ################################################
 
         """
-
-    return ""
-
-
-def _switched_strings(prog1_str, prog2_str):
-    """The created stream might be identical besides the ordering of the declared streams. The declared streams names
-    format is either "r5" for a regular stream or "atr5" for a stream with "adc_trace=True". This function checks if
-    the only difference in the strings are these name changes.
-    """
-    tag = r' *"tag": "(at)?r[\d]+"'
-    string_value = r' *"stringValue": "(at)?r[\d]+"'
-    prog1_str_split = prog1_str.splitlines()
-    prog2_str_split = prog2_str.splitlines()
-    if len(prog1_str_split) != len(prog2_str_split):
-        return False
-    for line1, line2 in zip(prog1_str_split, prog2_str_split):
-        if line1 != line2:
-            if not re.match(tag, line1) or not re.match(tag, line2):
-                if not re.match(string_value, line1) or not re.match(string_value, line2):
-                    return False
-    return True
 
 
 def _error_string(e: Exception, trace, error_type: str) -> str:
@@ -154,7 +148,7 @@ def _error_string(e: Exception, trace, error_type: str) -> str:
 
 def _program_string(prog) -> str:
     """Will create a canonized string representation of the program"""
-    strip_location_visitor = _StripLocationVisitor()
+    strip_location_visitor = StripLocationVisitor()
     strip_location_visitor.visit(prog)
     string = prog.to_json(2)
     return string
@@ -269,7 +263,7 @@ def _make_compact_string_from_list(list_data):
     return list_string
 
 
-class _StripLocationVisitor(QuaNodeVisitor):
+class StripLocationVisitor(QuaNodeVisitor):
     """Go over all nodes and if they have a location property, we strip it"""
 
     def _default_enter(self, node):
@@ -279,4 +273,37 @@ class _StripLocationVisitor(QuaNodeVisitor):
 
     @staticmethod
     def strip(node):
-        _StripLocationVisitor().visit(node)
+        StripLocationVisitor().visit(node)
+
+
+class RenameStreamVisitor(QuaNodeVisitor):
+    """This cladd standardizes the names of the streams, so when comparing two programs, the names will be the same"""
+
+    def __init__(self):
+        self._max_n = 0
+        self._old_to_new_map = {}
+
+    def _change_var_name(self, curr_s):
+        if curr_s in self._old_to_new_map:
+            return self._old_to_new_map[curr_s]
+        non_digits = "".join([s for s in curr_s if not s.isdigit()])
+        new_name = non_digits + str(self._max_n)
+        self._max_n += 1
+        self._old_to_new_map[curr_s] = new_name
+        return new_name
+
+    def visit_qm_grpc_qua_QuaProgramMeasureStatement(self, node: qua.QuaProgramMeasureStatement):
+        if node.stream_as:
+            node.stream_as = self._change_var_name(node.stream_as)
+        if node.timestamp_label:
+            node.timestamp_label = self._change_var_name(node.timestamp_label)
+
+    def visit_qm_grpc_qua_QuaProgramSaveStatement(self, node: qua.QuaProgramSaveStatement):
+        if node.tag:
+            node.tag = self._change_var_name(node.tag)
+
+    def _default_enter(self, node):
+        """This function is for the Value of betterproto. There is a chance we can visit the object directly"""
+        if hasattr(node, "string_value") and node.string_value and node.string_value in self._old_to_new_map:
+            node.string_value = self._old_to_new_map[node.string_value]
+        return isinstance(node, betterproto.Message)

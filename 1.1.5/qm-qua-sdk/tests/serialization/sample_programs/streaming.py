@@ -39,7 +39,7 @@ with program() as prog:
         stream.subtract(5).divide(stream).add(3).multiply(stream).save("arithmetic")
         stream.skip_last(10).skip(10).boolean_to_int().take(10).save("skip_take")
         stream.auto_reshape().zip(stream).save_all("auto_reshape")
-        stream2.save_all('save_all')
+        stream2.save_all("save_all")
 
 
 with program() as stream_processing_prog_with_numpy:
@@ -74,12 +74,12 @@ with program() as adc_trace:
     measure("op1" * amp(0.1), "el1", stream3)
     measure("op1", "el1", stream4)
     measure("op1" * amp(0.1), "el1", stream5)
-    measure('op2', 'el2', "A")
-    measure('op2' * amp(0.1), 'el2', "B")
+    measure("op2", "el2", "A")
+    measure("op2" * amp(0.1), "el2", "B")
 
     with stream_processing():
-        stream2.input1().save_all('adc_trace2')
-        stream5.input1().save_all('adc_trace5')
+        stream2.input1().save_all("adc_trace2")
+        stream5.input1().save_all("adc_trace5")
 
 with program() as legacy_save:
     var = declare(int)
@@ -98,5 +98,25 @@ with program() as wrong_order:
     save(var1, stream1)
 
     with stream_processing():
-        stream1.save('yo1')
-        stream2.save('yo2')
+        stream1.save("yo1")
+        stream2.save("yo2")
+
+with program() as multiple_streams:
+    play("pi", "q1", timestamp_stream="timestamp_stream1")
+    play("pi", "q1", duration=5, timestamp_stream="label1")
+    stream = declare_stream()
+    play("pi", "q1", duration=5, timestamp_stream=stream)
+    with stream_processing():
+        stream.save_all("label12")
+    play("pi", "q1", timestamp_stream="timestamp_stream2")
+    play("pi", "q1", duration=5, timestamp_stream="label2")
+    stream2 = declare_stream()
+    play("pi", "q1", duration=5, timestamp_stream=stream2)
+    with stream_processing():
+        stream2.save_all("label22")
+    play("pi", "q1", timestamp_stream="timestamp_stream3")
+    play("pi", "q1", duration=5, timestamp_stream="label3")
+    stream3 = declare_stream()
+    play("pi", "q1", duration=5, timestamp_stream=stream3)
+    with stream_processing():
+        stream3.save_all("label32")

@@ -9,10 +9,10 @@ from dependency_injector.wiring import Provide, inject
 from marshmallow import Schema, ValidationError, fields, validate, post_load, validates_schema
 
 from qm.grpc import qua_config
-from qm.exceptions import ConfigValidationException, OctaveConnectionAmbiguity, InvalidOctaveParameter
 from qm.type_hinting.config_types import DictQuaConfig
 from qm.api.models.capabilities import ServerCapabilities
 from qm.containers.capabilities_container import CapabilitiesContainer
+from qm.exceptions import InvalidOctaveParameter, ConfigValidationException, OctaveConnectionAmbiguity
 from qm.program._validate_config_schema import (
     validate_oscillator,
     validate_output_tof,
@@ -22,6 +22,19 @@ from qm.program._validate_config_schema import (
     validate_arbitrary_waveform,
     validate_timetagging_parameters,
 )
+from qm.grpc.qua_config import (
+    QuaConfig,
+    QuaConfigOctaveConfig,
+    QuaConfigAdcPortReference,
+    QuaConfigOctaveLoSourceInput,
+    QuaConfigOctaveRfInputConfig,
+    QuaConfigGeneralPortReference,
+    QuaConfigOctaveRfOutputConfig,
+    QuaConfigOctaveIfOutputsConfig,
+    QuaConfigAnalogOutputPortFilter,
+    QuaConfigOctaveSingleIfOutputConfig,
+    QuaConfigOctaveDownconverterRfSource,
+)
 from qm.program._qua_config_to_pb import (
     IF_OUT1_DEFAULT,
     IF_OUT2_DEFAULT,
@@ -30,24 +43,11 @@ from qm.program._qua_config_to_pb import (
     dac_port_ref_to_pb,
     get_octave_loopbacks,
     single_if_output_to_pb,
+    validate_inputs_or_outputs_exist,
+    set_non_existing_mixers_in_mix_input_elements,
     set_octave_upconverter_connection_to_elements,
     set_octave_downconverter_connection_to_elements,
     set_lo_frequency_to_mix_input_elements_that_are_connected_to_octave,
-    set_non_existing_mixers_in_mix_input_elements,
-    validate_inputs_or_outputs_exist,
-)
-from qm.grpc.qua_config import (
-    QuaConfig,
-    QuaConfigOctaveConfig,
-    QuaConfigAdcPortReference,
-    QuaConfigOctaveLoSourceInput,
-    QuaConfigOctaveRfInputConfig,
-    QuaConfigOctaveRfOutputConfig,
-    QuaConfigOctaveIfOutputsConfig,
-    QuaConfigAnalogOutputPortFilter,
-    QuaConfigOctaveSingleIfOutputConfig,
-    QuaConfigOctaveDownconverterRfSource,
-    QuaConfigGeneralPortReference,
 )
 
 logger = logging.getLogger(__name__)

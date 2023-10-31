@@ -1,8 +1,8 @@
 import logging
+
 from marshmallow import ValidationError
 
 from qm.exceptions import ConfigValidationException
-
 
 logger = logging.getLogger(__name__)
 

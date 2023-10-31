@@ -4,6 +4,7 @@ from typing import List, Union, Optional
 import betterproto
 from betterproto.lib.google.protobuf import Value, ListValue
 
+import qm
 from qm.grpc import qua
 from qm.exceptions import QmQuaException
 from qm.serialization.qua_node_visitor import QuaNodeVisitor
@@ -32,8 +33,6 @@ class QuaSerializingVisitor(QuaNodeVisitor):
         if statement:
             line = statement(node)
             self._line(line)
-            if name == "betterproto.lib.google.protobuf.ListValue":
-                self._fix_legacy_save(line, node)
         if block:
             self._enter_block(block(node))
         return statement is None
@@ -76,7 +75,7 @@ class QuaSerializingVisitor(QuaNodeVisitor):
             self._lines.pop()
             line_to_remove_index = None
             for i in range(len(self._lines)):
-                if self._lines[i].find(f"{trace_name} = declare_stream(adc_trace=True)") > 0:
+                if self._lines[i].find(f"{trace_name} = declare_stream") > 0:
                     line_to_remove_index = i
                 self._lines[i] = self._lines[i].replace(trace_name, f'"{save_name}"')
             if line_to_remove_index:
@@ -109,6 +108,21 @@ class QuaSerializingVisitor(QuaNodeVisitor):
         else:
             self._line(f"{node.name} = declare({_var_type_dec[node.type]}, {_dict_to_python_call(args)})")
 
+        return False
+
+    def enter_betterproto_lib_google_protobuf_ListValue(self, node: betterproto.lib.google.protobuf.ListValue):
+        name = f"{type(node).__module__}.{type(node).__name__}"
+        statement = _statements.get(name, None)
+        line = statement(node)
+        self._line(line)
+        if name == "betterproto.lib.google.protobuf.ListValue":
+            self._fix_legacy_save(line, node)
+
+        return False
+
+    def leave_qm_grpc_qua_QuaProgram(self, node: qm.grpc.qua.QuaProgram):
+        if self._lines[-1].find("with stream_processing():") > 0:
+            self._lines.pop()
         return False
 
     def _get_declare_var_args(self, node):

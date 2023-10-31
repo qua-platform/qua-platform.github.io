@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Mapping, Optional, cast
 
 import numpy as np
-
+from octave_sdk import Octave, RFInputLOSource
 from octave_sdk._errors import InvalidLoSource
 from octave_sdk._octave_client import OctaveClient
-from octave_sdk import Octave, RFInputLOSource
+from octave_sdk.octave import UnableToSetFrequencyError
 from octave_sdk.grpc.quantummachines.octave.api.v1 import (
     SynthUpdate,
     OctaveModule,
@@ -29,8 +29,6 @@ from octave_sdk.grpc.quantummachines.octave.api.v1 import (
     SynthUpdateSynthOutputPower,
     RfUpConvUpdateFastSwitchMode,
 )
-from octave_sdk.octave import UnableToSetFrequencyError
-from qm.exceptions import QmQuaException, CantCalibrateElementError
 
 from qm.program import Program
 from qm.type_hinting import Number
@@ -38,6 +36,7 @@ from qm.elements.element import Element
 from qm.jobs.running_qm_job import RunningQmJob
 from qm.grpc.qua_config import QuaConfigMixInputs
 from qm.elements.up_converted_input import UpconvertedInput
+from qm.exceptions import QmQuaException, CantCalibrateElementError
 from qm.octave._calibration_names import SavedVariablesNames, CalibrationElementsNames
 from qm.octave._calibration_analysis import (
     Array,

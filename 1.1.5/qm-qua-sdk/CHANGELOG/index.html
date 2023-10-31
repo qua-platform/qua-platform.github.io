@@ -2182,6 +2182,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unreleased
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1151-2023-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1.5.1 - 2023-10-30
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1.5.1 - 2023-10-30">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#115-2023-10-22" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2194,7 +2233,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2266,7 +2305,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link">
+  <a href="#fixed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2305,7 +2344,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_2" class="md-nav__link">
+  <a href="#fixed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2355,7 +2394,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_3" class="md-nav__link">
+  <a href="#fixed_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2383,7 +2422,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_4" class="md-nav__link">
+  <a href="#fixed_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2483,7 +2522,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_5" class="md-nav__link">
+  <a href="#fixed_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2539,7 +2578,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_6" class="md-nav__link">
+  <a href="#fixed_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2589,7 +2628,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_7" class="md-nav__link">
+  <a href="#fixed_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2639,7 +2678,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_8" class="md-nav__link">
+  <a href="#fixed_9" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2873,7 +2912,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_9" class="md-nav__link">
+  <a href="#fixed_10" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -3041,8 +3080,16 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
-<h2 id="115-2023-10-22">1.1.5 - 2023-10-22<a class="headerlink" href="#115-2023-10-22" title="Permanent link">&para;</a></h2>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="1151-2023-10-30">1.1.5.1 - 2023-10-30<a class="headerlink" href="#1151-2023-10-30" title="Permanent link">&para;</a></h2>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Saving timestamps directly to a string will now not mess up adc saving</li>
+<li>Fix serialization for timestamps in some cases</li>
+<li>Downgrading from this version will not break the Octave (Introduced in 1.1.5)</li>
+</ul>
+<h2 id="115-2023-10-22">1.1.5 - 2023-10-22<a class="headerlink" href="#115-2023-10-22" title="Permanent link">&para;</a></h2>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed simulations with negative IF frequency (in mixer).</li>
 <li>Deprecation warnings will now be shown for imports in IPython</li>
@@ -3068,7 +3115,7 @@
 <li>Added <code>QuantumMachinesMananger.version_dict()</code> which returns a dict with two keys <code>qm-qua</code> and <code>QOP</code>.</li>
 <li>Two new keys were added to the dict returned by <code>QuantumMachinesMananger.version()</code>: <code>qm-qua</code> and <code>QOP</code>. </li>
 </ul>
-<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed missing import of <code>ClockMode</code>.</li>
 <li>Fixed simulations with negative IF frequency (in mixer).</li>
@@ -3085,7 +3132,7 @@
 <li>If no port is given to <code>QuantumMachinesManager</code>, and there isn't a saved configuration file, it will default to <code>80</code> (instead of <code>80</code> &amp; <code>9510</code>)</li>
 </ul>
 <h2 id="113-2023-05-29">1.1.3 - 2023-05-29<a class="headerlink" href="#113-2023-05-29" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed negative IF freq handling in config builder</li>
 <li>Sticky Element duration is to be given in ns and not clock cycles</li>
@@ -3106,7 +3153,7 @@
 <li>Added a default (minimal) duration for sticky elements</li>
 <li>Added <code>qm.get_job(job_id)</code> to retreieve previously ran jobs</li>
 </ul>
-<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_4">Fixed<a class="headerlink" href="#fixed_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed creating credentials for authentication in gRPC</li>
 <li>Removed redundant entry from element generated class (<code>up_converted</code>)</li>
@@ -3117,7 +3164,7 @@
 <li>Fixed event-loop Windows bug of creating multiple instances of QuantumMachine</li>
 </ul>
 <h2 id="111-2023-03-20">1.1.1 - 2023-03-20<a class="headerlink" href="#111-2023-03-20" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_4">Fixed<a class="headerlink" href="#fixed_4" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_5">Fixed<a class="headerlink" href="#fixed_5" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed long delay while waiting for values</li>
 </ul>
@@ -3182,7 +3229,7 @@
 <li>Added the function <code>create_new_user_config()</code> under <code>qm.user_config</code> to create a configuration file with the QOP host IP &amp; Port to allow opening <code>QuantumMachinesManager()</code> without inputs.</li>
 <li>Added infrastructure for anonymous log sending (by default, no logs are sent). </li>
 </ul>
-<h3 id="fixed_5">Fixed<a class="headerlink" href="#fixed_5" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_6">Fixed<a class="headerlink" href="#fixed_6" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Serializer - Added support for averaging on different axes.</li>
 <li>Serializer - Remove false message about lacking <code>play(ramp()...)</code> support.</li>
@@ -3202,7 +3249,7 @@
 <li>Removed deprecated entries from the configuration schema</li>
 <li>Removed dependency in <code>qua</code> package</li>
 </ul>
-<h3 id="fixed_6">Fixed<a class="headerlink" href="#fixed_6" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_7">Fixed<a class="headerlink" href="#fixed_7" title="Permanent link">&para;</a></h3>
 <ul>
 <li>QuantumMachineManager - Fixed a bug where you could not connect using SSL on python version 3.10+</li>
 <li>Serializer - Fixed <code>declare_stream()</code> with <code>adc_true=True</code></li>
@@ -3221,7 +3268,7 @@
 <li>Serializer - Added support for legacy save</li>
 </ul>
 <h2 id="038-2022-07-10"><a href="https://github.com/qm-labs/qm-qua-sdk/compare/v0.3.7...v0.3.8">0.3.8</a> - 2022-07-10<a class="headerlink" href="#038-2022-07-10" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_7">Fixed<a class="headerlink" href="#fixed_7" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_8">Fixed<a class="headerlink" href="#fixed_8" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Serializer - Fixed a bug which caused binary expression to fail</li>
 </ul>
@@ -3238,7 +3285,7 @@
 <li>Logger - Can now add an environment variable to disable the output to stdout </li>
 </ul>
 <h2 id="037-2022-05-31"><a href="https://github.com/qm-labs/qm-qua-sdk/compare/v0.3.6...v0.3.7">0.3.7</a> - 2022-05-31<a class="headerlink" href="#037-2022-05-31" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_8">Fixed<a class="headerlink" href="#fixed_8" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_9">Fixed<a class="headerlink" href="#fixed_9" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Serializer - Fixed a bug which caused the serializer to fail when given completely arbitrary integration weights</li>
 <li>Serializer - Fixed a bug which caused the serializer to fail when given a list of correction matrices</li>
@@ -3318,7 +3365,7 @@ the demod will not sum the items, but only multiply by weights.</li>
 <li>Documentation structure and content.</li>
 </ul>
 <h2 id="031-2021-09-13"><a href="https://github.com/qm-labs/qm-qua-sdk/compare/v0.3.0...v0.3.1">0.3.1</a> - 2021-09-13<a class="headerlink" href="#031-2021-09-13" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_9">Fixed<a class="headerlink" href="#fixed_9" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_10">Fixed<a class="headerlink" href="#fixed_10" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed serialization of IO values.</li>
 <li>Support running <code>QuantumMachinesManager</code> inside ipython or jupyter notebook.</li>
@@ -3371,7 +3418,7 @@ config file is ignored.</li>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-10-22T10:19:56+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-10-22</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-10-30T16:00:15+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-10-30</span>
       </span>
     
     

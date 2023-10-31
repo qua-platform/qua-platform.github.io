@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import betterproto
 
@@ -6,11 +6,11 @@ from qm.grpc.job_manager import InsertInputStreamResponse, GetElementCorrectionR
 
 if TYPE_CHECKING:
     from qm.grpc.job_manager import (
-        GetElementCorrectionRequest,
-        SetElementCorrectionRequest,
-        InsertInputStreamRequest,
         Deadline,
         MetadataLike,
+        InsertInputStreamRequest,
+        GetElementCorrectionRequest,
+        SetElementCorrectionRequest,
     )
 
 
