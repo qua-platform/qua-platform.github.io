@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+import "qm/pb/errors.proto";
+import "qm/pb/general_messages.proto";
+
+option java_multiple_files = true;
+option java_package = "qm.grpc.jobManager";
+option java_outer_classname = "JobManagerServiceProto";
+option objc_class_prefix = "HLW";
+
+package qm.grpc.job_manager;
+
+service JobManagerService {
+    rpc GetElementCorrection(GetElementCorrectionRequest) returns (GetElementCorrectionResponse) {}
+    rpc SetElementCorrection(SetElementCorrectionRequest) returns (SetElementCorrectionResponse) {}
+    rpc InsertInputStream(InsertInputStreamRequest) returns (InsertInputStreamResponse){}
+}
+
+message GetElementCorrectionRequest {
+    string jobId = 1;
+    string qeName = 2;
+    qm.grpc.general_messages.Matrix correction = 3;
+}
+
+message GetElementCorrectionResponse {
+    JobManagerResponseHeader jobManagerResponseHeader = 1;
+    qm.grpc.general_messages.Matrix correction = 3;
+}
+
+message SetElementCorrectionRequest {
+    string jobId = 1;
+    string qeName = 2;
+    qm.grpc.general_messages.Matrix correction = 3;
+}
+
+message SetElementCorrectionResponse {
+    JobManagerResponseHeader jobManagerResponseHeader = 1;
+    qm.grpc.general_messages.Matrix correction = 2;
+}
+
+message JobManagerResponseHeader {
+    bool success = 1;
+    string jobId = 2;
+
+    qm.grpc.errors.JobManagerErrorTypes jobManagerErrorType = 10;
+    JobErrorDetails jobErrorDetails = 11;
+}
+
+message JobErrorDetails {
+    oneof errorType {
+        qm.grpc.errors.JobOperationSpecificErrorTypes jobOperationSpecificErrorType = 1;
+        qm.grpc.errors.ConfigQueryErrorTypes configQueryErrorType = 2;
+    }
+    string message = 10;
+}
+
+message JobOperationSpecificError {
+    qm.grpc.errors.JobOperationSpecificErrorTypes type = 1;
+    string message = 2;
+}
+
+
+
+
+
+message InsertInputStreamRequest {
+    string jobId = 1;
+    string streamName = 2;
+    oneof stream_data_oneof{
+        IntStreamData intStreamData = 3;
+        FixedStreamData fixedStreamData = 4;
+        BoolStreamData boolStreamData = 5;
+    }
+}
+
+message IntStreamData {
+    repeated int32 data = 1;
+}
+
+message FixedStreamData {
+    repeated double data = 1;
+}
+
+message BoolStreamData {
+    repeated bool data = 1;
+}
+
+message InsertInputStreamResponse {
+    JobManagerResponseHeader jobManagerResponseHeader = 1;
+}

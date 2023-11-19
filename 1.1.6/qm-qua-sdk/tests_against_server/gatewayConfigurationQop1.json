@@ -1,0 +1,26 @@
+{
+    "controllers": [
+      {
+        "name": "con1",
+        "physicalAddress": "",
+        "usbPhysicalAddress": "",
+        "mock": true,
+        "implementation": "onix"
+      },
+      {
+        "name": "con2",
+        "physicalAddress": "",
+        "usbPhysicalAddress": "",
+        "mock": true,
+        "implementation": "onix"
+      }
+    ],
+    "pairings": [
+          {
+            "delay": 17,
+            "pairs": [
+              [{"controller": "con1", "sfps": [0,1,2,3]},{"controller": "con2", "sfps": [4,5,6,7]}]
+            ]
+          }
+      ]
+}

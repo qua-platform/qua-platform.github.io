@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+import "qm/pb/inc_qua_config.proto";
+import "qm/pb/general_messages.proto";
+import "google/protobuf/struct.proto";
+
+package qm.grpc.qm_api;
+
+
+message HighQmApiRequest {
+    QmConfig config = 1 [deprecated = true];
+    qm.grpc.qua_config.QuaConfig strongConfig = 2 [deprecated = true];
+    string quantumMachineId = 3;
+    reserved 4 to 50; // for future use
+    oneof api_oneof {
+        SetCorrection setCorrection = 51;
+        SetFrequency setFrequency = 52;
+        SetDcOffset setDcOffset = 53 [deprecated = true]; // TODO: deprecated, Added SetOutputDcOffset instead on 08.09.19
+        SetDigitalRoute setDigitalRoute = 54;
+        SetIOValues setIOValues = 55;
+        SetInputDcOffset setInputDcOffset = 56;
+        SetOutputDcOffset setOutputDcOffset = 57;
+        SetOutputFilterTaps setOutputFilterTaps = 58;
+        SetDigitalInputThreshold setDigitalInputThreshold = 59;
+        SetDigitalInputDeadtime setDigitalInputDeadtime = 61;
+        SetDigitalInputPolarity setDigitalInputPolarity = 63;
+    }
+
+    message SetCorrection {
+        Matrix correction = 1;
+        oneof oneof_set_correction {
+            string qe = 10;
+            SetCorrectionMixerInfo mixer = 11;
+        }
+    }
+
+    message SetCorrectionMixerInfo {
+        string mixer = 1;
+        uint64 intermediateFrequency = 2[deprecated = true];
+        uint64 loFrequency = 3 [deprecated = true];
+        bool frequencyNegative = 4;
+        double intermediateFrequencyDouble = 5;
+        double loFrequencyDouble = 6;
+    }
+
+    message SetFrequency {
+        double value = 1;
+        oneof oneof_set_frequency {
+            string qe = 10;
+        }
+    }
+
+    message SetDcOffset {
+        double I = 1;
+        double Q = 2;
+        oneof oneof_set_dc {
+            QePort qe = 10;
+            //            PortReference port = 11;
+        }
+    }
+
+    message SetOutputDcOffset {
+        double I = 1;
+        double Q = 2;
+        oneof oneof_set_dc {
+            QePort qe = 10;
+            //            PortReference port = 11;
+        }
+    }
+
+    message SetOutputFilterTaps {
+        AnalogOutputPortFilter filter = 1;
+        oneof oneof_set_filter_Taps {
+            QePort qe = 10;
+        }
+    }
+
+    message AnalogOutputPortFilter {
+        repeated double feedforward = 1;
+        repeated double feedback = 2;
+    }
+
+    message SetInputDcOffset {
+        double offset = 1;
+        oneof oneof_set_dc {
+            QePort qe = 10;
+        }
+    }
+
+    message SetDigitalRoute {
+        uint32 value = 1;
+        oneof oneof_set_digital_route {
+            QePort delay = 10;
+            QePort buffer = 11;
+            string tof = 12;
+            string smearing = 13;
+            //            PortReference port = 11;
+        }
+    }
+
+    message SetIOValues {
+        oneof oneof_setType {
+            bool all = 1;
+        }
+        reserved 2 to 50; // for future use
+
+        repeated IOValueSetData ioValueSetData = 51;
+    }
+
+    message QePort {
+        string qe = 1;
+        string port = 2;
+    }
+
+    message IOValueSetData {
+        int32 io_number = 1;
+        oneof oneof_IO_type {
+            int32 intValue = 2;
+            double doubleValue = 3;
+            bool booleanValue = 4;
+        }
+    }
+
+    message SetDigitalInputThreshold {
+        DigitalInputPort digitalPort = 1;
+        double threshold = 2;
+
+    }
+
+    message SetDigitalInputPolarity {
+        DigitalInputPort digitalPort = 1;
+        DigitalInputPortPolarity polarity = 2;
+    }
+
+    message SetDigitalInputDeadtime {
+        DigitalInputPort digitalPort = 1;
+        uint32 deadtime = 2;
+    }
+}
+
+message DigitalInputPort {
+    string controllerName = 1;
+    uint32 portNumber = 2; // 1 - based
+}
+
+enum DigitalInputPortPolarity {
+    RISING = 0;
+    FALLING = 1;
+}
+
+
+message HighQmApiResponse {
+    bool ok = 1;
+    repeated qm.grpc.general_messages.ErrorMessage errors = 2;
+}
+
+message QmConfig {
+    uint32 version = 1;
+    google.protobuf.Struct root = 2;
+}
+
+message Matrix {
+    double v00 = 1;
+    double v01 = 2;
+    double v10 = 3;
+    double v11 = 4;
+}
+
+message PortReference {
+    string controller = 1;
+    uint32 number = 2;
+}
