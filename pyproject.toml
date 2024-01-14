@@ -31,6 +31,18 @@ urllib3 = "^1.26.15"
 
 [tool.poetry.dev-dependencies]
 
+[tool.poe.tasks]
+
+[tool.poe.tasks.generate-grpc]
+cmd = "poetry run poe generate-grpc"
+help = "Generate gRPC python files"
+
+[tool.poe.tasks.generate-docs]
+cmd = "poetry run mkdocs serve"
+
+[tool.poe.tasks.deploy]
+cmd = "poetry run mike deploy --push --update-aliases 0.1 latest"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
