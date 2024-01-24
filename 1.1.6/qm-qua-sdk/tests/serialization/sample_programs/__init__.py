@@ -1,14 +1,9 @@
+from qm import _Program
 from types import ModuleType
 
-from tests.serialization.sample_programs import complex
-from tests.serialization.sample_programs import control_structs
-from tests.serialization.sample_programs import simple
-from tests.serialization.sample_programs import streaming
-from tests.serialization.sample_programs import var_declare
-from tests.serialization.sample_programs import usage_of_fixed_expression
-from tests.serialization.sample_programs import var_ref
-from tests.serialization.sample_programs import input_stream
-from tests.serialization.sample_programs import math
+from tests.serialization.sample_programs import complex, control_structs, \
+    input_stream, math, simple, streaming, usage_of_fixed_expression, var_declare, \
+    var_ref
 
 
 def to_dict(imp: ModuleType):
@@ -21,12 +16,6 @@ def to_dict(imp: ModuleType):
 
 
 all_programs = {}
-all_programs.update(to_dict(simple))
-all_programs.update(to_dict(complex))
-all_programs.update(to_dict(var_declare))
-all_programs.update(to_dict(control_structs))
-all_programs.update(to_dict(streaming))
-all_programs.update(to_dict(usage_of_fixed_expression))
-all_programs.update(to_dict(var_ref))
-all_programs.update(to_dict(input_stream))
-all_programs.update(to_dict(math))
+for module in [simple, complex, var_declare, control_structs, streaming,
+               usage_of_fixed_expression, var_ref, input_stream, math]:
+    all_programs.update(to_dict(module))

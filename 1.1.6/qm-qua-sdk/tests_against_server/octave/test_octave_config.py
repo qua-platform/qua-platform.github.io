@@ -4,16 +4,22 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import qm.octave.octave_manager
 from octave_sdk import RFInputLOSource
 from qm import DictQuaConfig
 from qm.elements.up_converted_input import UpconvertedInput
 from qm.elements.element_inputs import MixInputs
-from qm.exceptions import OctaveConnectionError, OctaveCableSwapError, ConfigValidationException, \
-    OctaveConnectionAmbiguity
+from qm.exceptions import (
+    OctaveConnectionError,
+    OctaveCableSwapError,
+    ConfigValidationException,
+    OctaveConnectionAmbiguity,
+)
 from qm.grpc.qua_config import QuaConfig
 from qm.octave.octave_mixer_calibration import LOFrequencyCalibrationResult, LOFrequencyDebugData
 from qm.quantum_machines_manager import QuantumMachinesManager
 from qm.octave import OctaveOutput, OctaveLOSource
+from qm.octave import octave_manager
 import qm.octave.octave_config as config
 from qm.program import load_config
 from qm.program._qua_config_to_pb import load_config_pb
@@ -25,7 +31,7 @@ def qmm_with_octave(host_port, monkeypatch) -> QuantumMachinesManager:
     octave_config = config.QmOctaveConfig()
     octave_config.add_device_info("oct1", "127.0.0.1", 333)
     octave_mock = MagicMock()
-    monkeypatch.setattr(f"qm.octave.octave_config.Octave", octave_mock)
+    monkeypatch.setattr(f"qm.octave.octave_manager.Octave", octave_mock)
     return QuantumMachinesManager(**host_port, octave=octave_config)
 
 
@@ -35,7 +41,7 @@ def octave_config_with_specific_connectivity() -> OctaveConfigType:
         "RF_outputs": {
             1: {
                 "LO_frequency": 11e9,
-                "LO_source": "Internal",
+                "LO_source": "internal",
                 "output_mode": "always_on",
                 "gain": -0.5,
                 "input_attenuators": "ON",
@@ -44,7 +50,7 @@ def octave_config_with_specific_connectivity() -> OctaveConfigType:
             },
             2: {
                 "LO_frequency": 12e9,
-                "LO_source": "External",
+                "LO_source": "external",
                 "output_mode": "always_on",
                 "gain": 1,
                 "input_attenuators": "ON",
@@ -53,7 +59,7 @@ def octave_config_with_specific_connectivity() -> OctaveConfigType:
             },
             3: {
                 "LO_frequency": 13e9,
-                "LO_source": "Internal",
+                "LO_source": "internal",
                 "output_mode": "always_on",
                 "gain": 1.5,
                 "input_attenuators": "ON",
@@ -62,7 +68,7 @@ def octave_config_with_specific_connectivity() -> OctaveConfigType:
             },
             4: {
                 "LO_frequency": 14e9,
-                "LO_source": "Internal",
+                "LO_source": "internal",
                 "output_mode": "always_on",
                 "gain": -3.5,
                 "input_attenuators": "ON",
@@ -71,7 +77,7 @@ def octave_config_with_specific_connectivity() -> OctaveConfigType:
             },
             5: {
                 "LO_frequency": 15e9,
-                "LO_source": "Internal",
+                "LO_source": "internal",
                 "output_mode": "always_on",
                 "gain": -4,
                 "input_attenuators": "ON",
@@ -187,7 +193,9 @@ def qua_single_element_config_with_specific_octave_connectivity(
 def qua_multiple_element_config_with_specific_octave_connectivity(
     qua_bare_config_with_specific_octave_connectivity, single_element_config
 ):
-    qua_bare_config_with_specific_octave_connectivity["controllers"]["con1"]["analog_outputs"] = {i: {"offset": 0.0} for i in range(1, 11)}
+    qua_bare_config_with_specific_octave_connectivity["controllers"]["con1"]["analog_outputs"] = {
+        i: {"offset": 0.0} for i in range(1, 11)
+    }
     for i in range(1, 6):
         single_element = deepcopy(single_element_config)
         single_element["mixInputs"]["I"] = ("con1", 2 * i - 1)
@@ -306,8 +314,16 @@ def test_octave_config_calibration_db(tmpdir, lo_freq: float, gain: float, octav
 
 @pytest.mark.parametrize("synth", [OctaveOutput.Synth1, OctaveOutput.Synth2, OctaveOutput.Synth3])
 @pytest.mark.parametrize(
-    "lo_source", [OctaveLOSource.LO1, OctaveLOSource.LO2, OctaveLOSource.LO3, OctaveLOSource.LO4, OctaveLOSource.LO5,
-                  OctaveLOSource.Dmd1LO, OctaveLOSource.Dmd2LO]
+    "lo_source",
+    [
+        OctaveLOSource.LO1,
+        OctaveLOSource.LO2,
+        OctaveLOSource.LO3,
+        OctaveLOSource.LO4,
+        OctaveLOSource.LO5,
+        OctaveLOSource.Dmd1LO,
+        OctaveLOSource.Dmd2LO,
+    ],
 )
 @pytest.mark.parametrize("validate_with_protobuf", [True, False])
 def test_octave_config_loop_backs(
@@ -318,12 +334,12 @@ def test_octave_config_loop_backs(
     validate_with_protobuf: bool,
     monkeypatch,
 ):
-    config._cached_get_device.cache_clear()
+    qm.octave.octave_manager._cached_get_device.cache_clear()
     qua_single_element_with_octave_config["octaves"]["oct1"]["loopbacks"] = [(("oct1", synth.name), lo_source.name)]
 
     qmm_with_octave.open_qm(config=qua_single_element_with_octave_config, validate_with_protobuf=validate_with_protobuf)
 
-    config.Octave.assert_called_with(
+    octave_manager.Octave.assert_called_with(
         host="127.0.0.1",
         port=333,
         port_mapping={lo_source: synth},
@@ -416,7 +432,7 @@ def test_not_failing_even_if_improper_connection_when_not_relevant_to_experiment
 def test_two_loopbacks(host_port, monkeypatch) -> None:
 
     octave_mock = MagicMock()
-    monkeypatch.setattr(f"qm.octave.octave_config.Octave", octave_mock)
+    monkeypatch.setattr(f"qm.octave.octave_manager.Octave", octave_mock)
 
     octave_config = config.QmOctaveConfig()
     octave_config.add_device_info("oct1", "127.0.0.1", 333)
@@ -431,9 +447,12 @@ def test_setting_downconversion(qmm_with_octave, qua_single_element_with_octave_
 
 
 @pytest.mark.parametrize("validate_with_protobuf", [True, False])
-def test_many_elements(qmm_with_octave, qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf):
+def test_many_elements(
+    qmm_with_octave, qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf
+):
     qm_inst = qmm_with_octave.open_qm(
-        config=qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf=validate_with_protobuf
+        config=qua_multiple_element_config_with_specific_octave_connectivity,
+        validate_with_protobuf=validate_with_protobuf,
     )
     for i in range(1, 6):
         element_input = qm_inst._elements[f"qe{i}"].input
@@ -451,9 +470,12 @@ def test_many_elements(qmm_with_octave, qua_multiple_element_config_with_specifi
 
 @pytest.mark.parametrize("gain", [-21, 21, 1.1, -1.3])
 @pytest.mark.parametrize("validate_with_protobuf", [True, False])
-def test_invalid_gain(gain, qmm_with_octave, qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf):
+def test_invalid_gain(
+    gain, qmm_with_octave, qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf
+):
     qua_multiple_element_config_with_specific_octave_connectivity["octaves"]["oct1"]["RF_outputs"][1]["gain"] = gain
     with pytest.raises(ConfigValidationException):
         qmm_with_octave.open_qm(
-            config=qua_multiple_element_config_with_specific_octave_connectivity, validate_with_protobuf=validate_with_protobuf
+            config=qua_multiple_element_config_with_specific_octave_connectivity,
+            validate_with_protobuf=validate_with_protobuf,
         )

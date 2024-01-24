@@ -3,43 +3,21 @@ import types
 
 import pytest
 
-from qm.grpc.qua import QuaProgram
 from qm.serialization.qua_serializing_visitor import QuaSerializingVisitor
 from qm.exceptions import QmQuaException
-from qm.grpc.qua_config import QuaConfig
 from .sample_programs import all_programs
-from qm.serialization.generate_qua_script import StripLocationVisitor, generate_qua_script, RenameStreamVisitor
+from qm.serialization.generate_qua_script import StripLocationVisitor, generate_qua_script, assert_programs_are_equal
 from qm.qua import switch_, case_, default_, if_, else_, elif_
 from qm.qua import program, declare, play
 from .sample_programs.control_structs import for_each_with_ts
 from .sample_programs.simple import play_with_timestamp, just_play, program_with_fast_frame_rotation
 
-program_names = list(all_programs.keys())
-
-
-def standardize_program_for_comparison(prog: QuaProgram) -> QuaProgram:
-    """There are things in the PB model that if they are different, the programs behaves exactly the same.
-    These 3 things are
-    1. the value of the loc field, that tells where the command was defined
-    2. the names of the variables, as long as the commands are the same.
-    3. the order of the variables in the result analysis
-    """
-    StripLocationVisitor.strip(prog)
-    RenameStreamVisitor().visit(prog)
-    prog.result_analysis.model = sorted(prog.result_analysis.model, key=str)
-    return prog
-
-
-def assert_programs_are_equal(prog1: QuaProgram, prog2: QuaProgram) -> None:
-    prog1 = standardize_program_for_comparison(prog1)
-    prog2 = standardize_program_for_comparison(prog2)
-    assert prog1 == prog2
+program_names = list(all_programs)
 
 
 @pytest.mark.parametrize("name", program_names)
 def test_all_programs(name):
-    config = QuaConfig()
-    prog = all_programs[name].build(config)
+    prog = all_programs[name].qua_program
 
     visitor = QuaSerializingVisitor()
     visitor.visit(betterproto.deepcopy(prog))
@@ -51,7 +29,7 @@ def test_all_programs(name):
     print(new_var)
     exec(new_var, generated_mod.__dict__)
 
-    gen_prog = generated_mod.prog.build(config)
+    gen_prog = generated_mod.prog.qua_program
     assert_programs_are_equal(prog, gen_prog)
 
 
@@ -71,20 +49,17 @@ def test_program_without_timestamp():
 
 @pytest.mark.parametrize("name", program_names)
 def test_all_programs_with_function(name):
-    result = generate_qua_script(all_programs[name], None)
+    result = generate_qua_script(all_programs[name])
     assert "SERIALIZATION WAS NOT COMPLETE" not in result
     assert "SERIALIZATION VALIDATION ERROR" not in result
 
 
 def test_trying_to_generate_in_scope():
     with program() as prog:
-        x = declare(int)
-        play(
-            "pulse",
-            "element",
-        )
+        declare(int)
+        play("pulse", "element")
         with pytest.raises(RuntimeError):
-            result = generate_qua_script(prog, None)
+            generate_qua_script(prog, None)
 
 
 def find_prog(mod):

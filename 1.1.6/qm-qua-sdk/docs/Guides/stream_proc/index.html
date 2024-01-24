@@ -3159,7 +3159,7 @@ manipulates it and stores the results to terminals. In addition, you can take a 
 <p>Here two streams are created. The first, <code>my_stream1</code>, is used to stream raw ADC samples.
 The second, <code>my_stream2</code>, is used to stream the value of the QUA variable <code>a</code>.</p>
 <p>The pipelines and terminals are defined under the <code>with stream_processing()</code> context. Pipelines initiate with a
-stream variable and terminate with a <a class="autorefs autorefs-internal" href="../../API_references/qua/result_stream/#qm.qua._dsl._ResultStream.save"><code>save()</code></a> or <a class="autorefs autorefs-internal" href="../../API_references/qua/result_stream/#qm.qua._dsl._ResultStream.save_all"><code>save_all()</code></a>
+stream variable and terminate with a [<code>save()</code>][qm.qua._ResultStream.save] or [<code>save_all()</code>][qm.qua._ResultStream.save_all]
 function, which acts as a <em>terminal</em>. In this example the pipelines are
 simple: The first selects only the data from analog input1 and adds timestamps to it. The second is immediately terminated.</p>
 <p>The terminal used for the pipeline initiated with <code>my_stream1</code> is a <em>save terminal</em>.
@@ -3252,7 +3252,7 @@ on that handle, or equivalently by calling <code>len(my_result)</code>.</p>
 methods as specified below.
 We can also save results to the file system by calling <a class="autorefs autorefs-internal" href="../../API_references/results_api/#qm.results.streaming_result_fetcher.StreamingResultFetcher.save_to_store"><code>save_to_store()</code></a>.</p>
 <h3 id="fetch-and-fetch_all">fetch and fetch_all<a class="headerlink" href="#fetch-and-fetch_all" title="Permanent link">&para;</a></h3>
-<p>To transfer the results from the server PC to the client PC, [<code>fetch()</code>][qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch] and <a class="autorefs autorefs-internal" href="../../API_references/results_api/#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch_all"><code>fetch_all()</code></a> commands are called on a result
+<p>To transfer the results from the server PC to the client PC, <a class="autorefs autorefs-internal" href="../../API_references/results_api/#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch"><code>fetch()</code></a> and <a class="autorefs autorefs-internal" href="../../API_references/results_api/#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch_all"><code>fetch_all()</code></a> commands are called on a result
 handle, for example:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">my_stream_res</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">my_stream</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()</span>
 </code></pre></div>

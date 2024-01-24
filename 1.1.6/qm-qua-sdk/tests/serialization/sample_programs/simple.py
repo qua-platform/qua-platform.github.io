@@ -1,3 +1,4 @@
+import numpy as np
 from qm.qua import *
 
 f32 = np.float32

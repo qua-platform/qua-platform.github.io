@@ -26,7 +26,7 @@ def ignore_deprecation():
 def capability_container():
     container = create_capabilities_container(QuaMachineInfo([], ImplementationInfo("", "", "")))
     container.capabilities.override(
-        ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
+        ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True, 0)
     )
     return container
 

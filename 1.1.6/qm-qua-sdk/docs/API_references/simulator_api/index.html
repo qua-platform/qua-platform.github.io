@@ -2591,6 +2591,14 @@ input.</p>
           <td><code>noisePower</code></td>
           <td class="doc-param-details">
             <p>How much noise to add to the input.</p>
+<div class="highlight"><pre><span></span><code>``(fromController: str, fromFEM: int, fromPort: int, toController: str, toFEM: int, toPort: int)``
+</code></pre></div>
+<ol>
+<li>
+<p>Virtual connection between elements:</p>
+<p><code>(fromQE: str, toQE: str, toQEInput: int)</code></p>
+</li>
+</ol>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -2605,15 +2613,20 @@ input.</p>
         </tr>
     </tbody>
   </table>
+      <p>:param int latency: The latency between the OPX outputs and its input.
+:param float noisePower: How much noise to add to the input.</p>
+<p>Example::</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>job = qmm.simulate(config, prog, SimulationConfig(
+                  duration=20000,
+                  # loopback from output 1 to input 2 of controller 1:
+                  simulation_interface=LoopbackInterface([("con1", 1, "con1", 2)])</p>
+</blockquote>
+</blockquote>
+</blockquote>
 
-<details class="example">
-  <summary>Example</summary>
-  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">job</span> <span class="o">=</span> <span class="n">qmm</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">SimulationConfig</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                  <span class="n">duration</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                  <span class="c1"># loopback from output 1 to input 2 of controller 1:</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                  <span class="n">simulation_interface</span><span class="o">=</span><span class="n">LoopbackInterface</span><span class="p">([(</span><span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;con1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
-</code></pre></div>
-</details>
 
 
   
@@ -2641,7 +2654,8 @@ input.</p>
 
 
 <h2 id="qm.simulate.raw.RawInterface" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">qm</span><span class="o">.</span><span class="n">simulate</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">RawInterface</span></code>
+        <code>qm.simulate.raw.RawInterface</code>
+
 
 <a href="#qm.simulate.raw.RawInterface" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -2664,7 +2678,7 @@ A raw interface defines samples that will be inputted into the OPX inputs.</p>
           <td><code>connections</code></td>
           <td class="doc-param-details">
             <p>List of tuples with the connection. Each tuple should be:</p>
-<div class="highlight"><pre><span></span><code>    ``(toController: str, toPort: int, toSamples: List[float])``
+<div class="highlight"><pre><span></span><code>``(toController: str, toFEM: int, toPort: int, toSamples: List[float])``
 </code></pre></div>
             <p>
                 <span class="doc-param-annotation">
@@ -2674,24 +2688,9 @@ A raw interface defines samples that will be inputted into the OPX inputs.</p>
             </p>
           </td>
         </tr>
-        <tr>
-          <td><code>noisePower</code></td>
-          <td class="doc-param-details">
-            <p>How much noise to add to the input.</p>
-            <p>
-                <span class="doc-param-annotation">
-                  <b>TYPE:</b>
-                    <code>float</code>
-                </span>
-                <span class="doc-param-default">
-                  <b>DEFAULT:</b> 
-                    <code>0.0</code>
-                </span>
-            </p>
-          </td>
-        </tr>
     </tbody>
   </table>
+      <p>:param float noisePower: How much noise to add to the input.</p>
 
 <details class="example">
   <summary>Example</summary>
@@ -2780,7 +2779,7 @@ If no ports are given, all active ports are plotted.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[str, <span title="typing.List">List</span>[str]]]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[str, int, <span title="typing.List">List</span>[<span title="typing.Union">Union</span>[str, int]]]]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -2796,7 +2795,7 @@ If no ports are given, all active ports are plotted.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[str, <span title="typing.List">List</span>[str]]]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[str, int, <span title="typing.List">List</span>[<span title="typing.Union">Union</span>[str, int]]]]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 

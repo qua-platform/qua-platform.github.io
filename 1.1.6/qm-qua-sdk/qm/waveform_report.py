@@ -6,7 +6,6 @@ import functools
 import dataclasses
 from copy import deepcopy
 from dataclasses import dataclass
-from typing_extensions import Protocol
 from abc import ABCMeta, abstractmethod
 from typing import (
     Any,
@@ -21,14 +20,15 @@ from typing import (
     Callable,
     Iterable,
     Optional,
+    Protocol,
     Sequence,
     MutableMapping,
     cast,
 )
 
 import numpy as np
-import plotly.colors  # type: ignore[import]
-import plotly.graph_objects as go  # type: ignore[import]
+import plotly.colors  # type: ignore[import-untyped]
+import plotly.graph_objects as go  # type: ignore[import-untyped]
 
 from qm.type_hinting.simulator_types import (
     IqInfoType,
@@ -157,7 +157,7 @@ def pretty_string_freq(f: float) -> str:
     elif 1000 <= f < 1_000_000:
         div, units = 1000.0, "kHz"
     else:
-        div, units = 10e6, "MHz"
+        div, units = 1e6, "MHz"
     return f"{format_float(f / div).rstrip('0').rstrip('.')}{units}"
 
 
@@ -176,7 +176,7 @@ class PlayedAnalogWaveform(PlayedWaveform):
         dict_description = cast(PlayedAnalogWaveformType, dict_description)
         pulse_chirp_info = dict_description["chirpInfo"]
         is_pulse_have_chirp = len(pulse_chirp_info["units"]) > 0 or len(pulse_chirp_info["rate"]) > 0
-        formated_attribute_list = dict(
+        formatted_attribute_list = dict(
             current_amp_elements=dict_description["currentGMatrixElements"],
             current_dc_offset_by_port=dict_description["currentDCOffsetByPort"],
             current_intermediate_frequency=dict_description["currentIntermediateFrequency"],
@@ -185,7 +185,7 @@ class PlayedAnalogWaveform(PlayedWaveform):
             chirp_info=pulse_chirp_info if is_pulse_have_chirp else None,
             current_phase=dict_description.get("currentPhase", 0),
         )
-        return cls(**cls._build_initialization_dict(dict_description, formated_attribute_list))
+        return cls(**cls._build_initialization_dict(dict_description, formatted_attribute_list))
 
     def _to_custom_string(self, show_chirp: bool = True) -> str:
         _attributes = super()._common_attributes_to_printable_str_list()

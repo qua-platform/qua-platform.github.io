@@ -21,89 +21,39 @@ package qm.grpc.frontend;
 
 // The greeting service definition.
 service Frontend {
-    rpc GetVersion (google.protobuf.Empty) returns (google.protobuf.StringValue) {
-    }
-    rpc HealthCheck (google.protobuf.Empty) returns (HealthCheckResponse) {
-    }
-
+    rpc GetVersion (google.protobuf.Empty) returns (google.protobuf.StringValue) {}
+    rpc HealthCheck (google.protobuf.Empty) returns (HealthCheckResponse) {}
     // Compile and Run a QUA program
-    rpc Execute (ExecutionRequest) returns (ExecutionResponse) {
-    }
-
-    rpc AddToQueue(AddToQueueRequest) returns (AddToQueueResponse){
-    }
-
-    rpc Compile(CompileRequest) returns (CompileResponse) {
-    }
-
-    rpc AddCompiledToQueue(AddCompiledToQueueRequest) returns (AddCompiledToQueueResponse) {
-    }
-
-    rpc RemovePendingJobs(JobQueryParams) returns (RemovePendingJobsResponse){
-    }
-
-    rpc GetPendingJobs(JobQueryParams) returns (GetPendingJobsResponse){
-    }
-
-    rpc GetJobExecutionStatus(GetJobExecutionStatusRequest) returns (GetJobExecutionStatusResponse){
-    }
-
-    rpc PausedStatus (PausedStatusRequest) returns (PausedStatusResponse) {
-    }
-    rpc Resume (ResumeRequest) returns (ResumeResponse) {
-    }
-    rpc Halt (HaltRequest) returns (HaltResponse) {
-    }
-    rpc ResetDataProcessing (ResetDataProcessingRequest) returns (ResetDataProcessingResponse) {
-    }
-    rpc ValidateConfig (qm.grpc.qua_config.QuaConfig) returns (qm.grpc.compiler.ValidationResponse) {
-    }
-    rpc Init (google.protobuf.Empty) returns (google.protobuf.Empty) {
-    }
-    rpc PerformQmRequest (qm.grpc.qm_api.HighQmApiRequest) returns (qm.grpc.qm_api.HighQmApiResponse) {
-    }
-    rpc RequestData (QmDataRequest) returns (QmDataResponse) {
-    }
-
-    rpc PullSimulatorSamples (qm.grpc.results_analyser.PullSimulatorSamplesRequest) returns (stream qm.grpc.results_analyser.SimulatorSamplesResponse) {
-    }
-
-    rpc OpenQuantumMachine (qm.grpc.qm_manager.OpenQuantumMachineRequest) returns (qm.grpc.qm_manager.OpenQuantumMachineResponse) {
-    }
-
-    rpc CloseQuantumMachine (qm.grpc.qm_manager.CloseQuantumMachineRequest) returns (qm.grpc.qm_manager.CloseQuantumMachineResponse) {
-    }
-
-    rpc GetQuantumMachine (qm.grpc.qm_manager.GetQuantumMachineRequest) returns (qm.grpc.qm_manager.GetQuantumMachineResponse) {
-    }
-
-    rpc GetRunningJob(qm.grpc.qm_manager.GetRunningJobRequest) returns (qm.grpc.qm_manager.GetRunningJobResponse){
-    }
-
-    rpc ListOpenQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.ListOpenQuantumMachinesResponse) {
-    }
-
-    rpc CloseAllQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.CloseAllQuantumMachinesResponse) {
-    }
-
-    rpc GetControllers(google.protobuf.Empty) returns (qm.grpc.qm_manager.GetControllersResponse) { }
-
+    rpc Execute (ExecutionRequest) returns (ExecutionResponse) {}
+    rpc AddToQueue(AddToQueueRequest) returns (AddToQueueResponse){}
+    rpc Compile(CompileRequest) returns (CompileResponse) {}
+    rpc AddCompiledToQueue(AddCompiledToQueueRequest) returns (AddCompiledToQueueResponse) {}
+    rpc RemovePendingJobs(JobQueryParams) returns (RemovePendingJobsResponse){}
+    rpc GetPendingJobs(JobQueryParams) returns (GetPendingJobsResponse){}
+    rpc GetJobExecutionStatus(GetJobExecutionStatusRequest) returns (GetJobExecutionStatusResponse) {}
+    rpc GetJobStatusUpdates(GetJobExecutionStatusRequest) returns (stream GetJobExecutionStatusResponse) {}
+    rpc PausedStatus (PausedStatusRequest) returns (PausedStatusResponse) {}
+    rpc Resume (ResumeRequest) returns (ResumeResponse) {}
+    rpc Halt (HaltRequest) returns (HaltResponse) {}
+    rpc ResetDataProcessing (ResetDataProcessingRequest) returns (ResetDataProcessingResponse) {}
+    rpc ValidateConfig (qm.grpc.qua_config.QuaConfig) returns (qm.grpc.compiler.ValidationResponse) {}
+    rpc Init (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc PerformQmRequest (qm.grpc.qm_api.HighQmApiRequest) returns (qm.grpc.qm_api.HighQmApiResponse) {}
+    rpc RequestData (QmDataRequest) returns (QmDataResponse) {}
+    rpc PullSimulatorSamples (qm.grpc.results_analyser.PullSimulatorSamplesRequest) returns (stream qm.grpc.results_analyser.SimulatorSamplesResponse) {}
+    rpc OpenQuantumMachine (qm.grpc.qm_manager.OpenQuantumMachineRequest) returns (qm.grpc.qm_manager.OpenQuantumMachineResponse) {}
+    rpc CloseQuantumMachine (qm.grpc.qm_manager.CloseQuantumMachineRequest) returns (qm.grpc.qm_manager.CloseQuantumMachineResponse) {}
+    rpc GetQuantumMachine (qm.grpc.qm_manager.GetQuantumMachineRequest) returns (qm.grpc.qm_manager.GetQuantumMachineResponse) {}
+    rpc GetRunningJob(qm.grpc.qm_manager.GetRunningJobRequest) returns (qm.grpc.qm_manager.GetRunningJobResponse) {}
+    rpc ListOpenQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.ListOpenQuantumMachinesResponse) {}
+    rpc CloseAllQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.CloseAllQuantumMachinesResponse) {}
+    rpc GetControllers(google.protobuf.Empty) returns (qm.grpc.qm_manager.GetControllersResponse) {}
     rpc IsJobRunning(IsJobRunningRequest) returns (IsJobRunningResponse) {}
-
     rpc IsJobAcquiringData(IsJobAcquiringDataRequest) returns (IsJobAcquiringDataResponse) {}
-
-
-    rpc Simulate (SimulationRequest) returns (SimulationResponse) {
-    }
-
-    rpc ClearAllJobResults(google.protobuf.Empty) returns (google.protobuf.Empty) {
-    }
-
-    rpc PerformHalDebugCommand(PerformHalDebugCommandRequest) returns (PerformHalDebugCommandResponse){
-    }
-
-    rpc GetSimulatedQuantumState (GetSimulatedQuantumStateRequest) returns (GetSimulatedQuantumStateResponse) {
-    }
+    rpc Simulate (SimulationRequest) returns (SimulationResponse) {}
+    rpc ClearAllJobResults(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc PerformHalDebugCommand(PerformHalDebugCommandRequest) returns (PerformHalDebugCommandResponse) {}
+    rpc GetSimulatedQuantumState (GetSimulatedQuantumStateRequest) returns (GetSimulatedQuantumStateResponse) {}
 }
 
 message QueuePosition {
@@ -175,6 +125,7 @@ message JobExecutionStatus {
         Canceled canceled = 5;
         Loading loading = 6;
         Error error = 7;
+        Processing processing = 8;
     }
 
     message Unknown {
@@ -209,6 +160,12 @@ message JobExecutionStatus {
     message Error {
         google.protobuf.ListValue errorMessages = 1;
         string addedBy = 2;
+    }
+
+    message Processing {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+        google.protobuf.Timestamp timeStarted = 3;
     }
 }
 
@@ -415,8 +372,10 @@ message ExecutionRequest {
             message Loopback {
                 message Connections {
                     string fromController = 1;
+                    int32 fromFem = 5;
                     int32 fromPort = 2;
                     string toController = 3;
+                    int32 toFem = 6;
                     int32 toPort = 4;
                 }
                 repeated Connections connections = 2;
@@ -442,6 +401,7 @@ message ExecutionRequest {
             message RawInterface {
                 message Connections {
                     string fromController = 1;
+                    int32 fromFem = 4;
                     int32 fromPort = 2;
                     repeated double toSamples = 3;
                 }

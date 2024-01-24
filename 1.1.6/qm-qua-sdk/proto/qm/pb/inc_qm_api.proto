@@ -141,6 +141,7 @@ message HighQmApiRequest {
 message DigitalInputPort {
     string controllerName = 1;
     uint32 portNumber = 2; // 1 - based
+    uint32 fem_Number = 3; // 1 - based
 }
 
 enum DigitalInputPortPolarity {

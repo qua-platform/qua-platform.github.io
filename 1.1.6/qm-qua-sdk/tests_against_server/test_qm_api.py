@@ -5,10 +5,10 @@ from typing import Any, Tuple, Union
 import pytest
 from _pytest.logging import LogCaptureFixture
 
-from qm.qua import save, declare, program
-from qm import DictQuaConfig, QuantumMachine
+from qm.qua import program, declare, save
+from qm import DictQuaConfig, QuantumMachine, QuantumMachinesManager
 from tests_against_server.conftest import HostPort
-from qm.quantum_machines_manager import QuantumMachinesManager
+
 
 config: DictQuaConfig = {
     "version": 1,
@@ -164,7 +164,7 @@ class TestOPDApi:
     @pytest.mark.parametrize("polarity_value", [0, 1, "0", "1", "HIGH", "LOW"])
     def test_set_invalid_polarity_values(self, host_port: HostPort, port: int, polarity_value: str) -> None:
         qm = get_qm(host_port)
-        with pytest.raises((BaseException)):
+        with pytest.raises(BaseException):
             qm.set_digital_input_polarity(("con1", port), polarity_value)
 
     @pytest.mark.parametrize("port", [1, 2])

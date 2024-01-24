@@ -1,9 +1,28 @@
-from qm.qua import *
-from qm.quantum_machines_manager import QuantumMachinesManager
+import logging
+from qm import QuantumMachinesManager
 from qm.exceptions import FailedToExecuteJobException
+from qm.qua import (
+    program,
+    declare,
+    fixed,
+    save,
+    assign,
+    for_,
+    for_each_,
+    else_,
+    if_,
+    elif_,
+    while_,
+    switch_,
+    case_,
+    default_,
+    Cast,
+    Math,
+    Util,
+    Random,
+)
 from tests.simulate.opx_config import create_opx_config
 from qm.simulate.interface import SimulationConfig
-from qm.simulate import loopback
 
 import numpy as np
 import pytest
@@ -53,8 +72,6 @@ def _run_sim(prog, host_port, vars_to_save):
 @pytest.mark.parametrize("float_type", [f16, f32, f64, f128])
 @pytest.mark.parametrize("int_type", [i32, i64, u32, u64])
 def test_var_declare_numpy(host_port, float_type, int_type):
-    import sys
-
     with program() as prog:
         int_var = declare(int, value=int_type(1))
         int_arr = declare(int, value=np.array([1, 2, 3, 4, 5], dtype=int_type))
@@ -235,10 +252,11 @@ def test_switch_case_numpy(host_port, float_type, int_type):
 
 @pytest.mark.parametrize("float_type", [f16, f32, f64, f128])
 def test_all_math_functions(host_port, float_type):
-    """Check all math functions under Math library with numpy inputs.
-    Some of the functions are not supported in compiler, This test also checks that
-     pure python behaviour is similar to numpy behaviour. (i.e, if tests fails on
-     python input (literal or array), it is expected that it will fail on numpy as well.
+    """
+    Check all math functions under Math library with numpy inputs.
+    Some functions are not supported in compiler, This test also checks that
+    pure python behaviour is similar to numpy behaviour. (i.e, if tests fails on
+    python input (literal or array), it is expected that it will fail on numpy as well).
     """
 
     math_methods = [func for func in dir(Math) if callable(getattr(Math, func)) if not func.startswith("__")]
@@ -265,18 +283,16 @@ def test_all_math_functions(host_port, float_type):
     ]
     math_methods_two_scalars = ["pow", "div", "log", "plrelu"]
     math_methods_single_scalar_int_return = ["msb"]
-    math_signle_array_methods = ["sum", "max", "min", "argmax", "argmin"]
+    math_single_array_methods = ["sum", "max", "min", "argmax", "argmin"]
     math_dual_array_methods = ["dot"]
+
+    int_returning_methods = math_methods_single_scalar_int_return + math_single_array_methods + math_dual_array_methods
 
     python_failed_tests = []
     for input_type in ("python", "numpy"):
-        for method in math_methods:  # math_methods:
+        for method in math_methods:
             call_method = getattr(Math, method)
-            return_value_type = (
-                int
-                if method in math_methods_single_scalar_int_return + math_signle_array_methods + math_dual_array_methods
-                else fixed
-            )
+            return_value_type = int if method in int_returning_methods else fixed
             options = 1
             literal_type = float_type if input_type == "numpy" else float
             array_type = np.array if input_type == "numpy" else list
@@ -295,7 +311,7 @@ def test_all_math_functions(host_port, float_type):
                     assign(ret[1], call_method(literal_type(1.5), x))
                     assign(ret[2], call_method(literal_type(1.5), literal_type(2)))
                     options = 3
-                elif method in math_signle_array_methods:
+                elif method in math_single_array_methods:
                     assign(ret[0], call_method(array_type([1, 2, 3])))
                     assign(expected_ret[0], call_method(declare(int, value=[1, 2, 3])))
                 elif method in math_dual_array_methods:
@@ -317,7 +333,7 @@ def test_all_math_functions(host_port, float_type):
             logger.info(f"Checking: {method}")
             try:
                 res = _run_sim(p, host_port, ["ret0", "ret1", "ret2", "expected"])
-            except FailedToExecuteJobException as e:
+            except FailedToExecuteJobException:
                 if input_type == "python":
                     python_failed_tests.append(method)
                 else:

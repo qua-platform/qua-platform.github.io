@@ -69,6 +69,7 @@ def _create_server_capabilities(
         supports_sticky_elements=supports_sticky_elements,
         supports_octave_reset=supports_octave_reset,
         supports_fast_frame_rotation=supports_fast_frame_rotation,
+        fem_number_in_simulator=0,
     )
 
 
@@ -580,7 +581,9 @@ class TestElementWithDoubleIntermediateFreq:
     def test_many_elements_schema_with_float_freq(self, element: dict, capability_container):
         with ignore_warnings_context():
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, False, True, True, True, True, True)
+                ServerCapabilities(
+                    True, True, True, True, True, True, True, True, False, True, True, True, True, True, 0
+                )
             )
             schema = ElementSchema()
             conf = schema.load(element)
@@ -589,7 +592,9 @@ class TestElementWithDoubleIntermediateFreq:
             assert isinstance(intermediate_frequency_int, int)
 
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
+                ServerCapabilities(
+                    True, True, True, True, True, True, True, True, True, True, True, True, True, True, 0
+                )
             )
             schema = ElementSchema()
             conf = schema.load(element)
@@ -609,7 +614,9 @@ class TestElementWithSticky:
     def test_element_scheme_with_sticky(self, capability_container):
         with ignore_warnings_context():
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, True, True)
+                ServerCapabilities(
+                    True, True, True, True, True, True, True, True, True, True, True, True, True, True, 0
+                )
             )
             schema = ElementSchema()
             conf = schema.load(self._single_element)
@@ -621,10 +628,12 @@ class TestElementWithSticky:
     def test_element_scheme_sticky_without_capabilities(self, capability_container):
         with ignore_warnings_context():
             capability_container.capabilities.override(
-                ServerCapabilities(True, True, True, True, True, True, True, True, True, True, True, True, False, True)
+                ServerCapabilities(
+                    True, True, True, True, True, True, True, True, True, True, True, True, False, True, 0
+                )
             )
             self._single_element["sticky"] = {"analog": True, "duration": 16}
             schema = ElementSchema()
             conf = schema.load(self._single_element)
             hold_offset = conf.hold_offset
-            assert hold_offset.duration == int(self._single_element["sticky"]["duration"] / 4)
+            assert hold_offset.duration == self._single_element["sticky"]["duration"] // 4

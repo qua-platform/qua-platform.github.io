@@ -2,8 +2,6 @@ import pathlib
 import shutil
 from pprint import pprint
 
-from octave_sdk import ClockType
-from octave_sdk.octave import ClockInfo, ClockFrequency
 from qm import DictQuaConfig
 from qm.api.models.capabilities import ServerCapabilities
 from qm.grpc.qua_config import QuaConfigMatrix
@@ -15,7 +13,7 @@ from qm.program._qua_config_to_pb import load_config_pb
 
 def octave_config() -> QmOctaveConfig:
     _octave_config = QmOctaveConfig()
-    _octave_config.add_device_info("oct1", "127.0.0.1", 333, ClockInfo(ClockType.Internal, ClockFrequency.MHZ_10))
+    _octave_config.add_device_info("oct1", "127.0.0.1", 333)
     return _octave_config
 
 
@@ -86,7 +84,7 @@ def test_load_from_calibration_db(tmp_path):
     assert qua_config["controllers"]["con1"]["analog_outputs"][2]["offset"] == 0
     pprint(qua_config)
 
-    capabilities = ServerCapabilities(*[True] * 14)
+    capabilities = ServerCapabilities(*[True] * 14 + [0])
 
     config_after_modification = load_config_from_calibration_db(
         load_config_pb(qua_config), db, octave_config(), capabilities
@@ -105,6 +103,6 @@ def test_load_from_calibration_db(tmp_path):
             found = True
 
     assert found
-
-    assert config_after_modification.v1_beta.controllers["con1"].analog_outputs[1].offset == -0.008240181297692948
-    assert config_after_modification.v1_beta.controllers["con1"].analog_outputs[2].offset == 0.028723706805086662
+    analog_outputs = config_after_modification.v1_beta.control_devices["con1"].fems[1].opx.analog_outputs
+    assert analog_outputs[1].offset == -0.008240181297692948
+    assert analog_outputs[2].offset == 0.028723706805086662

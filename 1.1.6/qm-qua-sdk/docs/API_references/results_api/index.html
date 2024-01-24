@@ -1762,6 +1762,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch_all" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1849,17 +1860,6 @@
     <span class="md-ellipsis">
       
         get()
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#qm.results.streaming_result_fetcher.StreamingResultFetcher.get_debug_data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_debug_data()
       
     </span>
   </a>
@@ -2635,6 +2635,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch_all" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2722,17 +2733,6 @@
     <span class="md-ellipsis">
       
         get()
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#qm.results.streaming_result_fetcher.StreamingResultFetcher.get_debug_data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_debug_data()
       
     </span>
   </a>
@@ -3075,6 +3075,107 @@ in the program.</p>
 
 
 
+<h3 id="qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fetch</span></code>
+
+<a href="#qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Fetch a single result from the current result stream saved in server memory.
+The result stream is populated by the save().</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>item</code></td>
+          <td class="doc-param-details">
+            <p>ignored</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.Union">Union</span>[int, slice]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>flat_struct</code></td>
+          <td class="doc-param-details">
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>False</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>RETURNS</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+              <span class="doc-returns-annotation">
+                  <code><span title="typing.Optional">Optional</span>[<span title="numpy.typing">numpy</span>.<span title="numpy.typing.typing">typing</span>.<span title="numpy.typing.NDArray">NDArray</span>[<span title="numpy.typing">numpy</span>.<span title="numpy.typing.generic">generic</span>]]</code>
+              </span>
+          </td>
+          <td class="doc-returns-details">
+            <p>the current result</p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="example">
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">res</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span> <span class="c1"># return the item in the top position</span>
+</code></pre></div>
+</details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
 <h3 id="qm.results.base_streaming_result_fetcher.BaseStreamingResultFetcher.fetch_all" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">fetch_all</span></code>
 
@@ -3097,10 +3198,26 @@ may give different results.</p>
     </thead>
     <tbody>
         <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>flat_struct</code></td>
           <td class="doc-param-details">
-            <p>results will have a flat structure - dimensions
-will be part of the shape and not of the type</p>
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -3281,10 +3398,26 @@ with the same item index may give different results.</p>
           </td>
         </tr>
         <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>flat_struct</code></td>
           <td class="doc-param-details">
-            <p>results will have a flat structure - dimensions
-will be part of the shape and not of the type</p>
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -3575,44 +3708,6 @@ This object is iterable:</p>
           </td>
           <td class="doc-returns-details">
             <p>A handle object to the results <code>MultipleNamedJobResult</code> or <code>SingleNamedJobResult</code> or None if the named results in unknown</p>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="qm.results.streaming_result_fetcher.StreamingResultFetcher.get_debug_data" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_debug_data</span></code>
-
-<a href="#qm.results.streaming_result_fetcher.StreamingResultFetcher.get_debug_data" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-  <div class="doc doc-contents ">
-  
-
-  <table>
-    <thead>
-      <tr>
-        <th><b>RETURNS</b></th>
-        <th><b>DESCRIPTION</b></th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-              <span class="doc-returns-annotation">
-                  <code>None</code>
-              </span>
-          </td>
-          <td class="doc-returns-details">
-            <p>debugging data to report to QM</p>
           </td>
         </tr>
     </tbody>
@@ -3920,10 +4015,26 @@ The result stream is populated by the save().</p>
           </td>
         </tr>
         <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>flat_struct</code></td>
           <td class="doc-param-details">
-            <p>results will have a flat structure - dimensions
-will be part of the shape and not of the type</p>
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -3995,10 +4106,26 @@ may give different results.</p>
     </thead>
     <tbody>
         <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>flat_struct</code></td>
           <td class="doc-param-details">
-            <p>results will have a flat structure - dimensions
-will be part of the shape and not of the type</p>
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -4116,10 +4243,26 @@ with the same item index may give different results.</p>
           </td>
         </tr>
         <tr>
+          <td><code>check_for_errors</code></td>
+          <td class="doc-param-details">
+            <p>If true, the function would also check whether run-time errors happened during the
+program execution and would write to the logger an error message.</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>True</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
           <td><code>flat_struct</code></td>
           <td class="doc-param-details">
-            <p>results will have a flat structure - dimensions
-will be part of the shape and not of the type</p>
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
@@ -4203,6 +4346,22 @@ will be part of the shape and not of the type</p>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
                     <code>None</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>flat_struct</code></td>
+          <td class="doc-param-details">
+            <p>results will have a flat structure - dimensions will be part of the shape and not of the type</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>bool</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>False</code>
                 </span>
             </p>
           </td>

@@ -3696,7 +3696,7 @@ in the documentation for further information.</p>
 </details>
 <details class="note">
   <summary>Note</summary>
-  <p>When using chrip, it is possible to add a flag "continue_chirp=True" to the play command.
+  <p>When using chirp, it is possible to add a flag "continue_chirp=True" to the play command.
 When this flag is set, the internal oscillator will continue the chirp even after the play command had ended.
 See the `chirp documentation <a href="../../../Guides/features/#frequency-chirp">chirp documentation</a>
 for more information.</p>
@@ -3712,8 +3712,8 @@ for more information.</p>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse1&#39;</span> <span class="o">*</span> <span class="n">amp</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="o">-</span><span class="n">v1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="s1">&#39;element_iq_pair&#39;</span><span class="p">)</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">time_stream</span> <span class="o">=</span> <span class="n">declare_stream</span><span class="p">()</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="c1"># Supported on QOP2.2+</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse1&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;element1&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">timestamp_stream</span><span class="o">=</span><span class="s1">&#39;t1&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse1&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;element1&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">timestamp_stream</span><span class="o">=</span><span class="n">time_stream</span><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse1&#39;</span><span class="p">,</span> <span class="s1">&#39;element1&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">timestamp_stream</span><span class="o">=</span><span class="s1">&#39;t1&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">play</span><span class="p">(</span><span class="s1">&#39;pulse1&#39;</span><span class="p">,</span> <span class="s1">&#39;element1&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">timestamp_stream</span><span class="o">=</span><span class="n">time_stream</span><span class="p">)</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="k">with</span> <span class="n">stream_processing</span><span class="p">():</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="n">stream</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span>
 </code></pre></div>
@@ -4012,7 +4012,7 @@ element</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.QuaNumberType">QuaNumberType</span></code>
+                    <code><span title="qm.qua._dsl_specific_type_hints.QuaNumberType">QuaNumberType</span></code>
                 </span>
             </p>
           </td>
@@ -4050,7 +4050,7 @@ element</p>
    The OPX input to be sampled is defined in the configuration of the element.</p>
 </li>
 <li>
-<p>Processing the aqcuired data according to a parameter defined in the measure command,
+<p>Processing the acquired data according to a parameter defined in the measure command,
     including Demodulation, Integration and Time Tagging.</p>
 </li>
 </ol>
@@ -4255,8 +4255,10 @@ finish their currently running statement.</p>
 
   <div class="doc doc-contents first">
   
-      <p>Resets the phase of the oscillator associated with <code>element</code>, setting the phase of the next pulse to absolute zero.
-This sets the phase of the currently playing intermediate frequency to the value it had at the beginning of the program (t=0).</p>
+      <p>Resets the phase of the oscillator associated with <code>element</code>,
+setting the phase of the next pulse to absolute zero.
+This sets the phase of the currently playing intermediate frequency
+to the value it had at the beginning of the program (t=0).</p>
 
 <details class="note">
   <summary>Note</summary>
@@ -4867,7 +4869,7 @@ all of their oscillators' phases will be shifted</p>
   <div class="doc doc-contents first">
   
       <p>Resets the frame of the oscillator associated with an element to 0.</p>
-<p>Used to reset all of the frame updated made up to this statement.</p>
+<p>Used to reset all the frame updated made up to this statement.</p>
 
   <table>
     <thead>
@@ -5000,7 +5002,7 @@ statement (if given) will be executed.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.QuaExpressionType">QuaExpressionType</span></code>
+                    <code><span title="qm.qua._expressions.QuaExpressionType">QuaExpressionType</span></code>
                 </span>
             </p>
           </td>
@@ -5009,7 +5011,7 @@ statement (if given) will be executed.</p>
           <td><code>unsafe</code></td>
           <td class="doc-param-details">
             <p>If set to True, then switch-case would be more efficient
-and would produce less gaps. However, if an input which does
+and would produce fewer gaps. However, if an input which does
 not match a case is given, unexpected behavior will occur.
 Cannot be used with the <code>default_()</code> statement. Default is
 false, use with care.</p>
@@ -5083,7 +5085,7 @@ in the <code>switch_()</code> statement</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.TypeOrExpression">TypeOrExpression</span>[<span title="qm.qua._type_hinting.AllPyTypes">AllPyTypes</span>]</code>
+                    <code><span title="qm.qua._dsl_specific_type_hints.TypeOrExpression">TypeOrExpression</span>[<span title="qm.qua._type_hinting.AllPyTypes">AllPyTypes</span>]</code>
                 </span>
             </p>
           </td>
@@ -5127,7 +5129,7 @@ in the <code>switch_()</code> statement</p>
 statement.</p>
 <p>The expression given in the <code>switch_()</code> statement will be evaluated and compared
 to each of the values in the <code>case_()</code> statements. The QUA code block following
-the <code>case_()</code> statement which evaulated to true will be executed. If none of the
+the <code>case_()</code> statement which evaluated to true will be executed. If none of the
 statements evaluated to true, the QUA code block following the <code>default_()</code>
 statement (if given) will be executed.</p>
 
@@ -5181,7 +5183,7 @@ executed only if the expression given evaluates to true.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.QuaExpressionType">QuaExpressionType</span></code>
+                    <code><span title="qm.qua._expressions.QuaExpressionType">QuaExpressionType</span></code>
                 </span>
             </p>
           </td>
@@ -5234,7 +5236,7 @@ expression given in this <code>elif_()</code> evaluates to true.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.QuaExpressionType">QuaExpressionType</span></code>
+                    <code><span title="qm.qua._expressions.QuaExpressionType">QuaExpressionType</span></code>
                 </span>
             </p>
           </td>
@@ -5701,7 +5703,7 @@ array</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._type_hinting.PyNumberType">PyNumberType</span>]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._expressions.PyNumberType">PyNumberType</span>]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -5724,7 +5726,7 @@ array</p>
         <tr>
           <td>
               <span class="doc-returns-annotation">
-                  <code><span title="qm.qua._type_hinting.QuaVariableType">QuaVariableType</span></code>
+                  <code><span title="qm.qua._expressions.QuaVariableType">QuaVariableType</span></code>
               </span>
           </td>
           <td class="doc-returns-details">
@@ -5922,7 +5924,7 @@ first element in the amplitude matrix which multiples the
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="qm.qua._type_hinting.QuaNumberType">QuaNumberType</span></code>
+                    <code><span title="qm.qua._dsl_specific_type_hints.QuaNumberType">QuaNumberType</span></code>
                 </span>
             </p>
           </td>
@@ -5935,7 +5937,7 @@ the <code>pulse</code> associated with the <code>operation</code>.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._type_hinting.QuaNumberType">QuaNumberType</span>]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._dsl_specific_type_hints.QuaNumberType">QuaNumberType</span>]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -5952,7 +5954,7 @@ the <code>pulse</code> associated with the <code>operation</code>.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._type_hinting.QuaNumberType">QuaNumberType</span>]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._dsl_specific_type_hints.QuaNumberType">QuaNumberType</span>]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -5969,7 +5971,7 @@ the <code>pulse</code> associated with the <code>operation</code>.</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._type_hinting.QuaNumberType">QuaNumberType</span>]</code>
+                    <code><span title="typing.Optional">Optional</span>[<span title="qm.qua._dsl_specific_type_hints.QuaNumberType">QuaNumberType</span>]</code>
                 </span>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
@@ -6039,7 +6041,7 @@ The slope argument is specified in units of <code>V/ns</code>. Usage of this fea
 
   <div class="doc doc-contents first">
   
-      <p>Any QUA command written within the strict timing block will be required to to play without gaps.</p>
+      <p>Any QUA command written within the strict timing block will be required to play without gaps.</p>
 <p>See <a href="../../../Guides/timing_in_qua/#strict-timing">the documentation</a> for further information and examples.</p>
 <p>To be used with a context manager.</p>
 <p>-- Available from QOP 2.0 --</p>
@@ -6685,7 +6687,7 @@ times of the detected pulses are saved (in ns)</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code>QUA int</code>
+                    <code>int</code>
                 </span>
             </p>
           </td>
@@ -6776,7 +6778,7 @@ times of the detected pulses are saved (in ns)</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code>QUA int</code>
+                    <code>int</code>
                 </span>
             </p>
           </td>
@@ -6866,7 +6868,7 @@ times of the detected pulses are saved (in ps)</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code>QUA int</code>
+                    <code>int</code>
                 </span>
             </p>
           </td>
@@ -6995,7 +6997,7 @@ pulses detected</p>
             <p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
-                    <code>QUA int</code>
+                    <code>int</code>
                 </span>
             </p>
           </td>
@@ -7052,7 +7054,7 @@ A pipeline must be terminated with a save/save_all terminal, and then can be ret
 <p>A pipeline can be assigned to python variable, and then reused on other pipelines. It is ensured that the
 common part of the pipeline is processed only once.</p>
 <details class="example">
-<summary>Creating a results analysis</summary>
+<summary>Creating a result analysis object</summary>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">with</span> <span class="n">stream_processing</span><span class="p">():</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">a</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="s2">&quot;another tag&quot;</span><span class="p">)</span>

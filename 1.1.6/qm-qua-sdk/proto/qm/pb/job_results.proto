@@ -15,7 +15,6 @@ service JobResultsService {
     rpc GetJobState (GetJobStateRequest) returns (GetJobStateResponse) {}
     rpc GetJobNamedResultHeader (GetJobNamedResultHeaderRequest) returns (GetJobNamedResultHeaderResponse) {}
     rpc GetJobNamedResult (GetJobNamedResultRequest) returns (stream GetJobNamedResultResponse) {}
-    rpc GetJobDebugData (GetJobDebugDataRequest) returns (stream GetJobDebugDataResponse) {}
     rpc GetJobErrors (GetJobErrorsRequest) returns (GetJobErrorsResponse) {}
     rpc GetProgramMetadata(GetProgramMetadataRequest) returns (GetProgramMetadataResponse) {}
 }
@@ -138,15 +137,6 @@ message GetJobNamedResultResponse {
 
 message GetJobErrorsRequest {
     string jobId = 1;
-}
-
-message GetJobDebugDataRequest {
-    string jobId = 1;
-}
-
-message GetJobDebugDataResponse {
-    bytes data = 1;
-    string jobId = 2;
 }
 
 message GetJobErrorsResponse {

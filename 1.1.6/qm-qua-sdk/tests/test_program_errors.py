@@ -1,3 +1,4 @@
+from qm.exceptions import QmQuaException
 from qm.qua import *
 import pytest
 

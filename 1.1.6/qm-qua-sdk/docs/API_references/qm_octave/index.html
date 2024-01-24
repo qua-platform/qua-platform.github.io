@@ -1825,6 +1825,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qm.octave.qm_octave.QmOctave.set_element_parameters_from_calibration_db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_element_parameters_from_calibration_db()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qm.octave.qm_octave.QmOctave.set_lo_frequency" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2452,6 +2463,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#qm.octave.qm_octave.QmOctave.set_element_parameters_from_calibration_db" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_element_parameters_from_calibration_db()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#qm.octave.qm_octave.QmOctave.set_lo_frequency" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2979,6 +3001,66 @@ It can also set the clock frequency - 10, 100 or 1000 MHz</p>
                 <span class="doc-param-default">
                   <b>DEFAULT:</b> 
                     <code>False</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="qm.octave.qm_octave.QmOctave.set_element_parameters_from_calibration_db" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">set_element_parameters_from_calibration_db</span></code>
+
+<a href="#qm.octave.qm_octave.QmOctave.set_element_parameters_from_calibration_db" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Apply correction parameters to an element from the calibration database. The parameters will be selected
+according to the current LO and IF frequencies in the configuration. Therefore, If used when sweeping the LO,
+it is required to first set the new LO freq using qm.octave.set_lo_frequency() before updating the calibration
+parameters.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><b>PARAMETER</b></th>
+        <th><b>DESCRIPTION</b></th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>element</code></td>
+          <td class="doc-param-details">
+            <p>The name of the element for setting the calibration parameters</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code>str</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>running_job</code></td>
+          <td class="doc-param-details">
+            <p>Optional. If given, will update the element's parameters of the given running job</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="qm.jobs.running_qm_job.RunningQmJob" href="../qm_job_api/#qm.jobs.running_qm_job.RunningQmJob">RunningQmJob</a>]</code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>None</code>
                 </span>
             </p>
           </td>

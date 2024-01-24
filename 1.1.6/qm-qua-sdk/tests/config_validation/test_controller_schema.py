@@ -1,11 +1,9 @@
 import pytest
 
 from qm.exceptions import ConfigValidationException
-from qm.api.models.capabilities import ServerCapabilities
-from qm.program._qua_config_schema import (
-    QuaConfigSchema,
-    validate_config_capabilities,
-)
+from qm.api.models.capabilities import ServerCapabilities, OPX_FEM_IDX
+from qm.grpc.qua_config import QuaConfig
+from qm.program._qua_config_schema import QuaConfigSchema, validate_config_capabilities
 
 
 class TestControllerWithInvertedDigitalOutputs:
@@ -35,9 +33,7 @@ class TestControllerWithInvertedDigitalOutputs:
     def test_qua_config_fail_if_no_capability(self):
         schema = QuaConfigSchema()
         conf = schema.load(self.config_with_inverted)
-        with pytest.raises(
-            ConfigValidationException, match="Server does not support inverted digital output"
-        ):
+        with pytest.raises(ConfigValidationException, match="Server does not support inverted digital output"):
             validate_config_capabilities(
                 conf,
                 ServerCapabilities(
@@ -54,7 +50,8 @@ class TestControllerWithInvertedDigitalOutputs:
                     supports_inverted_digital_output=False,
                     supports_octave_reset=False,
                     supports_sticky_elements=False,
-                    supports_fast_frame_rotation=False
+                    supports_fast_frame_rotation=False,
+                    fem_number_in_simulator=0,
                 ),
             )
 
@@ -77,7 +74,8 @@ class TestControllerWithInvertedDigitalOutputs:
                 supports_inverted_digital_output=True,
                 supports_octave_reset=False,
                 supports_sticky_elements=False,
-                supports_fast_frame_rotation=False
+                supports_fast_frame_rotation=False,
+                fem_number_in_simulator=0,
             ),
         )
 
@@ -100,7 +98,8 @@ class TestControllerWithInvertedDigitalOutputs:
                 supports_inverted_digital_output=False,
                 supports_sticky_elements=False,
                 supports_octave_reset=False,
-                supports_fast_frame_rotation=False
+                supports_fast_frame_rotation=False,
+                fem_number_in_simulator=0,
             ),
         )
 
@@ -134,9 +133,7 @@ class TestControllerWithSharedPorts:
     def test_qua_config_fail_if_no_capability(self):
         schema = QuaConfigSchema()
         conf = schema.load(self.config_with_shareable)
-        with pytest.raises(
-            ConfigValidationException, match="Server does not support shareable ports"
-        ):
+        with pytest.raises(ConfigValidationException, match="Server does not support shareable ports"):
             validate_config_capabilities(
                 conf,
                 ServerCapabilities(
@@ -154,6 +151,7 @@ class TestControllerWithSharedPorts:
                     supports_sticky_elements=False,
                     supports_octave_reset=False,
                     supports_fast_frame_rotation=False,
+                    fem_number_in_simulator=0,
                 ),
             )
 
@@ -177,6 +175,7 @@ class TestControllerWithSharedPorts:
                 supports_sticky_elements=False,
                 supports_octave_reset=False,
                 supports_fast_frame_rotation=False,
+                fem_number_in_simulator=0,
             ),
         )
 
@@ -200,10 +199,11 @@ class TestControllerWithSharedPorts:
                 supports_sticky_elements=False,
                 supports_octave_reset=False,
                 supports_fast_frame_rotation=False,
+                fem_number_in_simulator=0,
             ),
         )
 
     def test_qua_config_shareable_default_value_is_false(self):
         schema = QuaConfigSchema()
-        conf = schema.load(self.config_with_shareable)
-        assert conf.v1_beta.controllers["con1"].analog_outputs[2].shareable is False
+        conf: QuaConfig = schema.load(self.config_with_shareable)
+        assert conf.v1_beta.control_devices["con1"].fems[OPX_FEM_IDX].opx.analog_outputs[2].shareable is False

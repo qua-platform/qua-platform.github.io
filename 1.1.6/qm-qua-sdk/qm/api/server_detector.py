@@ -51,7 +51,7 @@ def detect_server(
         )
 
         try:
-            connection_details = _redirect(connection_details)
+            connection_details, octaves = _redirect(connection_details)
             info, server_version = _connect(connection_details)
         except Exception as e:
             errors.append((dst, f"{e}\n{traceback.format_exc()}"))
@@ -68,30 +68,42 @@ def detect_server(
             server_version=server_version,
             qua_implementation=info,
             connection_details=connection_details,
+            octaves={
+                name: ConnectionDetails(octave_host, octave_port, None, None)
+                for name, (octave_host, octave_port) in octaves.items()
+            },
         )
 
     targets = ",".join([f"{host}:{port}" for port in ports_to_try])
-    message = f"Failed to detect a QuantumMachines server. Tried connecting to {targets}."
+    cluster_str = f"cluster '{cluster_name}'" if cluster_name else "a cluster"
+    message = (
+        f"Failed to detect to QuantumMachines server, failed to connect to {cluster_str}. "
+        f"Tried connecting to {targets}."
+    )
     errors_msgs = "\n".join([f"{dst}: {error}" for dst, error in errors])
     logger.error(f"{message}\nErrors:\n{errors_msgs}.")
     raise QmServerDetectionError(message)
 
 
-def _redirect(connection_details: ConnectionDetails) -> ConnectionDetails:
-    host, port = run_async(
+def _redirect(connection_details: ConnectionDetails) -> Tuple[ConnectionDetails, Dict[str, Tuple[str, int]]]:
+    response_details = run_async(
         send_redirection_check(
             connection_details.host, connection_details.port, connection_details.headers, connection_details.timeout
         )
     )
-
-    if host != connection_details.host or port != connection_details.port:
+    octaves = {}
+    if response_details.host != connection_details.host or response_details.port != connection_details.port:
         logger.debug(
-            f"Connection redirected from '{connection_details.host}:{connection_details.port}' to '{host}:{port}'"
+            f"Connection redirected from '{connection_details.host}:{connection_details.port}' to "
+            f"'{response_details.host}:{response_details.port}'"
         )
-        connection_details.host = host
-        connection_details.port = port
+        connection_details.host = response_details.host
+        connection_details.port = response_details.port
+        octaves = response_details.octaves
+        if octaves:
+            logger.debug(f"Detected octaves: {octaves}")
 
-    return connection_details
+    return connection_details, octaves
 
 
 def _connect(

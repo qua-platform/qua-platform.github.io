@@ -2,302 +2,302 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/community/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/learn/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/CHANGELOG/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/about_doc/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/legal/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/safety/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/support/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/config_spec/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/octave_config/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qm_api/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qm_job_api/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qm_manager_api/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qm_octave/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/queue/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/results_api/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/simulator_api/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/cast/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/dsl_main/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/math/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/random/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/result_stream/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/API_references/qua/util/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/analog_input_stage/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/best_practices/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/demod/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/error/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/external_clock/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/external_trigger/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/features/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/multi-users/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/octave/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/output_filter/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/phase_and_frame/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/qua_ref/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/simulator/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/stream_proc/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/timing_in_qua/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Guides/variables/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Hardware/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Hardware/OPX_hardware/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Hardware/dib/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Hardware/octave/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Hardware/opx%2Binstallation/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Introduction/config/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Introduction/qop_overview/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Introduction/qua_overview/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Introduction/use_case/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Libraries/libs_repository/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Libraries/tools_repository/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Releases/qm_qua_releases/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Releases/qop1_releases/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/Releases/qop2_releases/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/legal/cookie_policy/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/legal/privacy_policy/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/qm-qua-sdk/docs/legal/terms_of_use/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://docs.quantum-machines.co/1.1.6/solutions/</loc>
-         <lastmod>2023-11-19</lastmod>
+         <lastmod>2024-01-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

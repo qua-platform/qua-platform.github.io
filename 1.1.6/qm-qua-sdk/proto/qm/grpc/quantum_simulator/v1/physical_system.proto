@@ -9,6 +9,8 @@ message InputPort{
   string controller = 1;
   // id
   uint32 id = 2;
+  // fem
+  uint32 fem = 3;
 }
 
 // Output port of the quantum system (input port of OPX)
@@ -17,6 +19,8 @@ message OutputPort{
   string controller = 1;
   // id
   uint32 id = 2;
+  // fem
+  uint32 fem = 3;
 }
 
 /*

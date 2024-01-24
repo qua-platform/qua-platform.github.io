@@ -3252,7 +3252,7 @@ Configuring the Octave is done using a <code>"octaves"</code> key in the <a href
 </details>
 <details class="info">
 <summary>Info</summary>
-<p>When changing the LO frequency using the API command, either the external LO or the internal one, there is a need to run this command again in order get the desired gain.</p>
+<p>For versions <a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.4-green" /></a> and below - When changing the LO frequency using the API command, either the external LO or the internal one, there is a need to run this command again in order get the desired gain.</p>
 <p>i.e. for internal LO, </p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_lo_source</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">OctaveLOSource</span><span class="o">.</span><span class="n">Internal</span><span class="p">)</span> 
 <a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">qm</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">set_lo_frequency</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">LO</span><span class="p">)</span> 
@@ -3284,7 +3284,20 @@ Configuring the Octave is done using a <code>"octaves"</code> key in the <a href
 <p>Don't forget to connect the OPX's digital output to the relevant Trig port (as can be seen in the <a href="../../Hardware/octave/#octave-front-panel">octave front panel</a>). Moreover, it's important to calibrate the digital output's <code>delay</code> and <code>buffer</code> parameters. </p>
 </div>
 <h5 id="calibrating-the-digital-pulse">Calibrating the Digital Pulse<a class="headerlink" href="#calibrating-the-digital-pulse" title="Permanent link">&para;</a></h5>
-<p>There is an intrinsic delay between the time that the digital pulse arrives at the octave and the time that the RF pulse outputs from the octave. This time depends on the path of the digital signal inside the octave, computation time, and the time it takes for the digital switch to open. Hence, it's important to calibrate the <code>delay</code> and <code>buffer</code> parameters. The suggested parameters are: <code>delay</code> = 87 ns, <code>buffer</code>  = 15 ns.</p>
+<p>There is an intrinsic delay between the time that the digital pulse arrives at the octave and the time that the RF pulse outputs from the octave. This time depends on the path of the digital signal inside the octave, computation time, and the time it takes for the digital switch to open. Hence, it's important to calibrate the <code>delay</code> and <code>buffer</code> parameters. </p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.2-blue" /></a> and above</label><label for="__tabbed_3_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.1-blue" /></a> and below</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>The suggested parameters are: <code>delay</code> = 57 ns, <code>buffer</code>  = 18 ns.</p>
+</div>
+<div class="tabbed-block">
+<p>The suggested parameters are: <code>delay</code> = 87 ns, <code>buffer</code>  = 15 ns.</p>
+</div>
+</div>
+</div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>These parameters may vary between different ports due to small intrinsic cable differences inside the octave and different external cables between the octave and the OPX. </p>
@@ -3331,10 +3344,10 @@ To do so:</p>
 <li>Connect the OPX's analog outputs to the octave's I,Q pairs.</li>
 <li>Connect the OPX's analog inputs to the <code>IFOUT1</code>, <code>IFOUT2</code> octave's ports. </li>
 </ul>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.5-green" /></a> and above</label><label for="__tabbed_3_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.4-green" /></a> and below</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.5-green" /></a> and above</label><label for="__tabbed_4_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.4-green" /></a> and below</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.2-blue" /></a> and above</label><label for="__tabbed_4_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.1-blue" /></a> and below</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.2-blue" /></a> and above</label><label for="__tabbed_5_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="OPX+" class="middle" src="https://img.shields.io/badge/OPX+-2.2.1-blue" /></a> and below</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>The automatic calibration is done using the <a class="autorefs autorefs-internal" href="../../API_references/qm_api/#qm.QuantumMachine.QuantumMachine.calibrate_element"><code>calibrate_element()</code></a> command from the <code>qm</code> API: </p>
@@ -3417,7 +3430,7 @@ To do so:</p>
 </div>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>In the following example you can see how to use the octave in order to up-convert and down-convert the resonator element. </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.5-green" /></a> and above</label><label for="__tabbed_5_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.4-green" /></a> and below</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.5-green" /></a> and above</label><label for="__tabbed_6_2"><a class="middle" href="https://qm-docs.qualang.io/about_doc.html#shields"><img alt="QUA" class="middle" src="https://img.shields.io/badge/QUA-1.1.4-green" /></a> and below</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>The relevant parts in the configuration are
@@ -3597,7 +3610,7 @@ This code snippet sends all the commands in one message and can at some cases, e
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2023-10-22T10:19:56+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2023-10-22</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2024-01-23T10:06:06+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2024-01-23</span>
       </span>
     
     

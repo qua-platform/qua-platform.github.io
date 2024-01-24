@@ -109,7 +109,6 @@ class JobResultServiceMock(BaseMockService, JobResultsServiceBase):
         self.get_job_state = EndpointMock()
         self.get_job_named_result_header = EndpointMock()
         self.get_job_named_result = EndpointMock()
-        self.get_job_debug_data = EndpointMock()
         self.get_job_errors = EndpointMock()
         self.get_program_metadata = EndpointMock()
 

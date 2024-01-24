@@ -1,9 +1,11 @@
 import numpy as np
 
+from qm import DictQuaConfig
+
 pulse_duration = 5700
 eom_warmpup = 1000
 
-config = {
+config: DictQuaConfig = {
     "version": 1,
     "controllers": {
         "con1": {
@@ -301,7 +303,7 @@ config = {
                 },
             },
         },
-        "RR" : {
+        "RR": {
             "intermediate_frequency": -297852122.0,
             "operations": {"readout": "readout_pulse"},
             "mixInputs": {
@@ -562,10 +564,10 @@ config = {
     },
     "digital_waveforms": {
         "trig_wf0": {
-            "samples": ((1, 0),),
+            "samples": [(1, 0), ],
         },
         "trig_empty": {
-            "samples": ((0, 0),),
+            "samples": [(0, 0), ],
         },
     },
     "integration_weights": {
@@ -624,4 +626,43 @@ config = {
             "mixer": "mxr_a"
         }
     },
+}
+
+
+opx1000_config = {
+    'controllers': {
+        'con1': {
+            'fems': {
+                1: {
+                    'analog_inputs': {},
+                    'analog_outputs': {
+                        1: {'offset': 0.0, "upsampling_mode": "mw", 'sampling_rate': 1e9},
+                        2: {'offset': 0.0, "upsampling_mode": "mw", 'sampling_rate': 1e9},
+                    },
+                    'digital_inputs': {},
+                    'digital_outputs': {}
+                },
+            },
+            'type': 'opy'}
+    },
+    'digital_waveforms': {},
+    'elements': {
+        'qe1': {
+            'intermediate_frequency': 333e6,
+            'operations': {'pulse1': 'qe1_pulse1_pulse'},
+            'singleInput': {'port': ('con1', 1, 1)}
+        },
+        },
+    'integration_weights': {},
+    'mixers': {},
+    'oscillators': {},
+    'pulses': {
+        'qe1_pulse1_pulse': {
+            'length': 500000,
+            'operation': 'control',
+            'waveforms': {'single': 'qe1_pulse1_pulse_wf_I'}
+        }
+    },
+    'version': 1,
+    'waveforms': {'qe1_pulse1_pulse_wf_I': {'sample': 0.2, 'type': 'constant'}}
 }

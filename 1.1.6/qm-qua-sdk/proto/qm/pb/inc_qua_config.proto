@@ -17,7 +17,7 @@ message QuaConfig {
 
     message QuaConfigV1 {
         map<string, ControllerDec> controllers = 2 [deprecated = true];
-        map<string, ControllerTypeDec> controllerTypes = 10;
+        map<string, DeviceDec> controlDevices = 20;
         map<string, Oscillator> oscillators = 9;
         map<string, ElementDec> elements = 3;
         map<string, PulseDec> pulses = 4;
@@ -28,6 +28,19 @@ message QuaConfig {
         map<string, Octave.Config> octaves = 11;
     }
 
+
+    message DeviceDec {
+        map<uint32, FEMTypes> fems = 1;
+    }
+
+
+    message FEMTypes {
+        oneof fem_type_one_of {
+            ControllerDec opx = 1;
+            OctoDacFemDec octo_dac = 2;
+        }
+    }
+
     message ControllerDec {
         string type = 1;
         map<uint32, AnalogOutputPortDec> analogOutputs = 2;
@@ -36,22 +49,14 @@ message QuaConfig {
         map<uint32, DigitalInputPortDec> digitalInputs = 5;
     }
 
-    message ControllerTypeDec {
-        oneof controller_type_one_of {
-            OpxControllerDec opx = 1;
-            OpxPlusControllerDec opxPlus = 2;
-        }
+
+    message OctoDacFemDec {
+        map<uint32, OctoDacAnalogOutputPortDec> analogOutputs = 2;
+        map<uint32, AnalogInputPortDec> analogInputs = 3;
+        map<uint32, DigitalOutputPortDec> digitalOutputs = 4;
+        map<uint32, DigitalInputPortDec> digitalInputs = 5;
     }
 
-    message OpxControllerDec {
-        ControllerDec controller = 1;
-        string controllerName = 2;
-    }
-
-    message OpxPlusControllerDec {
-        ControllerDec controller = 1;
-        string controllerName = 2;
-    }
 
     message AnalogOutputPortDec {
         double offset = 1;
@@ -61,6 +66,36 @@ message QuaConfig {
         bool shareable = 5;
         map<uint32, double> crosstalk = 6;
      }
+
+
+     message OctoDacAnalogOutputPortDec {
+        double offset = 1;
+        AnalogOutputPortFilter filter = 2;
+        uint32 delay = 3;
+        bool shareable = 5;
+        map<uint32, double> crosstalk = 6;
+        SamplingRate sampling_rate = 7;
+        SamplingRateMode upsampling_mode = 8;
+        OutputMode output_mode = 9;
+
+        enum OutputMode {
+            direct = 0;
+            amplified = 1;
+        }
+
+        enum SamplingRate {
+            Undefined = 0;
+            GSPS1 = 1;
+            GSPS2 = 2;
+        }
+
+        enum SamplingRateMode {
+            unset = 0;
+            mw = 1;
+            pulse = 2;
+        }
+     }
+
 
      message AnalogOutputPortFilter {
          repeated double feedforward = 1;
@@ -206,11 +241,13 @@ message QuaConfig {
     message DacPortReference {
         string controller = 1;
         uint32 number = 2;
+        uint32 fem = 3;
     }
 
     message AdcPortReference {
         string controller = 1;
         uint32 number = 2;
+        uint32 fem = 3;
     }
 
     message DigitalInputPortReference {
@@ -226,6 +263,7 @@ message QuaConfig {
     message PortReference {
         string controller = 1;
         uint32 number = 2;
+        uint32 fem = 3;
     }
 
     message PulseDec {

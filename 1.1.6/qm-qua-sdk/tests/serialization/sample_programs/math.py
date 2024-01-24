@@ -1,3 +1,4 @@
+import numpy as np
 from qm.qua import *
 
 i32 = np.int32

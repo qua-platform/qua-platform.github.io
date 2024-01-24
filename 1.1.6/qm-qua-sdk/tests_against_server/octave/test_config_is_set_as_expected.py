@@ -55,7 +55,7 @@ def test_config_is_set_as_expected(monkeypatch, host_port):
     octave_config.add_device_info("octave1", "localhost", 333)
     octave_config.set_calibration_db(os.path.dirname(__file__))
     octave_mock = MagicMock()
-    monkeypatch.setattr(f"qm.octave.octave_config.Octave", octave_mock)
+    monkeypatch.setattr(f"qm.octave.octave_manager.Octave", octave_mock)
 
     qmm = QuantumMachinesManager(**host_port, octave=octave_config)
 

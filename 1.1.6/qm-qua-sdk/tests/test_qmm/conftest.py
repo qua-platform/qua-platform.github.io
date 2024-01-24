@@ -20,17 +20,15 @@ def qmm_mock(monkeypatch, capability_container):
                 host="mock-host",
                 port=1234,
                 ssl_context=None,
-                user_token=None
+                user_token=None,
             ),
-            qua_implementation=None
-        )
+            qua_implementation=None,
+            octaves={},
+        ),
     )
     monkeypatch.setattr(qm.quantum_machines_manager, "FrontendApi", lambda x: AsyncMock())
     monkeypatch.setattr(qm.quantum_machines_manager, "SimulationApi", lambda x: AsyncMock())
     qmm = qm.quantum_machines_manager.QuantumMachinesManager(
-        host="mock-host",
-        port=1234,
-        cluster_name="mock-cluster",
-        log_level=logging.DEBUG
+        host="mock-host", port=1234, cluster_name="mock-cluster", log_level=logging.DEBUG
     )
     yield qmm

@@ -1,7 +1,7 @@
 import ssl
 import warnings
 import dataclasses
-from typing import Dict, Optional
+from typing import Dict, Tuple, Optional
 
 from qm.utils import deprecation_message
 from qm.api.models.info import QuaMachineInfo
@@ -25,11 +25,19 @@ class ConnectionDetails:
 
 
 @dataclasses.dataclass
+class ResponseConnectionDetails:
+    host: str
+    port: int
+    octaves: Dict[str, Tuple[str, int]]
+
+
+@dataclasses.dataclass
 class ServerDetails:
     port: int
     host: str
     server_version: str
     connection_details: ConnectionDetails
+    octaves: Dict[str, ConnectionDetails]
 
     # does it implement the QUA service
     qua_implementation: Optional[QuaMachineInfo]

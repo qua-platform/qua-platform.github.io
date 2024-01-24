@@ -9,11 +9,8 @@ from qm.type_hinting.config_types import MixerConfigType
 def create_opx_config() -> DictQuaConfig:
     controller = "con1"
 
-    opx_analog_outputs_to_scope = (3, 6, 7, 9)
-    opx_digital_outputs_to_scope = (9,)
 
     single_pulse_len = 200
-    long_pulse_len = 10000
 
     wf_amp = 0.3
     offsets = [0.0] * 10
@@ -52,7 +49,6 @@ def create_opx_config() -> DictQuaConfig:
         ]
     )
 
-    w1_5 = rot_mat_5 @ w1_prerot
     w2_5 = rot_mat_5 @ w2_prerot
 
     w1_6 = rot_mat_6 @ w1_prerot
@@ -155,7 +151,7 @@ def create_opx_config() -> DictQuaConfig:
         "integration_weights": {
             "integW1": {
                 "cosine": w1cos.tolist(),
-                "sine": w1sin.tolist(),
+                "sine": (0.0, single_pulse_len + pad * 4),
             },
             "integW2": {
                 "cosine": w2_5[0, :].tolist(),
