@@ -57,7 +57,7 @@ Person that releases new documentation should
 To publish new version
 
 ```
-poetry run mike deploy --push --update-aliases 0.1 latest 
+poetry run mike deploy --push --update-aliases $(version) latest 
 ```
 
 To build config documentation (do once before publishing new version)
