@@ -1,0 +1,19 @@
+<head>
+    <script src="../javascripts/redoc.standalone.js"></script>
+    </head>
+    <body>
+        
+    <div id="config-schema-docs">test</div>
+    <script>
+        Redoc.init("../qm-qua-sdk/docs/spec.json",
+        {
+            expandResponses: "200",
+            hideTryItPanel: true,
+            disableSearch: true,
+            disableSidebar: true,
+            hideRightPanel: true
+        },
+            document.getElementById("config-schema-docs")
+        )
+    </script>
+    </body>

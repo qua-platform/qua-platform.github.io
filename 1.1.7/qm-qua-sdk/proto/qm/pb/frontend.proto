@@ -1,0 +1,512 @@
+syntax = "proto3";
+
+import "qm/pb/inc_qua.proto";
+import "qm/pb/inc_qua_config.proto";
+import "qm/pb/inc_qm_api.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "qm/pb/compiler.proto";
+import "qm/pb/job_results.proto";
+import "qm/pb/qm_manager.proto";
+import "qm/pb/general_messages.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "qm.grpc.frontend";
+option java_outer_classname = "FrontendProto";
+option objc_class_prefix = "HLW";
+
+package qm.grpc.frontend;
+
+// The greeting service definition.
+service Frontend {
+    rpc GetVersion (google.protobuf.Empty) returns (google.protobuf.StringValue) {}
+    rpc HealthCheck (google.protobuf.Empty) returns (HealthCheckResponse) {}
+    // Compile and Run a QUA program
+    rpc Execute (ExecutionRequest) returns (ExecutionResponse) {}
+    rpc AddToQueue(AddToQueueRequest) returns (AddToQueueResponse){}
+    rpc Compile(CompileRequest) returns (CompileResponse) {}
+    rpc AddCompiledToQueue(AddCompiledToQueueRequest) returns (AddCompiledToQueueResponse) {}
+    rpc RemovePendingJobs(JobQueryParams) returns (RemovePendingJobsResponse){}
+    rpc GetPendingJobs(JobQueryParams) returns (GetPendingJobsResponse){}
+    rpc GetJobExecutionStatus(GetJobExecutionStatusRequest) returns (GetJobExecutionStatusResponse) {}
+    rpc GetJobStatusUpdates(GetJobExecutionStatusRequest) returns (stream GetJobExecutionStatusResponse) {}
+    rpc PausedStatus (PausedStatusRequest) returns (PausedStatusResponse) {}
+    rpc Resume (ResumeRequest) returns (ResumeResponse) {}
+    rpc Halt (HaltRequest) returns (HaltResponse) {}
+    rpc ResetDataProcessing (ResetDataProcessingRequest) returns (ResetDataProcessingResponse) {}
+    rpc ValidateConfig (qm.grpc.qua_config.QuaConfig) returns (qm.grpc.compiler.ValidationResponse) {}
+    rpc Init (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc PerformQmRequest (qm.grpc.qm_api.HighQmApiRequest) returns (qm.grpc.qm_api.HighQmApiResponse) {}
+    rpc RequestData (QmDataRequest) returns (QmDataResponse) {}
+    rpc PullSimulatorSamples (qm.grpc.results_analyser.PullSimulatorSamplesRequest) returns (stream qm.grpc.results_analyser.SimulatorSamplesResponse) {}
+    rpc OpenQuantumMachine (qm.grpc.qm_manager.OpenQuantumMachineRequest) returns (qm.grpc.qm_manager.OpenQuantumMachineResponse) {}
+    rpc CloseQuantumMachine (qm.grpc.qm_manager.CloseQuantumMachineRequest) returns (qm.grpc.qm_manager.CloseQuantumMachineResponse) {}
+    rpc GetQuantumMachine (qm.grpc.qm_manager.GetQuantumMachineRequest) returns (qm.grpc.qm_manager.GetQuantumMachineResponse) {}
+    rpc GetRunningJob(qm.grpc.qm_manager.GetRunningJobRequest) returns (qm.grpc.qm_manager.GetRunningJobResponse) {}
+    rpc ListOpenQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.ListOpenQuantumMachinesResponse) {}
+    rpc CloseAllQuantumMachines (google.protobuf.Empty) returns (qm.grpc.qm_manager.CloseAllQuantumMachinesResponse) {}
+    rpc GetControllers(google.protobuf.Empty) returns (qm.grpc.qm_manager.GetControllersResponse) {}
+    rpc IsJobRunning(IsJobRunningRequest) returns (IsJobRunningResponse) {}
+    rpc IsJobAcquiringData(IsJobAcquiringDataRequest) returns (IsJobAcquiringDataResponse) {}
+    rpc Simulate (SimulationRequest) returns (SimulationResponse) {}
+    rpc ClearAllJobResults(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc PerformHalDebugCommand(PerformHalDebugCommandRequest) returns (PerformHalDebugCommandResponse) {}
+    rpc GetSimulatedQuantumState (GetSimulatedQuantumStateRequest) returns (GetSimulatedQuantumStateResponse) {}
+}
+
+message QueuePosition {
+    oneof position {
+        google.protobuf.Empty end = 1;
+        google.protobuf.Empty start = 2;
+    }
+}
+
+message AddToQueueRequest {
+    string quantumMachineId = 1;
+    qm.grpc.qua.QuaProgram highLevelProgram = 2;
+    QueuePosition queuePosition = 3;
+}
+
+message AddToQueueResponse {
+    bool ok = 1;
+    string jobId = 2;
+    repeated qm.grpc.compiler.CompilerMessage messages = 3;
+}
+
+message WaveformOverride {
+    repeated double samples = 1;
+}
+
+message ExecutionOverrides {
+    map<string, WaveformOverride> waveforms = 1;
+}
+
+message AddCompiledToQueueRequest {
+    string quantumMachineId = 1;
+    string programId = 2;
+    QueuePosition queuePosition = 3;
+    ExecutionOverrides executionOverrides = 4;
+}
+
+message AddCompiledToQueueResponse {
+    bool ok = 1;
+    string jobId = 2;
+    repeated general_messages.ErrorMessage errors = 3;
+}
+
+message CompileRequest {
+    string quantumMachineId = 1;
+    qm.grpc.qua.QuaProgram highLevelProgram = 2;
+}
+
+message CompileResponse {
+    bool ok = 1;
+    string programId = 2;
+    repeated qm.grpc.compiler.CompilerMessage messages = 3;
+}
+
+message GetJobExecutionStatusRequest {
+    string quantumMachineId = 1;
+    string jobId = 2;
+}
+
+message GetJobExecutionStatusResponse {
+    JobExecutionStatus status = 1;
+}
+
+message JobExecutionStatus {
+    oneof status {
+        Unknown unknown = 1;
+        Pending pending = 2;
+        Running running = 3;
+        Completed completed = 4;
+        Canceled canceled = 5;
+        Loading loading = 6;
+        Error error = 7;
+        Processing processing = 8;
+    }
+
+    message Unknown {
+    }
+    message Pending {
+        int32 positionInQueue = 1;
+        google.protobuf.Timestamp timeAdded = 2;
+        string addedBy = 3;
+    }
+    message Running {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+        google.protobuf.Timestamp timeStarted = 3;
+    }
+    message Completed {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+        google.protobuf.Timestamp timeStarted = 3;
+        google.protobuf.Timestamp timeCompleted = 4;
+    }
+    message Canceled {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+        google.protobuf.Timestamp timeCanceled = 3;
+    }
+
+    message Loading {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+    }
+
+    message Error {
+        google.protobuf.ListValue errorMessages = 1;
+        string addedBy = 2;
+    }
+
+    message Processing {
+        google.protobuf.Timestamp timeAdded = 1;
+        string addedBy = 2;
+        google.protobuf.Timestamp timeStarted = 3;
+    }
+}
+
+message GetPendingJobsResponse{
+    map<string, JobExecutionStatus.Pending> pendingJobs = 1;
+}
+
+message JobQueryParams {
+    string quantumMachineId = 1;
+    QueryValueMatcher jobId = 2;
+    QueryValueMatcher userId = 3;
+    google.protobuf.UInt32Value position = 4;
+}
+
+message QueryValueMatcher {
+    oneof valueType {
+        bool any = 1;
+        string value = 2;
+    }
+}
+
+message RemovePendingJobsResponse {
+    int32 numbersOfJobsRemoved = 1;
+}
+
+message SimulationRequest {
+    qm.grpc.qua_config.QuaConfig config = 1;
+    qm.grpc.qua.QuaProgram highLevelProgram = 2;
+    // The duration to simulate and provide results for
+    ExecutionRequest.Simulate simulate = 3;
+    repeated InterOpxConnection controllerConnections = 6;
+}
+
+message InterOpxAddress {
+    string controller = 1;
+    bool left = 2;
+}
+message InterOpxTarget {
+    oneof target {
+        InterOpxAddress direct = 1;
+    }
+}
+
+message InterOpxChannel {
+    string controller = 1;
+    int32 channelNumber = 2;
+}
+
+message InterOpxConnection {
+    InterOpxAddress source = 1 [deprecated = true];
+    InterOpxTarget target = 2 [deprecated = true];
+
+    oneof connectionType {
+        AddressToAddress addressToAddress = 3;
+        ChannelToChannel channelToChannel = 4;
+    }
+
+    message AddressToAddress {
+        InterOpxAddress source = 1;
+        InterOpxAddress target = 2;
+    }
+
+    message ChannelToChannel {
+        InterOpxChannel source = 1;
+        InterOpxChannel target = 2;
+    }
+}
+
+message SimulationResponse {
+    //QmManagerResponseHeader qmManagerResponseHeader = 1;
+    bool success = 1;
+    string jobId = 2;
+    repeated qm.grpc.qm_manager.ConfigValidationMessage configValidationErrors = 3;
+        repeated qm.grpc.qm_manager.PhysicalValidationMessage physicalValidationErrors = 4;
+    repeated qm.grpc.compiler.CompilerMessage messages = 5;
+
+    SimulatedResponsePart simulated = 6;
+}
+
+
+ message IsJobRunningRequest {
+    string jobId = 1;
+}
+message IsJobRunningResponse {
+    string jobId = 1;
+    bool isRunning = 2;
+}
+
+message IsJobAcquiringDataRequest {
+    string jobId = 1;
+}
+message IsJobAcquiringDataResponse {
+    string jobId = 1;
+    AcquiringStatus acquiringStatus = 2;
+
+    enum AcquiringStatus {
+        ACQUIRE_STOPPED = 0;
+        NO_DATA_TO_ACQUIRE = 1;
+        HAS_DATA_TO_ACQUIRE = 2;
+    }
+
+}
+
+message QmDataRequest {
+    repeated IOValueRequest io_value_Request = 1;
+}
+
+message QmDataResponse {
+    repeated IOValueResponse io_value_response = 1;
+    bool success = 2;
+    repeated general_messages.ErrorMessage errors = 3;
+
+    message IOValueResponse {
+        IOValueRequest request = 1;
+        qm.grpc.compiler.QuaValues values = 2;
+    }
+}
+
+message IOValueRequest {
+    uint32 pulser_number = 1 [deprecated = true];
+    uint32 io_number = 2;
+
+    oneof identifier_one_of {
+        string jobId = 3;
+        string quantumMachineId = 4;
+    }
+}
+
+
+message ResumeRequest {
+    string jobId = 1;
+    uint32 pulsersBitmap = 2 [deprecated = true];
+}
+
+message ResumeResponse {
+
+}
+
+message PausedStatusRequest {
+    string jobId = 1;
+}
+
+message PausedStatusResponse {
+    uint32 pulsersBitmap = 1 [deprecated = true];
+    bool ok = 2;
+    bool isPaused = 3;
+}
+
+message PullResultRequest {
+    string jobId = 1;
+}
+
+message PullAnalysedResultsRequest {
+    string jobId = 1;
+    string metadata = 2;
+}
+
+
+message PullResultResponse {
+    bytes data = 1;
+    uint32 offset = 2;
+    uint32 bytesLeft = 3;
+
+    string controllerName = 4;
+    uint32 applicationNumber = 5;
+    string implementationName = 6;
+}
+
+message HealthCheckResponse {
+    repeated string message = 1;
+    bool ok = 2;
+    repeated string errorMessages = 3;
+    repeated string warningMessages = 4;
+}
+
+// Execution request
+message ExecutionRequest {
+    oneof program_one_of {
+        qm.grpc.qua.QuaProgram highLevelProgram = 1;
+        bytes lowLevelProgram = 2 [deprecated = true];
+    }
+
+    // Stream limitation, time in milliseconds and data in records (4ns worth of raw data
+    // or a single icp/seq record).
+    uint32 streamDurationLimit = 3;
+    uint32 streamDataLimit = 4;
+
+    // Force the execution. If another job is currently running, terminate it.
+    bool forceExecution = 5;
+
+    message Simulate {
+        uint32 duration = 1;
+        bool simulateAnalogOutputs = 2 [deprecated = true];
+        bool simulateDigitalOutputs = 3 [deprecated = true];
+        bool includeAnalogSamples = 4 [deprecated = true];
+        bool includeDigitalSamples = 5 [deprecated = true];
+        bool includeAnalogWaveforms = 6;
+        bool includeDigitalWaveforms = 7;
+
+        message SimulationInterface {
+            message None {
+
+            }
+            message Loopback {
+                message Connections {
+                    string fromController = 1;
+                    int32 fromFem = 5;
+                    int32 fromPort = 2;
+                    string toController = 3;
+                    int32 toFem = 6;
+                    int32 toPort = 4;
+                }
+                repeated Connections connections = 2;
+                uint32 latency = 3;
+                double noisePower = 4;
+            }
+            // TODO remove old quantum sim
+            message QSim {
+                message Connections {
+                    string fromController = 1;
+                    int32 fromPort = 2;
+                    string toQSim = 3;
+                }
+                string target = 1;
+                string jobId = 2;
+                repeated Connections analogOutConnections = 3;
+                repeated Connections digitalOutConnections = 4;
+                repeated Connections analogInConnections = 5;
+            }
+            message QuantumSimulatorInterface {
+                bytes physical_config = 1;
+            }
+            message RawInterface {
+                message Connections {
+                    string fromController = 1;
+                    int32 fromFem = 4;
+                    int32 fromPort = 2;
+                    repeated double toSamples = 3;
+                }
+                repeated Connections connections = 1;
+                double noisePower = 2;
+            }
+            oneof interface_oneof {
+                None none = 1;
+                Loopback loopback = 2;
+                QSim qsim = 3;
+                RawInterface raw = 4;
+                QuantumSimulatorInterface quantum_simulator = 5;
+            }
+
+        }
+
+        SimulationInterface simulationInterface = 8;
+        int32 extraProcessingTimeoutMs = 9;
+    }
+
+    // The duration to simulate and provide results for
+    Simulate simulate = 6;
+    bool dryRun = 7;
+
+    // The id of the qm that will execute the program
+    string quantumMachineId = 8;
+}
+message ExecutionResponse {
+    bool ok = 1;
+    string jobId = 2;
+    repeated qm.grpc.compiler.CompilerMessage messages = 3;
+    string metadata = 4;
+
+    SimulatedResponsePart simulated = 6;
+
+    // The config used for execution (only filled for high level execution)
+    qm.grpc.qua_config.QuaConfig config = 7;
+}
+
+
+message SimulatedResponsePart {
+    google.protobuf.Struct analogOutputs = 1 [deprecated = true];
+    google.protobuf.Struct digitalOutputs = 2 [deprecated = true];
+    google.protobuf.Struct waveformReport = 4;
+
+    repeated string errors = 3;
+}
+
+message ResetDataProcessingRequest {
+}
+
+message ResetDataProcessingResponse {
+}
+
+message HaltRequest {
+    string jobId = 1;
+}
+
+message HaltResponse {
+    bool ok = 1;
+}
+
+message PeekRequest {
+    uint32 address = 1;
+    string controllerId = 2;
+}
+
+message PeekResponse {
+    uint32 value = 1;
+}
+
+message PokeRequest {
+    uint32 address = 1;
+    uint32 value = 2;
+    string controllerId = 3;
+}
+
+message PokeResponse {
+    bool ok = 1;
+}
+
+message GetSimulatedQuantumStateRequest {
+    string jobId = 1;
+}
+message GetSimulatedQuantumStateResponse {
+    string jobId = 1;
+    bool ok = 2;
+    DensityMatrix state = 3;
+}
+
+message DensityMatrix{
+    uint64 timeStamp=1;
+    repeated ComplexNumber data=2;
+}
+
+message ComplexNumber{
+    double re=1;
+    double im=2;
+}
+
+message PerformHalDebugCommandRequest{
+    string controllerName = 1;
+    string command = 2;
+}
+message PerformHalDebugCommandResponse {
+    bool success = 1;
+    string response = 2;
+}
