@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "QM's unified documentation and resources"
+name = "QM unified documentation and resources"
 version = "0.1.0"
 description = ""
 authors = ["Nikola Sibalic <nikola@quantum-machines.co>"]
@@ -20,7 +20,7 @@ mkdocs-glightbox = "^0.3.0"
 mkdocs-exclude = "^1.0.2"
 qm-qua = {path = "./docs/docs/qm-qua-sdk", develop=true}
 mkdocs-macros-plugin = "^0.7.0"
-mkdocs-material = {git = "https://github.com/entropy-lab/mkdocs-material-insiders.git"}
+mkdocs-material = "^9.5.17"
 pip = "^22.3.1"
 install = "^1.3.5"
 mkdocs-git-committers-plugin-2 = "^1.1.1"

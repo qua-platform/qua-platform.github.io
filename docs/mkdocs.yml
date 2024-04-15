@@ -233,7 +233,7 @@ nav:
   # - Community: "https://uxdiscuss.entropy-lab.io"
 
 plugins:
-  - meta
+  # - meta
   - search
   - table-reader:
       data_path: "docs"
