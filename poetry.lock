@@ -2290,13 +2290,13 @@ pyyaml = "*"
 
 [[package]]
 name = "qm-octave"
-version = "2.1.0"
+version = "2.0.1"
 description = "SDK to control an Octave with QUA"
 optional = false
 python-versions = ">=3.7,<3.12"
 files = [
-    {file = "qm_octave-2.1.0-py3-none-any.whl", hash = "sha256:b909596fbbb183af3555cd737fa12ffb899afef0c3f804762e0aedd29abd9838"},
-    {file = "qm_octave-2.1.0.tar.gz", hash = "sha256:ca142a6656a0e1cd83ecbb8a2050096274468656a724ad041db6178c28864bfe"},
+    {file = "qm_octave-2.0.1-py3-none-any.whl", hash = "sha256:ef2607101b978beb306f30bfc56656f087fe7764133ba22e3ce5739a409c4edb"},
+    {file = "qm_octave-2.0.1.tar.gz", hash = "sha256:f20844d98e493a253bedb72f86fcb665bc7461a46d502de3cc7c91f3d54416d6"},
 ]
 
 [package.dependencies]
@@ -2327,7 +2327,7 @@ marshmallow-polyfield = "^5.7"
 numpy = "^1.17.0"
 plotly = "^5.13.0"
 protobuf = ">=3.17.3, <5"
-qm-octave = "2.1.0"
+qm-octave = "2.0.1"
 tinydb = "^4.6.1"
 typing-extensions = "^4.5"
 
